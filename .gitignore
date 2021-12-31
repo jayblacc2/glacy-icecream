@@ -1,0 +1,6 @@
+.vscode/
+#ignore my todo or issues to be fixed
+*.md    
+node_modules/
+/package-lock.json
+
