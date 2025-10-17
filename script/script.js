@@ -1,7 +1,23 @@
-import { slider } from "./slider.js";
+let index = 0;
+let slides;
+let totalSlides;
 
-slider();
-import { Velocity } from "velocity-animate";
+function updateSlider() {
+  slides.style.transform = `translateX(-${index * 100}%)`;
+}
 
-const main_header = document.querySelector("h1");
-Velocity(main_header, { opacity: 1 }, 3000);
+function next() {
+  index = (index + 1) % totalSlides;
+  updateSlider();
+}
+
+function prev() {
+  index = (index - 1 + totalSlides) % totalSlides;
+  updateSlider();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  slides = document.querySelector(".slides");
+  totalSlides = document.querySelectorAll(".slide").length;
+  updateSlider();
+});

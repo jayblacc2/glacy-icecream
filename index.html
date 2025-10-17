@@ -11,6 +11,7 @@
   <link rel="shortcut icon" href="images/icons/favicon.png" type="image/x-icon" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Slab:wght@400;500;700&family=Yanone+Kaffeesatz:wght@400;500;700;900&display=swap"
     rel="stylesheet" />
@@ -45,14 +46,29 @@
           <div class="form-group form-login">
             <img src="images/icons/logout.svg" alt="signup-img" />
             <label for="signup">login</label>
-            <div class="search-box visually-hidden">
-
+            <div class=" login-container" id="login-container">
+              <form class="login-form">
+                <div class="form-group">
+                <label for="username">
+                  <input type="text" id="username" placeholder="username" class="login-username">
+                </label>
+                </div>
+                <div class="form-group">
+                <label for="password">
+                  <input type="password" id="password" placeholder="password" class="login-password">
+                </label>
+                </div>
+                <div class="login-btn">
+                  <button type="submit">Login</button>
+                  <button type="button">Register</button>
+                </div>
+              </form>
             </div>
           </div>
           <div class="form-group form-cart">
-            <img src="images/icons/cart.svg" alt="cart-img" />
+            <img src="images/icons/cart.svg" alt="cart-img"/>
             <label for="cart">Empty</label>
-            <div class="search-box visually-hidden">
+            <div class="cart-container visually-hidden">
               <label for="search">
                 <input type="search" id="search" placeholder="search">
               </label>
@@ -71,16 +87,23 @@
         <a href="#" class="btn btn-light">Order</a>
       </div>
       <div class="hero-slide">
-        <div class="slide-box">
-          <div class="slide-bg">
-            <img class="slide-img-1" src="images/icecream-1.png" alt="" />
-            <button class="left"><img class="left" src="images/icons/slide-left.png" alt="slide left" /></button>
-            <button class="right"><img class="right" src="images/icons/slide-right.png" alt="slide right" /></button>
+        <div class="slide-bg"></div>
+        <div class="slider">
+          <div class="slides">
+            <div class="slide">
+              <img class="slide-img-1" src="images/icecream/icecream-1.png" alt="Strawberry Jam Ice Cream" loading="lazy" />
+            </div>
+            <div class="slide">
+              <img class="slide-img-1" src="images/icecream/icecream-2.png" alt="Pistachio Ice Cream" loading="lazy" />
+            </div>
+            <div class="slide">
+              <img class="slide-img-1" src="images/icecream/icecream-3.png" alt="Blueberry Ice Cream" loading="lazy" />
+            </div>
           </div>
-          <div class="slide-bg-2"></div>
         </div>
+        <button type="button" class="left" onclick="prev()"><img src="images/icons/slide-left.png" alt="slide left" /></button>
+        <button type="button" class="right" onclick="next()"><img src="images/icons/slide-right.png" alt="slide right" /></button>
       </div>
-    </div>
   </header>
   <main class="main">
     <section id="section-order" class="container-center">
@@ -97,7 +120,7 @@
               <a href="" class="btn btn-light">Get gift</a>
             </div>
             <div class="content-img">
-              <img src="images/straw.png" alt="strawberry images" />
+              <img src="images/straw.png" alt="strawberry images" loading="lazy" />
             </div>
           </div>
           <div class="order-contents">
@@ -125,7 +148,7 @@
         <div class="cards py-3">
           <div class="card py-1 text-center">
             <div class="card-img">
-              <img src="./images/img1.png" alt="card image">
+              <img src="./images/img1.png" alt="card image" loading="lazy">
             </div>
             <div class="card-contents">
               <h3 class="text-lg">Strawberry</h3>
@@ -352,6 +375,34 @@
 
 
   <script type="module" src="script/script.js"></script>
+  <script>
+    // Inline backup for local file access
+    let index = 0;
+    let slides;
+    let totalSlides;
+
+    function updateSlider() {
+      if (slides) {
+        slides.style.transform = `translateX(-${index * 100}%)`;
+      }
+    }
+
+    function next() {
+      index = (index + 1) % totalSlides;
+      updateSlider();
+    }
+
+    function prev() {
+      index = (index - 1 + totalSlides) % totalSlides;
+      updateSlider();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      slides = document.querySelector(".slides");
+      totalSlides = document.querySelectorAll(".slide").length;
+      updateSlider();
+    });
+  </script>
 </body>
 
 </html>
