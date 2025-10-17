@@ -17,6 +17,8 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <title>Glacy icecream</title>
+  <script type="module" src="script/script.js"></script>
+  <script src="script/form-toggle.js"></script>
 </head>
 
 <body>
@@ -33,48 +35,80 @@
         </ul>
       </div>
       <div class="nav-info">
-        <form action="" class="nav-form">
+        <div class="nav-form">
           <p>+1 317 234-67-33</p>
-          <div class="form-group search">
-            <img src="images/icons/search.svg" alt="search-img" />
-            <div class="search-box visually-hidden">
-              <label for="search">
-                <input type="search" id="search" placeholder="search">
-              </label>
+          <div class="form-group search" id="search-toggle">
+            <img src="images/icons/search.svg" alt="search" />
+            <div class="search-box visually-hidden" id="search-box">
+              <form class="search-form" action="" method="get">
+                <input type="search" id="search" name="q" placeholder="Search products" aria-label="Search" />
+                <button type="submit" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+              </form>
             </div>
           </div>
           <div class="form-group form-login">
-            <img src="images/icons/logout.svg" alt="signup-img" />
-            <label for="signup">login</label>
-            <div class=" login-container" id="login-container">
+            <img src="images/icons/logout.svg" alt="signup-img" class="login-icon" />
+            <label for="login" class="login-label">login</label>
+            <div class="login-container visually-hidden" id="login-container">
               <form class="login-form">
                 <div class="form-group">
-                <label for="username">
-                  <input type="text" id="username" placeholder="username" class="login-username">
-                </label>
+                  <label for="username">
+                    <input type="text" id="username" placeholder="Username" class="login-username">
+                  </label>
+                  <button type="button" class="btn-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="form-group">
-                <label for="password">
-                  <input type="password" id="password" placeholder="password" class="login-password">
-                </label>
+                  <label for="password">
+                    <input type="password" id="password" placeholder="Password" class="login-password">
+                  </label>
                 </div>
                 <div class="login-btn">
-                  <button type="submit">Login</button>
-                  <button type="button">Register</button>
+                  <button type="submit" class="login-submit">Login</button>
+                  <a href="#" class="forgot-password">Forgot password?</a>
+                  <button type="button" class="register-btn" id="show-signup">Register</button>
+                </div>
+              </form>
+              <!-- register form -->
+              <form class="signup-form visually-hidden">
+                <h3>Create Account</h3>
+                <div class="form-group">
+                  <label for="signup-username">
+                    <input type="text" id="signup-username" placeholder="Username" class="signup-username">
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label for="signup-password">
+                    <input type="password" id="signup-password" placeholder="Password" class="signup-password">
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label for="confirm-password">
+                    <input type="password" id="confirm-password" placeholder="Confirm Password" class="confirm-password">
+                  </label>
+                </div>
+                <div class="signup-btn">
+                  <button type="submit" class="signup-submit">Register</button>
                 </div>
               </form>
             </div>
           </div>
+          
           <div class="form-group form-cart">
-            <img src="images/icons/cart.svg" alt="cart-img"/>
-            <label for="cart">Empty</label>
-            <div class="cart-container visually-hidden">
-              <label for="search">
-                <input type="search" id="search" placeholder="search">
-              </label>
+            <i class="fa-solid fa-cart-shopping cart-icon"></i>
+            <label for="cart" class="cart-label">Empty</label>
+            <div class="cart-container visually-hidden" id="cart-container">
+              <h3>Your Cart</h3>
+              <div class="cart-items">
+                <!-- Cart items will be dynamically added here -->
+                <p class="empty-cart-message">Your cart is empty</p>
+              </div>
+              <div class="cart-total">
+                <p>Total: <span class="total-amount">$0.00</span></p>
+                <button class="checkout-btn">Checkout</button>
+              </div>
             </div>
           </div>
-        </form>
+        </div>
       </div>
     </nav>
     <div class="hero">

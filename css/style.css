@@ -72,7 +72,7 @@ li {
   margin: 3rem auto;
 }
 .visually-hidden {
-  display: none;
+  display: none !important;
 }
 
 .center {
@@ -80,6 +80,126 @@ li {
   margin: 0 auto;
   padding: 3rem 0;
   overflow: hidden;
+}
+
+/* Form Containers Styling */
+.form-login, .form-signup, .form-cart {
+  position: relative;
+  cursor: pointer;
+}
+
+.login-icon, .cart-icon {
+  cursor: pointer;
+}
+
+.login-label, .cart-label {
+  cursor: pointer;
+}
+
+.login-container, .signup-container, .cart-container {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 300px;
+  z-index: 100;
+}
+
+.login-form, .signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-form h3, .signup-form h3, .cart-container h3 {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.login-form input, .signup-form input {
+  padding: 10px;
+  border: 1px solid var(--primary-text-color);
+  color: var(--primary-color);
+  border-radius: 4px;
+  font-size: 1.4rem;
+}
+
+.login-btn, .signup-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.login-submit, .signup-submit, .checkout-btn {
+  background-color: var(--bg-color-1);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.login-submit:hover, .signup-submit:hover, .checkout-btn:hover {
+  background-color: var(--dark-primary-color);
+}
+
+.register-btn, .login-link {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 1.3rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.forgot-password {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  text-align: right;
+}
+
+/* Cart Styling */
+.cart-container {
+  width: 350px;
+}
+
+.cart-items {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+
+.empty-cart-message {
+  text-align: center;
+  color: #888;
+  font-size: 1.4rem;
+  padding: 20px 0;
+}
+
+.cart-total {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+}
+
+.cart-total p {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+.checkout-btn {
+  width: 100%;
 }
 
 .primary-text {
@@ -225,6 +345,70 @@ h1 {
   position: relative;
 }
 
+/* Navbar Comp */
+
+.search-box {
+  width: 22.25rem;
+  height: 6rem;
+  position: absolute;
+  top: 40px;
+  right: 7px;
+
+  background-color: #fff;
+
+  border-radius: 3px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-box input[type="search"] {
+  width: 90%;
+  padding: 0.3rem 0.5rem;
+  color: var(--primary-color);
+
+  font-size: 1.3rem;
+
+  outline: none;
+}
+
+.search-box input[type="search"]::placeholder {
+  color: var(--primary-text-color);
+}
+
+/* Search Form */
+.search-form {
+  width: 90%;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.search-form input[type="search"] {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--primary-text-color);
+  border-radius: 4px;
+  font-size: 1.3rem;
+  color: var(--primary-color);
+}
+
+.btn-search {
+  padding: 0.6rem 0.9rem;
+  background: var(--bg-color-1);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-search:hover {
+  background: var(--dark-primary-color);
+}
+
+
 .login-container {
   position: absolute;
   top: 40px;
@@ -236,23 +420,21 @@ h1 {
   box-shadow: var(--box-shadow);
   display: flex;
   flex-direction: column;
+  z-index: 1000;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  border: 1px solid red;
 }
 
 .login-username {
-width: inherit;
+  width: 100%;
   height: 3rem;
   margin-bottom: 1rem;
   padding: 0 1rem;
-  /* border: 1px solid var(--primary-color); */
-  border: 1px solid red;
-
-  border-radius: 26px;
+  border: 1px solid var(--primary-text-color);
+  border-radius: 4px;
 }
 
 .login-btn {
@@ -646,7 +828,7 @@ width: inherit;
 }
 
 input::placeholder {
-  color: #e0e4e9;
+  color: var(--primary-text-color);
   font-size: 1.25rem;
 }
 
@@ -826,34 +1008,3 @@ input::placeholder {
   font-size: 1.1rem;
 }
 
-/* Navbar Comp */
-
-.search-box {
-  width: 22.25rem;
-  height: 6rem;
-  position: absolute;
-  top: 40px;
-  right: 7px;
-
-  background-color: #fff;
-
-  border-radius: 3px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.search-box input[type="search"] {
-  width: 90%;
-  padding: 0.3rem 0.5rem;
-  color: #333;
-
-  font-size: 1.3rem;
-
-  outline: none;
-}
-
-.search-box input[type="search"]::placeholder {
-  color: #333;
-}
