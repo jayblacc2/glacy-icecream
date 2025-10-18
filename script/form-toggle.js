@@ -101,7 +101,10 @@ document.addEventListener("DOMContentLoaded", function () {
       !event.target.closest(".form-login") &&
       !event.target.closest(".form-signup") &&
       !event.target.closest(".form-cart") &&
-      !event.target.closest(".search")
+      !event.target.closest(".search") &&
+      !event.target.closest(".search-box") &&
+      !event.target.closest(".search-form") &&
+      !event.target.closest("#search")
     ) {
       loginContainer.classList.add("visually-hidden");
       if (signupForm) signupForm.classList.add("visually-hidden");
@@ -126,6 +129,14 @@ document.addEventListener("DOMContentLoaded", function () {
   if (searchToggle) {
     searchToggle.addEventListener("click", toggleSearch);
   }
+  
+  // Prevent search box from closing when clicking inside it
+  if (searchBox) {
+    searchBox.addEventListener("click", function(event) {
+      event.stopPropagation();
+    });
+  }
+  
   document.addEventListener("click", closeAllDropdowns);
 
   // Prevent submission for login and signup only
