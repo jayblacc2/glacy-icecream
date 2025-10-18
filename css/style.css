@@ -531,10 +531,19 @@ h1 {
   padding: 0;
 }
 
-.left img,
-.right img {
-  width: 4rem;
+.fa-chevron-left,
+.fa-chevron-right {
+  border: 2px solid var(--dark-primary-color);
+  font-size: 2.4rem;
+  color: var(--dark-primary-color);
   height: auto;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .left:hover,
