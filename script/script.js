@@ -2,6 +2,20 @@ const cardCart = document.querySelectorAll(".card-cart");
 
 let cartItems = [];
 let index = 0;
+
+// Load cart from localStorage
+function loadCart() {
+  const savedCart = localStorage.getItem('glacy-cart');
+  if (savedCart) {
+    cartItems = JSON.parse(savedCart);
+    updateCart();
+  }
+}
+
+// Save cart to localStorage
+function saveCart() {
+  localStorage.setItem('glacy-cart', JSON.stringify(cartItems));
+}
 let slides;
 let totalSlides;
 
@@ -100,6 +114,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (nextButton) {
     nextButton.addEventListener("click", nextCatalog);
   }
+  
+  // Load cart from localStorage
+  loadCart();
 });
 
 // clicking cart and adding to cart
@@ -126,6 +143,7 @@ cardCart.forEach((item) => {
     }
     
     updateCart();
+    saveCart();
   });
 });
 
@@ -159,20 +177,20 @@ function updateCart() {
     total += itemTotal;
     
     cartItemElement.innerHTML = `
-      <div class="cart-item-info">
-        <img src="${item.image}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
-        <div style="flex: 1; margin-left: 10px;">
-          <h4 style="margin: 0; font-size: 14px;">${item.name}</h4>
-          <p style="margin: 5px 0; font-size: 12px; color: #666;">${item.price}</p>
-        </div>
+      <img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+      <div style="flex: 1; margin-left: 8px;">
+        <h4 style="margin: 0; font-size: 13px;">${item.name}</h4>
+        <p style="margin: 2px 0; font-size: 11px; color: #666;">${item.price}</p>
       </div>
-      <div class="cart-item-controls" style="display: flex; align-items: center; gap: 10px;">
-        <button class="decrease-qty" data-index="${index}" style="padding: 2px 8px; cursor: pointer;">-</button>
-        <span style="font-size: 14px;">${item.quantity}</span>
-        <button class="increase-qty" data-index="${index}" style="padding: 2px 8px; cursor: pointer;">+</button>
-        <button class="remove-item" data-index="${index}" style="padding: 2px 8px; cursor: pointer; color: red;">×</button>
+      <div class="cart-item-controls" style="display: flex; align-items: center; gap: 5px;">
+        <button class="decrease-qty" data-index="${index}" style="padding: 2px 6px; cursor: pointer; border: 1px solid #ddd; background: white;">-</button>
+        <span style="font-size: 13px;">${item.quantity}</span>
+        <button class="increase-qty" data-index="${index}" style="padding: 2px 6px; cursor: pointer; border: 1px solid #ddd; background: white;">+</button>
+        <button class="remove-item" data-index="${index}" style="padding: 2px 6px; cursor: pointer; color: red; border: 1px solid #ddd; background: white;">×</button>
       </div>
     `;
+    
+    cartItemElement.style.cssText = "display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #eee;";
     
     cartItemsContainer.appendChild(cartItemElement);
   });
@@ -184,14 +202,17 @@ function updateCart() {
   // Add event listeners for quantity controls
   document.querySelectorAll(".increase-qty").forEach(btn => {
     btn.addEventListener("click", (e) => {
+      e.stopPropagation();
       const index = parseInt(e.target.dataset.index);
       cartItems[index].quantity++;
       updateCart();
+      saveCart();
     });
   });
   
   document.querySelectorAll(".decrease-qty").forEach(btn => {
     btn.addEventListener("click", (e) => {
+      e.stopPropagation();
       const index = parseInt(e.target.dataset.index);
       if (cartItems[index].quantity > 1) {
         cartItems[index].quantity--;
@@ -199,14 +220,17 @@ function updateCart() {
         cartItems.splice(index, 1);
       }
       updateCart();
+      saveCart();
     });
   });
   
   document.querySelectorAll(".remove-item").forEach(btn => {
     btn.addEventListener("click", (e) => {
+      e.stopPropagation();
       const index = parseInt(e.target.dataset.index);
       cartItems.splice(index, 1);
       updateCart();
+      saveCart();
     });
   });
 }
