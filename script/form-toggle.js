@@ -101,6 +101,10 @@ document.addEventListener("DOMContentLoaded", function () {
       !event.target.closest(".form-login") &&
       !event.target.closest(".form-signup") &&
       !event.target.closest(".form-cart") &&
+      !event.target.closest("#cart-container") &&
+      !event.target.classList.contains("increase-qty") &&
+      !event.target.classList.contains("decrease-qty") &&
+      !event.target.classList.contains("remove-item") &&
       !event.target.closest(".search") &&
       !event.target.closest(".search-box") &&
       !event.target.closest(".search-form") &&

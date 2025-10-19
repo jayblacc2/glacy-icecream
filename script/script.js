@@ -5,7 +5,7 @@ let index = 0;
 
 // Load cart from localStorage
 function loadCart() {
-  const savedCart = localStorage.getItem('glacy-cart');
+  const savedCart = localStorage.getItem("glacy-cart");
   if (savedCart) {
     cartItems = JSON.parse(savedCart);
     updateCart();
@@ -14,7 +14,7 @@ function loadCart() {
 
 // Save cart to localStorage
 function saveCart() {
-  localStorage.setItem('glacy-cart', JSON.stringify(cartItems));
+  localStorage.setItem("glacy-cart", JSON.stringify(cartItems));
 }
 let slides;
 let totalSlides;
@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (nextButton) {
     nextButton.addEventListener("click", nextCatalog);
   }
-  
+
   // Load cart from localStorage
   loadCart();
 });
@@ -124,24 +124,25 @@ cardCart.forEach((item) => {
   item.addEventListener("click", (e) => {
     const selectedItem = e.target.closest(".card");
     const itemName = selectedItem.querySelector("h3")?.textContent || "";
-    const itemPrice = selectedItem.querySelector(".card-price")?.textContent || "";
+    const itemPrice =
+      selectedItem.querySelector(".card-price")?.textContent || "";
     const itemImage = selectedItem.querySelector(".card-img img")?.src || "";
-    
+
     const cartItem = {
       name: itemName,
       price: itemPrice,
       image: itemImage,
-      quantity: 1
+      quantity: 1,
     };
-    
+
     // Check if item already exists in cart
-    const existingItem = cartItems.find(item => item.name === itemName);
+    const existingItem = cartItems.find((item) => item.name === itemName);
     if (existingItem) {
       existingItem.quantity++;
     } else {
       cartItems.push(cartItem);
     }
-    
+
     updateCart();
     saveCart();
   });
@@ -150,32 +151,35 @@ cardCart.forEach((item) => {
 // Update cart UI
 function updateCart() {
   const cartItemsContainer = document.querySelector(".cart-items");
-  const emptyCartMessage = cartItemsContainer.querySelector(".empty-cart-message");
+  const emptyCartMessage = cartItemsContainer.querySelector(
+    ".empty-cart-message"
+  );
   const totalAmountElement = document.querySelector(".total-amount");
   const cartLabel = document.querySelector(".cart-label");
-  
+
   // Clear current items (except empty message)
   cartItemsContainer.innerHTML = "";
-  
+
   if (cartItems.length === 0) {
-    cartItemsContainer.innerHTML = '<p class="empty-cart-message">Your cart is empty</p>';
+    cartItemsContainer.innerHTML =
+      '<p class="empty-cart-message">Your cart is empty</p>';
     totalAmountElement.textContent = "$0.00";
     cartLabel.textContent = "Empty";
     return;
   }
-  
+
   // Add items to cart
   let total = 0;
   cartItems.forEach((item, index) => {
     const cartItemElement = document.createElement("div");
     cartItemElement.className = "cart-item";
-    
+
     // Extract numeric price
     const priceMatch = item.price.match(/\d+/);
     const itemPrice = priceMatch ? parseInt(priceMatch[0]) : 0;
     const itemTotal = itemPrice * item.quantity;
     total += itemTotal;
-    
+
     cartItemElement.innerHTML = `
       <img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
       <div style="flex: 1; margin-left: 8px;">
@@ -189,48 +193,43 @@ function updateCart() {
         <button class="remove-item" data-index="${index}" style="padding: 2px 6px; cursor: pointer; color: red; border: 1px solid #ddd; background: white;">×</button>
       </div>
     `;
-    
-    cartItemElement.style.cssText = "display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #eee;";
-    
+
+    cartItemElement.style.cssText =
+      "display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #eee;";
+
     cartItemsContainer.appendChild(cartItemElement);
   });
-  
+
   // Update total and label
   totalAmountElement.textContent = `₽${total}`;
-  cartLabel.textContent = `${cartItems.length} item${cartItems.length > 1 ? 's' : ''}`;
-  
-  // Add event listeners for quantity controls
-  document.querySelectorAll(".increase-qty").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const index = parseInt(e.target.dataset.index);
-      cartItems[index].quantity++;
-      updateCart();
-      saveCart();
-    });
-  });
-  
-  document.querySelectorAll(".decrease-qty").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const index = parseInt(e.target.dataset.index);
-      if (cartItems[index].quantity > 1) {
-        cartItems[index].quantity--;
-      } else {
-        cartItems.splice(index, 1);
-      }
-      updateCart();
-      saveCart();
-    });
-  });
-  
-  document.querySelectorAll(".remove-item").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const index = parseInt(e.target.dataset.index);
-      cartItems.splice(index, 1);
-      updateCart();
-      saveCart();
-    });
-  });
+  cartLabel.textContent = `${cartItems.length} item${
+    cartItems.length > 1 ? "s" : ""
+  }`;
 }
+
+// Handle cart item controls with event delegation
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("increase-qty")) {
+    e.stopPropagation();
+    const index = parseInt(e.target.dataset.index);
+    cartItems[index].quantity++;
+    updateCart();
+    saveCart();
+  } else if (e.target.classList.contains("decrease-qty")) {
+    e.stopPropagation();
+    const index = parseInt(e.target.dataset.index);
+    if (cartItems[index].quantity > 1) {
+      cartItems[index].quantity--;
+    } else {
+      cartItems.splice(index, 1);
+    }
+    updateCart();
+    saveCart();
+  } else if (e.target.classList.contains("remove-item")) {
+    e.stopPropagation();
+    const index = parseInt(e.target.dataset.index);
+    cartItems.splice(index, 1);
+    updateCart();
+    saveCart();
+  }
+});
