@@ -8,7 +8,7 @@ import {
   getUserCart,
 } from "./auth.js";
 
-const cardCart = document.querySelectorAll(".card-cart");
+// const cardCart = document.querySelectorAll(".card-cart");
 
 let cartItems = [];
 let index = 0;
@@ -24,6 +24,72 @@ async function loadIcecreams() {
     console.error("Error loading icecreams:", error);
     icecreams = [];
   }
+}
+
+// Render ice cream catalog dynamically
+function renderCatalog() {
+  const catalogContainer = document.getElementById("catalog-cards");
+  if (!catalogContainer) return;
+
+  catalogContainer.innerHTML = ""; // Clear existing content
+
+  icecreams.forEach((icecream) => {
+    const cardElement = document.createElement("div");
+    cardElement.className = "card py-1 text-center";
+
+    cardElement.innerHTML = `
+      <div class="card-img">
+        <img src="${icecream.image}" alt="${icecream.name} ice cream" loading="lazy">
+      </div>
+      <div class="card-contents">
+        <h3 class="text-lg">${icecream.name}</h3>
+        <p>${icecream.description}</p>
+        <div class="content-item">
+          <span class="card-price">${icecream.price}₽/кг</span>
+          <span class="card-cart">
+            <i class="fa-solid fa-cart-shopping"></i>
+          </span>
+        </div>
+      </div>
+    `;
+
+    catalogContainer.appendChild(cardElement);
+  });
+
+  // Re-attach event listeners for cart buttons
+  attachCartListeners();
+}
+
+// Attach event listeners to cart buttons
+function attachCartListeners() {
+  const cardCartButtons = document.querySelectorAll(".card-cart");
+  cardCartButtons.forEach((button) => {
+    button.addEventListener("click", (e) => {
+      const selectedCard = e.target.closest(".card");
+      const itemName = selectedCard.querySelector("h3")?.textContent || "";
+      const itemPrice =
+        selectedCard.querySelector(".card-price")?.textContent || "";
+      const itemImage = selectedCard.querySelector(".card-img img")?.src || "";
+
+      const cartItem = {
+        name: itemName,
+        price: itemPrice,
+        image: itemImage,
+        quantity: 1,
+      };
+
+      // Check if item already exists in cart
+      const existingItem = cartItems.find((item) => item.name === itemName);
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        cartItems.push(cartItem);
+      }
+
+      updateCart();
+      saveCart();
+    });
+  });
 }
 
 // Load cart based on authentication status
@@ -346,6 +412,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Load icecreams data
   await loadIcecreams();
 
+  // Render the catalog with loaded data
+  renderCatalog();
+
   // Initialize hero slider
   slides = document.querySelector(".slides");
   totalSlides = document.querySelectorAll(".slide").length;
@@ -375,34 +444,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   attachFormListeners();
 });
 
-// clicking cart and adding to cart
-cardCart.forEach((item) => {
-  item.addEventListener("click", (e) => {
-    const selectedItem = e.target.closest(".card");
-    const itemName = selectedItem.querySelector("h3")?.textContent || "";
-    const itemPrice =
-      selectedItem.querySelector(".card-price")?.textContent || "";
-    const itemImage = selectedItem.querySelector(".card-img img")?.src || "";
-
-    const cartItem = {
-      name: itemName,
-      price: itemPrice,
-      image: itemImage,
-      quantity: 1,
-    };
-
-    // Check if item already exists in cart
-    const existingItem = cartItems.find((item) => item.name === itemName);
-    if (existingItem) {
-      existingItem.quantity++;
-    } else {
-      cartItems.push(cartItem);
-    }
-
-    updateCart();
-    saveCart();
-  });
-});
+// The cart functionality is now handled by attachCartListeners() which is called after rendering the catalog
 
 // Update cart UI
 function updateCart() {
