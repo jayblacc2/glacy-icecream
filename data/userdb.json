@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1730000000000",
+    "username": "testuser",
+    "password": "password123",
+    "createdAt": "2025-10-20T17:31:05.522Z",
+    "cart": [
+      {
+        "name": "Strawberry",
+        "price": "₽310",
+        "image": "images/img1.png",
+        "quantity": 2
+      },
+      {
+        "name": "Pistachio",
+        "price": "₽310",
+        "image": "images/img2.png",
+        "quantity": 1
+      }
+    ]
+  }
+]

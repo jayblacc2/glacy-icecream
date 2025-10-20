@@ -1,129 +1,150 @@
-// Authentication Manager for Glacy Ice Cream Store
-class AuthManager {
-  constructor() {
-    this.currentUser = this.loadUser();
-    this.users = this.loadUsers();
+// Authentication functions for Glacy Ice Cream Store
+
+// Internal state
+let currentUser = null;
+let users = [];
+
+// Initialize auth state
+function initializeAuth() {
+  currentUser = loadUser();
+  users = loadUsers();
+}
+
+// Load users from localStorage
+function loadUsers() {
+  const storedUsers = localStorage.getItem("glacy-users");
+  return storedUsers ? JSON.parse(storedUsers) : [];
+}
+
+// Save users to localStorage
+function saveUsers() {
+  localStorage.setItem("glacy-users", JSON.stringify(users));
+}
+
+// Load current user session
+function loadUser() {
+  const user = localStorage.getItem("glacy-current-user");
+  return user ? JSON.parse(user) : null;
+}
+
+// Save current user session
+function saveUser(user) {
+  localStorage.setItem("glacy-current-user", JSON.stringify(user));
+  currentUser = user;
+}
+
+// Register new user
+function register(username, password, confirmPassword) {
+  // Validation
+  if (!username || !password || !confirmPassword) {
+    return { success: false, message: "All fields are required" };
   }
 
-  // Load users from localStorage
-  loadUsers() {
-    const users = localStorage.getItem('glacy-users');
-    return users ? JSON.parse(users) : [];
-  }
-
-  // Save users to localStorage
-  saveUsers() {
-    localStorage.setItem('glacy-users', JSON.stringify(this.users));
-  }
-
-  // Load current user session
-  loadUser() {
-    const user = localStorage.getItem('glacy-current-user');
-    return user ? JSON.parse(user) : null;
-  }
-
-  // Save current user session
-  saveUser(user) {
-    localStorage.setItem('glacy-current-user', JSON.stringify(user));
-    this.currentUser = user;
-  }
-
-  // Register new user
-  register(username, password, confirmPassword) {
-    // Validation
-    if (!username || !password || !confirmPassword) {
-      return { success: false, message: 'All fields are required' };
-    }
-
-    if (password.length < 6) {
-      return { success: false, message: 'Password must be at least 6 characters' };
-    }
-
-    if (password !== confirmPassword) {
-      return { success: false, message: 'Passwords do not match' };
-    }
-
-    // Check if user already exists
-    const existingUser = this.users.find(u => u.username === username);
-    if (existingUser) {
-      return { success: false, message: 'Username already exists' };
-    }
-
-    // Create new user
-    const newUser = {
-      id: Date.now().toString(),
-      username: username,
-      password: password, // In production, hash this!
-      createdAt: new Date().toISOString(),
-      cart: []
+  if (password.length < 6) {
+    return {
+      success: false,
+      message: "Password must be at least 6 characters",
     };
-
-    this.users.push(newUser);
-    this.saveUsers();
-
-    return { success: true, message: 'Account created successfully', user: newUser };
   }
 
-  // Login user
-  login(username, password) {
-    if (!username || !password) {
-      return { success: false, message: 'Username and password are required' };
-    }
-
-    const user = this.users.find(
-      u => u.username === username && u.password === password
-    );
-
-    if (!user) {
-      return { success: false, message: 'Invalid username or password' };
-    }
-
-    // Create session
-    this.saveUser({
-      id: user.id,
-      username: user.username
-    });
-
-    return { success: true, message: 'Login successful', user: user };
+  if (password !== confirmPassword) {
+    return { success: false, message: "Passwords do not match" };
   }
 
-  // Logout user
-  logout() {
-    localStorage.removeItem('glacy-current-user');
-    this.currentUser = null;
-    return { success: true, message: 'Logged out successfully' };
+  // Check if user already exists
+  const existingUser = users.find((u) => u.username === username);
+  if (existingUser) {
+    return { success: false, message: "Username already exists" };
   }
 
-  // Check if user is logged in
-  isLoggedIn() {
-    return this.currentUser !== null;
+  // Create new user
+  const newUser = {
+    id: Date.now().toString(),
+    username: username,
+    password: password, // In production, hash this!
+    createdAt: new Date().toISOString(),
+    cart: [],
+  };
+
+  users.push(newUser);
+  saveUsers();
+
+  return {
+    success: true,
+    message: "Account created successfully",
+    user: newUser,
+  };
+}
+
+// Login user
+function login(username, password) {
+  if (!username || !password) {
+    return { success: false, message: "Username and password are required" };
   }
 
-  // Get current user
-  getCurrentUser() {
-    return this.currentUser;
+  const user = users.find(
+    (u) => u.username === username && u.password === password
+  );
+
+  if (!user) {
+    return { success: false, message: "Invalid username or password" };
   }
 
-  // Update user cart
-  updateUserCart(cartItems) {
-    if (!this.isLoggedIn()) return;
+  // Create session
+  saveUser({
+    id: user.id,
+    username: user.username,
+  });
 
-    const userIndex = this.users.findIndex(u => u.id === this.currentUser.id);
-    if (userIndex !== -1) {
-      this.users[userIndex].cart = cartItems;
-      this.saveUsers();
-    }
-  }
+  return { success: true, message: "Login successful", user: user };
+}
 
-  // Get user cart
-  getUserCart() {
-    if (!this.isLoggedIn()) return [];
+// Logout user
+function logout() {
+  localStorage.removeItem("glacy-current-user");
+  currentUser = null;
+  return { success: true, message: "Logged out successfully" };
+}
 
-    const user = this.users.find(u => u.id === this.currentUser.id);
-    return user ? user.cart : [];
+// Check if user is logged in
+function isLoggedIn() {
+  return currentUser !== null;
+}
+
+// Get current user
+function getCurrentUser() {
+  return currentUser;
+}
+
+// Update user cart
+function updateUserCart(cartItems) {
+  if (!isLoggedIn()) return;
+
+  const userIndex = users.findIndex((u) => u.id === currentUser.id);
+  if (userIndex !== -1) {
+    users[userIndex].cart = cartItems;
+    saveUsers();
   }
 }
 
-// Export singleton instance
-const authManager = new AuthManager();
-export default authManager;
+// Get user cart
+function getUserCart() {
+  if (!isLoggedIn()) return [];
+
+  const user = users.find((u) => u.id === currentUser.id);
+  return user ? user.cart : [];
+}
+
+// Initialize on module load
+initializeAuth();
+
+// Export functions
+export {
+  register,
+  login,
+  logout,
+  isLoggedIn,
+  getCurrentUser,
+  updateUserCart,
+  getUserCart,
+};
