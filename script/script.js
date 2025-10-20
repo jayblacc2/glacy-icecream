@@ -12,6 +12,19 @@ const cardCart = document.querySelectorAll(".card-cart");
 
 let cartItems = [];
 let index = 0;
+let icecreams = [];
+
+// Load icecreams from combined JSON file
+async function loadIcecreams() {
+  try {
+    const response = await fetch("data/userdb.json");
+    const data = await response.json();
+    icecreams = data.icecreams || [];
+  } catch (error) {
+    console.error("Error loading icecreams:", error);
+    icecreams = [];
+  }
+}
 
 // Load cart based on authentication status
 function loadCart() {
@@ -329,7 +342,10 @@ window.addEventListener("scroll", () => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // Load icecreams data
+  await loadIcecreams();
+
   // Initialize hero slider
   slides = document.querySelector(".slides");
   totalSlides = document.querySelectorAll(".slide").length;

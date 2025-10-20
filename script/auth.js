@@ -5,15 +5,22 @@ let currentUser = null;
 let users = [];
 
 // Initialize auth state
-function initializeAuth() {
+async function initializeAuth() {
   currentUser = loadUser();
-  users = loadUsers();
+  users = await loadUsers();
 }
 
-// Load users from localStorage
-function loadUsers() {
-  const storedUsers = localStorage.getItem("glacy-users");
-  return storedUsers ? JSON.parse(storedUsers) : [];
+// Load users from combined JSON file
+async function loadUsers() {
+  try {
+    const response = await fetch("data/userdb.json");
+    const data = await response.json();
+    const storedUsers = localStorage.getItem("glacy-users");
+    return storedUsers ? JSON.parse(storedUsers) : data.users || [];
+  } catch (error) {
+    console.error("Error loading users:", error);
+    return [];
+  }
 }
 
 // Save users to localStorage
@@ -136,7 +143,9 @@ function getUserCart() {
 }
 
 // Initialize on module load
-initializeAuth();
+(async () => {
+  await initializeAuth();
+})();
 
 // Export functions
 export {
