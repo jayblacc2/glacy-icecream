@@ -1,0 +1,36 @@
+{
+  "icecreams": [
+    {
+      "id": 1,
+      "name": "Strawberry",
+      "description": "Creamy ice cream with raspberry jam",
+      "price": 310,
+      "image": "images/img1.png",
+      "category": "Fruit"
+    },
+    {
+      "id": 2,
+      "name": "Pistachio",
+      "description": "Creamy ice cream with raspberry jam",
+      "price": 310,
+      "image": "images/img2.png",
+      "category": "Nut"
+    },
+    {
+      "id": 3,
+      "name": "Blueberry",
+      "description": "Pistachio ice cream with pieces of chocolate",
+      "price": 310,
+      "image": "images/img3.png",
+      "category": "Fruit"
+    },
+    {
+      "id": 4,
+      "name": "Bubble gum",
+      "description": "Vanilla ice cream with sweet sprinkles",
+      "price": 310,
+      "image": "images/img4.png",
+      "category": "Candy"
+    }
+  ]
+}

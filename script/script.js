@@ -91,6 +91,18 @@ function prevCatalog() {
 // Handle window resize
 window.addEventListener("resize", updateCatalog);
 
+// Sticky nav on scroll
+const nav = document.querySelector(".nav");
+const navHeight = nav.offsetHeight;
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > navHeight) {
+    nav.classList.add("sticky");
+  } else {
+    nav.classList.remove("sticky");
+  }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize hero slider
   slides = document.querySelector(".slides");
