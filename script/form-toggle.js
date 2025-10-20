@@ -143,18 +143,6 @@ document.addEventListener("DOMContentLoaded", function () {
   
   document.addEventListener("click", closeAllDropdowns);
 
-  // Prevent submission for login and signup only
-  if (loginForm) {
-    loginForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-      alert("Logged in (demo). Implement real auth here.");
-    });
-  }
-  if (signupForm) {
-    signupForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-      alert("Account created (demo). Implement real signup here.");
-    });
-  }
+  // Form submissions are now handled in script.js with real authentication
   // Let search submit normally (GET)
 });

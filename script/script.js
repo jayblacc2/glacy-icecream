@@ -1,20 +1,232 @@
+import authManager from './auth.js';
+
 const cardCart = document.querySelectorAll(".card-cart");
 
 let cartItems = [];
 let index = 0;
 
-// Load cart from localStorage
+// Load cart based on authentication status
 function loadCart() {
-  const savedCart = localStorage.getItem("glacy-cart");
-  if (savedCart) {
-    cartItems = JSON.parse(savedCart);
-    updateCart();
+  if (authManager.isLoggedIn()) {
+    // Load cart from user account
+    cartItems = authManager.getUserCart();
+  } else {
+    // Load cart from localStorage (guest cart)
+    const savedCart = localStorage.getItem("glacy-guest-cart");
+    if (savedCart) {
+      cartItems = JSON.parse(savedCart);
+    }
+  }
+  updateCart();
+}
+
+// Save cart based on authentication status
+function saveCart() {
+  if (authManager.isLoggedIn()) {
+    // Save to user account
+    authManager.updateUserCart(cartItems);
+  } else {
+    // Save to guest localStorage
+    localStorage.setItem("glacy-guest-cart", JSON.stringify(cartItems));
   }
 }
 
-// Save cart to localStorage
-function saveCart() {
-  localStorage.setItem("glacy-cart", JSON.stringify(cartItems));
+// Update UI based on login status
+function updateAuthUI() {
+  const loginLabel = document.querySelector('.login-label');
+  
+  if (authManager.isLoggedIn()) {
+    const user = authManager.getCurrentUser();
+    loginLabel.textContent = user.username;
+    
+    // Add logout button to login container
+    const loginContainer = document.getElementById('login-container');
+    loginContainer.innerHTML = `
+      <div class="user-profile">
+        <h3>Welcome, ${user.username}!</h3>
+        <p style="font-size: 1.3rem; color: #666; margin: 10px 0;">You are logged in</p>
+        <button class="logout-btn" style="
+          background-color: var(--bg-color-1);
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          padding: 10px 20px;
+          font-size: 1.4rem;
+          cursor: pointer;
+          width: 100%;
+        ">Logout</button>
+      </div>
+    `;
+    
+    // Add logout event listener
+    const logoutBtn = loginContainer.querySelector('.logout-btn');
+    logoutBtn.addEventListener('click', handleLogout);
+  } else {
+    loginLabel.textContent = 'login';
+    // Restore original login/signup forms
+    restoreLoginForms();
+  }
+}
+
+// Handle logout
+function handleLogout() {
+  authManager.logout();
+  cartItems = []; // Clear cart on logout
+  updateCart();
+  updateAuthUI();
+  
+  // Close the dropdown
+  const loginContainer = document.getElementById('login-container');
+  loginContainer.classList.add('visually-hidden');
+  
+  alert('You have been logged out successfully');
+}
+
+// Restore login forms
+function restoreLoginForms() {
+  const loginContainer = document.getElementById('login-container');
+  loginContainer.innerHTML = `
+    <form class="login-form">
+      <h3>Sign In</h3>
+      <div class="form-control">
+        <label for="username">
+          <input type="text" id="username" placeholder="Username" class="login-username">
+        </label>
+      </div>
+      <div class="form-control">
+        <label for="password">
+          <input type="password" id="password" placeholder="Password" class="login-password">
+        </label>
+      </div>
+      <div class="login-btn">
+        <button type="submit" class="login-submit">Login</button>
+        <a href="#" class="forgot-password">Forgot password?</a>
+        <button type="button" class="register-btn" id="show-signup">Register</button>
+      </div>
+    </form>
+    <form class="signup-form visually-hidden">
+      <h3>Create Account</h3>
+      <div class="form-control">
+        <label for="signup-username">
+          <input type="text" id="signup-username" placeholder="Username" class="signup-username">
+        </label>
+      </div>
+      <div class="form-control">
+        <label for="signup-password">
+          <input type="password" id="signup-password" placeholder="Password" class="signup-password">
+        </label>
+      </div>
+      <div class="form-control">
+        <label for="confirm-password">
+          <input type="password" id="confirm-password" placeholder="Confirm Password" class="confirm-password">
+        </label>
+      </div>
+      <div class="signup-btn">
+        <button type="submit" class="signup-submit">Register</button>
+      </div>
+    </form>
+  `;
+  
+  // Re-attach form event listeners
+  attachFormListeners();
+}
+
+// Attach form event listeners
+function attachFormListeners() {
+  const loginForm = document.querySelector('.login-form');
+  const signupForm = document.querySelector('.signup-form');
+  
+  if (loginForm) {
+    loginForm.addEventListener('submit', handleLogin);
+  }
+  
+  if (signupForm) {
+    signupForm.addEventListener('submit', handleRegister);
+  }
+  
+  // Re-attach toggle listeners
+  const showSignupBtn = document.getElementById('show-signup');
+  if (showSignupBtn) {
+    showSignupBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      loginForm.classList.add('visually-hidden');
+      signupForm.classList.remove('visually-hidden');
+    });
+  }
+}
+
+// Handle login
+function handleLogin(e) {
+  e.preventDefault();
+  
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  
+  const result = authManager.login(username, password);
+  
+  if (result.success) {
+    // Merge guest cart with user cart
+    const guestCart = localStorage.getItem("glacy-guest-cart");
+    if (guestCart) {
+      const guestItems = JSON.parse(guestCart);
+      const userCart = authManager.getUserCart();
+      
+      // Merge carts - combine quantities for same items
+      guestItems.forEach(guestItem => {
+        const existingItem = userCart.find(item => item.name === guestItem.name);
+        if (existingItem) {
+          existingItem.quantity += guestItem.quantity;
+        } else {
+          userCart.push(guestItem);
+        }
+      });
+      
+      cartItems = userCart;
+      localStorage.removeItem("glacy-guest-cart");
+    } else {
+      cartItems = authManager.getUserCart();
+    }
+    
+    saveCart();
+    updateCart();
+    updateAuthUI();
+    
+    // Close the dropdown
+    const loginContainer = document.getElementById('login-container');
+    loginContainer.classList.add('visually-hidden');
+    
+    alert(result.message);
+  } else {
+    alert(result.message);
+  }
+}
+
+// Handle register
+function handleRegister(e) {
+  e.preventDefault();
+  
+  const username = document.getElementById('signup-username').value;
+  const password = document.getElementById('signup-password').value;
+  const confirmPassword = document.getElementById('confirm-password').value;
+  
+  const result = authManager.register(username, password, confirmPassword);
+  
+  if (result.success) {
+    alert(result.message + ' Please login now.');
+    
+    // Switch to login form
+    const loginForm = document.querySelector('.login-form');
+    const signupForm = document.querySelector('.signup-form');
+    signupForm.classList.add('visually-hidden');
+    loginForm.classList.remove('visually-hidden');
+    
+    // Clear form
+    document.getElementById('signup-username').value = '';
+    document.getElementById('signup-password').value = '';
+    document.getElementById('confirm-password').value = '';
+  } else {
+    alert(result.message);
+  }
 }
 let slides;
 let totalSlides;
@@ -33,6 +245,10 @@ function prev() {
   index = (index - 1 + totalSlides) % totalSlides;
   updateSlider();
 }
+
+// Make functions globally available for inline onclick handlers
+window.next = next;
+window.prev = prev;
 
 // Catalog carousel variables and functions
 let catalogIndex = 0;
@@ -127,8 +343,10 @@ document.addEventListener("DOMContentLoaded", () => {
     nextButton.addEventListener("click", nextCatalog);
   }
 
-  // Load cart from localStorage
+  // Initialize auth UI and load cart
+  updateAuthUI();
   loadCart();
+  attachFormListeners();
 });
 
 // clicking cart and adding to cart
@@ -217,6 +435,37 @@ function updateCart() {
   cartLabel.textContent = `${cartItems.length} item${
     cartItems.length > 1 ? "s" : ""
   }`;
+  
+  // Update checkout button
+  const checkoutBtn = document.querySelector(".checkout-btn");
+  if (checkoutBtn) {
+    checkoutBtn.disabled = false;
+    checkoutBtn.onclick = handleCheckout;
+  }
+}
+
+// Handle checkout
+function handleCheckout() {
+  if (!authManager.isLoggedIn()) {
+    alert('Please login to proceed with checkout');
+    // Open login form
+    const loginContainer = document.getElementById('login-container');
+    loginContainer.classList.remove('visually-hidden');
+    return;
+  }
+  
+  // Proceed with checkout
+  const totalAmount = document.querySelector('.total-amount').textContent;
+  alert(`Checkout for ${cartItems.length} items. Total: ${totalAmount}\n\nOrder placed successfully!`);
+  
+  // Clear cart after checkout
+  cartItems = [];
+  updateCart();
+  saveCart();
+  
+  // Close cart dropdown
+  const cartContainer = document.getElementById('cart-container');
+  cartContainer.classList.add('visually-hidden');
 }
 
 // Handle cart item controls with event delegation
