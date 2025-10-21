@@ -23,9 +23,11 @@ async function loadUsers() {
   }
 }
 
-// Save users to localStorage
+// Save users to localStorage and simulate file persistence
 function saveUsers() {
   localStorage.setItem("glacy-users", JSON.stringify(users));
+  // In a real application, this would make an API call to update the JSON file on the server
+  console.log("Users saved. In production, this would persist to the server.");
 }
 
 // Load current user session
@@ -76,6 +78,9 @@ function register(username, password, confirmPassword) {
   users.push(newUser);
   saveUsers();
 
+  // Simulate saving to JSON file (in production this would be server-side)
+  console.log('New user registered and saved to localStorage. In production, this would update the JSON file.');
+
   return {
     success: true,
     message: "Account created successfully",
@@ -102,6 +107,9 @@ function login(username, password) {
     id: user.id,
     username: user.username,
   });
+
+  // Simulate authentication from JSON file
+  console.log('User authenticated successfully from stored user data.');
 
   return { success: true, message: "Login successful", user: user };
 }
