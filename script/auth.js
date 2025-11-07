@@ -31,7 +31,7 @@ function saveUsers() {
 }
 
 // Load current user session
-function loadUser() {
+function  loadUser() {
   const user = localStorage.getItem("glacy-current-user");
   return user ? JSON.parse(user) : null;
 }

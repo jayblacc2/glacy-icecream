@@ -3,4 +3,6 @@
 *.md    
 node_modules/
 /package-lock.json
+spec.md
+backend
 
