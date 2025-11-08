@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function openSidebar() {
     mobileSidebar.classList.add("active");
     sidebarOverlay.classList.add("active");
-    burgerMenu.classList.add("active");
+    // burgerMenu.classList.add("active"); // Removed - keep burger as menu icon
     document.body.style.overflow = "hidden"; // Prevent scrolling when sidebar is open
   }
 
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function closeSidebar() {
     mobileSidebar.classList.remove("active");
     sidebarOverlay.classList.remove("active");
-    burgerMenu.classList.remove("active");
+    // burgerMenu.classList.remove("active"); // Removed - keep burger as menu icon
     document.body.style.overflow = ""; // Restore scrolling
   }
 
@@ -102,6 +102,6 @@ document.addEventListener("DOMContentLoaded", function () {
     function (e) {
       e.stopPropagation();
     },
-    { passive: false }
+    { passive: false },
   );
 });

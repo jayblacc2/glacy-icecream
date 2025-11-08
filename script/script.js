@@ -290,7 +290,7 @@ function setupMobileMenu() {
   burgerMenu.addEventListener("click", () => {
     mobileSidebar.classList.add("active");
     sidebarOverlay.classList.add("active");
-    burgerMenu.classList.add("active");
+    // burgerMenu.classList.add("active"); // Removed - keep burger as menu icon
     document.body.style.overflow = "hidden";
   });
 
@@ -298,7 +298,7 @@ function setupMobileMenu() {
   const closeSidebar = () => {
     mobileSidebar.classList.remove("active");
     sidebarOverlay.classList.remove("active");
-    burgerMenu.classList.remove("active");
+    // burgerMenu.classList.remove("active"); // Removed - keep burger as menu icon
     document.body.style.overflow = "";
   };
 

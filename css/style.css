@@ -584,13 +584,13 @@ h1 {
 
 .left {
     top: 50%;
-    left: 20%;
+    left: calc(50% - 15rem - 20px);
     transform: translateY(-50%);
 }
 
 .right {
     top: 50%;
-    right: 20%;
+    right: calc(50% - 15rem - 20px);
     transform: translateY(-50%);
 }
 
@@ -1178,17 +1178,8 @@ input::placeholder {
     transition: all 0.3s ease;
 }
 
-.burger-menu.active .burger-line:nth-child(1) {
-    transform: rotate(45deg) translate(8px, 8px);
-}
-
-.burger-menu.active .burger-line:nth-child(2) {
-    opacity: 0;
-}
-
-.burger-menu.active .burger-line:nth-child(3) {
-    transform: rotate(-45deg) translate(7px, -7px);
-}
+/* Burger menu active state removed - it stays as hamburger icon */
+/* Close functionality is handled by the X button inside the sidebar */
 
 /* Mobile Sidebar */
 .mobile-sidebar {
@@ -1261,7 +1252,6 @@ input::placeholder {
 }
 
 .sidebar-actions {
-    margin-top: auto;
     padding-top: 20px;
     border-top: 2px solid #f0f0f0;
 }
@@ -1516,6 +1506,15 @@ input::placeholder {
     .mobile-sidebar {
         width: 280px;
     }
+
+    /* Hero slider chevrons positioning */
+    .left {
+        left: calc(50% - 15rem - 12px);
+    }
+
+    .right {
+        right: calc(50% - 15rem - 12px);
+    }
 }
 
 /* ========================== */
@@ -1734,6 +1733,14 @@ input::placeholder {
         height: 44px;
     }
 
+    .left {
+        left: calc(50% - 15rem - 15px);
+    }
+
+    .right {
+        right: calc(50% - 15rem - 15px);
+    }
+
     .fa-chevron-left,
     .fa-chevron-right {
         width: 40px;
@@ -1789,6 +1796,14 @@ input::placeholder {
         margin-top: 2rem;
     }
 
+    .left {
+        left: calc(50% - 12.5rem - 10px);
+    }
+
+    .right {
+        right: calc(50% - 12.5rem - 10px);
+    }
+
     .slider {
         width: 25rem;
         height: 30rem;
@@ -1798,6 +1813,8 @@ input::placeholder {
         width: 25rem;
         height: 25rem;
     }
+
+    /* Adjust chevrons for smaller slide-bg */
 
     /* Sections */
     .sec-title {
@@ -1966,6 +1983,15 @@ input::placeholder {
 
     .cart-container {
         max-height: 90vh;
+    }
+
+    /* Hero slider chevrons positioning for landscape */
+    .left {
+        left: calc(50% - 15rem - 15px);
+    }
+
+    .right {
+        right: calc(50% - 15rem - 15px);
     }
 }
 
