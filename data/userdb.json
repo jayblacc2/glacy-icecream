@@ -56,27 +56,35 @@
     },
     {
       "id": 5,
-      "name": "Bubble gum",
-      "description": "Vanilla ice cream with sweet sprinkles",
-      "price": 310,
-      "image": "images/img4.png",
-      "category": "Candy"
+      "name": "Chocolate",
+      "description": "Rich chocolate ice cream with cocoa",
+      "price": 320,
+      "image": "images/img1.png",
+      "category": "Chocolate"
     },
     {
       "id": 6,
-      "name": "Bubble gum",
-      "description": "Vanilla ice cream with sweet sprinkles",
-      "price": 310,
-      "image": "images/img4.png",
-      "category": "Candy"
+      "name": "Vanilla Bean",
+      "description": "Classic vanilla with real vanilla beans",
+      "price": 300,
+      "image": "images/img2.png",
+      "category": "Classic"
     },
     {
       "id": 7,
-      "name": "Bubble gum",
-      "description": "Vanilla ice cream with sweet sprinkles",
-      "price": 310,
+      "name": "Mint Chocolate",
+      "description": "Refreshing mint ice cream with chocolate chips",
+      "price": 330,
+      "image": "images/img3.png",
+      "category": "Mint"
+    },
+    {
+      "id": 8,
+      "name": "Caramel Swirl",
+      "description": "Creamy caramel ice cream with swirls",
+      "price": 340,
       "image": "images/img4.png",
-      "category": "Candy"
+      "category": "Caramel"
     }
   ]
 }
