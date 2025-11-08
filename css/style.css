@@ -283,17 +283,25 @@ h1 {
 
 #header {
     display: flex;
+
     flex-direction: column;
-    flex-wrap: wrap;
+
+    flex-wrap: nowrap;
+
     min-height: auto;
 }
 
 .nav {
     display: flex;
+
     justify-content: space-between;
+
     flex-direction: row;
-    flex-wrap: wrap;
+
+    flex-wrap: nowrap;
+
     align-items: center;
+
     min-height: 10vh;
     position: relative;
     z-index: 3000;
@@ -322,7 +330,7 @@ h1 {
 
 .nav-item {
     display: flex;
-    flex: 1 1 10rem;
+    flex: 0 0 auto;
 }
 #logo {
     margin: auto;
@@ -330,8 +338,9 @@ h1 {
 }
 
 #logo img {
-    flex: 1 1 5rem;
     width: 10rem;
+    display: block;
+    flex: 0 0 auto;
 }
 
 .nav-list {
@@ -1214,7 +1223,7 @@ input::placeholder {
     color: var(--primary-color);
     cursor: pointer;
     padding: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     transition: transform 0.3s ease;
 }
 
@@ -1223,16 +1232,7 @@ input::placeholder {
     color: var(--bg-color-1);
 }
 
-.sidebar-logo {
-    text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
-}
-
-.sidebar-logo img {
-    width: 120px;
-}
+/* Logo removed from sidebar - now only in main header */
 
 .sidebar-nav {
     list-style: none;
@@ -1381,15 +1381,29 @@ input::placeholder {
 
     .nav-item {
         order: 1;
-        flex: 0;
+
+        display: flex;
+        flex: 0 0 auto;
+
+        align-items: center;
     }
+
+    /* Show logo in main header on mobile - align left */
 
     #logo {
         margin: 0;
+
+        display: block;
+
+        text-align: left;
     }
 
     #logo img {
         width: 8rem;
+
+        display: block;
+
+        flex: 0 0 auto;
     }
 
     /* Adjust hero section for mobile */
@@ -1736,6 +1750,17 @@ input::placeholder {
 
     .container-center {
         width: 95%;
+    }
+
+    /* Logo sizing and alignment for very small screens */
+    #logo {
+        text-align: left;
+    }
+
+    #logo img {
+        width: 7rem;
+
+        flex: 0 0 auto;
     }
 
     /* Hero section */
