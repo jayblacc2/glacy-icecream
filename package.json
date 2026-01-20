@@ -1,0 +1,35 @@
+{
+  "name": "glacy-store",
+  "version": "1.0.0",
+  "description": "Ice cream store website with frontend and backend",
+  "main": "frontend/index.html",
+  "scripts": {
+    "start": "npx serve frontend",
+    "dev": "npx serve frontend -p 3000",
+    "build": "echo 'Build process placeholder'",
+    "test": "echo 'Test process placeholder'",
+    "version:major": "npm version major -m \"Bump to version %s\"",
+    "version:minor": "npm version minor -m \"Bump to version %s\"",
+    "version:patch": "npm version patch -m \"Bump to version %s\""
+  },
+  "keywords": [
+    "ice-cream",
+    "store",
+    "ecommerce",
+    "vanilla-js"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/glacy-store.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/glacy-store/issues"
+  },
+  "homepage": "https://github.com/yourusername/glacy-store#readme"
+}
