@@ -2,7 +2,6 @@
 #ignore my todo or issues to be fixed
 *.md    
 /package-lock.json
-backend
 
 # Logs
 logs
