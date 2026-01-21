@@ -12,6 +12,14 @@ const createProduct = async (req, res) => {
       });
     }
 
+    const existingProduct = await Product.findOne({ name });
+    if (existingProduct) {
+      return res.status(409).json({
+        success: false,
+        message: "Product with this name already exists",
+      });
+    }
+
     const validCategories = Product.schema.path("category").enumValues;
     if (!validCategories.includes(category.toLowerCase())) {
       return res.status(400).json({
