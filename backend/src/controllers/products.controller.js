@@ -4,11 +4,10 @@ import Product from "../models/product.model.js";
 const createProduct = async (req, res) => {
   try {
     const { name, description, price, image, category } = req.body;
-    if ((!name || !description || !price, !category)) {
-      res.status(404).json({
+    if (!name || !description || !price || !category) {
+      return res.status(400).json({
         success: false,
-        message:
-          "All fields are required: name, description, price, image, category",
+        message: "All fields are required: name, description, price, category",
       });
     }
 
@@ -40,9 +39,9 @@ const createProduct = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "added",
-      products: {
-        id: product._id,
+      message: "Product added successfully",
+      product: {
+        id: product.id,
         name: product.name,
         description: product.description,
         price: product.price,
@@ -50,7 +49,7 @@ const createProduct = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching products by category:", error);
+    console.error("Error creating product:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",

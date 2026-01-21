@@ -40,7 +40,17 @@ const ProductSchema = new Schema(
       ],
     },
   },
-  { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } }
+  {
+    timestamps: true,
+    toJSON: {
+      getters: true,
+      transform: function (doc, ret) {
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: { getters: true },
+  }
 );
 
 // Add index on category for faster queries
