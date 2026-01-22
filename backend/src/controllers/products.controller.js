@@ -24,7 +24,7 @@ const createProduct = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: `Invalid category. Valid categories: ${validCategories.join(
-          ", "
+          ", ",
         )}`,
       });
     }
@@ -57,41 +57,74 @@ const createProduct = async (req, res) => {
   }
 };
 
-// Get all products
+// Get all products with optional category filtering and pagination
 const getProducts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
     const skip = (page - 1) * limit;
+    const category = req.query.category?.trim().toLowerCase();
 
-    const total = await Product.countDocuments({});
-    const products = await Product.find({}).skip(skip).limit(limit);
 
-    if (products.length === 0 && total > 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "No products found on this page" });
+    const filter = {};
+
+   
+    if (category) {
+      const validCategories = Product.schema.path("category").enumValues;
+      if (!validCategories.includes(category)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid category. Valid categories: ${validCategories.join(", ")}`,
+        });
+      }
+      filter.category = category;
+    }
+
+   
+    const [total, products] = await Promise.all([
+      Product.countDocuments(filter),
+      Product.find(filter).skip(skip).limit(limit).lean(),
+    ]);
+
+  
+    if (products.length === 0) {
+      const message = category
+        ? `No products found in category: ${category}`
+        : total > 0
+          ? "No products found on this page"
+          : "No products available";
+
+      return res.status(404).json({
+        success: false,
+        message,
+      });
     }
 
     const totalPages = Math.ceil(total / limit);
 
     return res.status(200).json({
       success: true,
-      message: "Products retrieved successfully",
+      message: category
+        ? `Products in ${category} category retrieved successfully`
+        : "Products retrieved successfully",
       products,
       pagination: {
         currentPage: page,
         totalPages,
         totalProducts: total,
+        limit,
         hasNext: page < totalPages,
         hasPrev: page > 1,
       },
+      ...(category && { filter: { category } }),
     });
   } catch (error) {
-    console.error("Internal server error:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal server error" });
+    console.error("Error fetching products:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 // Get a single product by ID
@@ -115,47 +148,6 @@ const getProduct = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
-  }
-};
-
-// Get all products by category
-const getProductsByCategories = async (req, res) => {
-  try {
-    const { category } = req.params;
-    if (!category) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Category parameter is required" });
-    }
-
-    const validCategories = Product.Schema.path("category").enumValues;
-    if (!validCategories.includes(category.toLowerCase())) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid category parameter" });
-    }
-
-    const products = await Product.find({ category: category.toLowerCase() });
-
-    if (products.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: `No products found in category: ${category}`,
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: `Products in ${category} category retrieved successfully`,
-      products,
-      total: products.length,
-    });
-  } catch (error) {
-    console.error("Error fetching products by category:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
   }
 };
 
@@ -228,3 +220,4 @@ export {
   getProductsByCategories,
   updateProduct,
 };
+
