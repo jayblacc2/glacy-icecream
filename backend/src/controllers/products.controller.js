@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
 import Product from "../models/product.model.js";
 
+//import cloudinary variables
+import { uploadImage, deleteImage } from "../config/cloudinary.js";
+import upload from "../middleware/upload.middleware.js";
+
 const createProduct = async (req, res) => {
   try {
     const { name, description, price, image, category } = req.body;
-    if (!name || !description || !price || !category) {
+    if (!name || !description || !price || !image || !category) {
       return res.status(400).json({
         success: false,
         message: "All fields are required: name, description, price, category",
@@ -29,11 +33,28 @@ const createProduct = async (req, res) => {
       });
     }
 
+    let imageUrl = null;
+    if (req.file) {
+      try {
+        const result = await uploadImage(req.file.buffer);
+        imageUrl = result.secure_url;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Error uploading image",
+        });
+      }
+    }
+
+
+
+
     const product = await Product.create({
       name,
       description,
       price,
-      image,
+      image: imageUrl,
       category: category.toLowerCase(),
     });
 
@@ -46,6 +67,7 @@ const createProduct = async (req, res) => {
         description: product.description,
         price: product.price,
         category: product.category,
+        image: product.image,
       },
     });
   } catch (error) {
@@ -60,16 +82,13 @@ const createProduct = async (req, res) => {
 // Get all products with optional category filtering and pagination
 const getProducts = async (req, res) => {
   try {
-
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
     const skip = (page - 1) * limit;
     const category = req.query.category?.trim().toLowerCase();
 
-
     const filter = {};
 
-   
     if (category) {
       const validCategories = Product.schema.path("category").enumValues;
       if (!validCategories.includes(category)) {
@@ -81,13 +100,11 @@ const getProducts = async (req, res) => {
       filter.category = category;
     }
 
-   
     const [total, products] = await Promise.all([
       Product.countDocuments(filter),
       Product.find(filter).skip(skip).limit(limit).lean(),
     ]);
 
-  
     if (products.length === 0) {
       const message = category
         ? `No products found in category: ${category}`
@@ -212,12 +229,4 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-export {
-  createProduct,
-  deleteProduct,
-  getProduct,
-  getProducts,
-  getProductsByCategories,
-  updateProduct,
-};
-
+export { createProduct, deleteProduct, getProduct, getProducts, updateProduct };

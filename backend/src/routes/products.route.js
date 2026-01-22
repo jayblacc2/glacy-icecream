@@ -4,16 +4,15 @@ import {
   deleteProduct,
   getProduct,
   getProducts,
-  getProductsByCategories,
   updateProduct,
 } from "../controllers/products.controller.js";
+import upload from "../middleware/upload.middleware.js";
 
 const Route = express.Router();
 
-Route.route("/create").post(createProduct);
+Route.route("/create").post(upload.single("image"), createProduct );
 Route.route("/").get(getProducts);
 Route.route("/:id").get(getProduct);
-Route.route("/category/:category").get(getProductsByCategories);
 Route.route("/update/:id").put(updateProduct);
 Route.route("/delete/:id").delete(deleteProduct);
 
