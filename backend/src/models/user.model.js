@@ -24,6 +24,7 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       minlength: 8,
       maxlength: 100,
+      select: false,
     },
 
     role: {
@@ -31,8 +32,12 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    isLoggedIn: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User = mongoose.model("User", UserSchema);

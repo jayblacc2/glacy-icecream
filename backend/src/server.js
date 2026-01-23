@@ -13,6 +13,8 @@ app.use(express.json());
 app.use("/api/v1/users", usersRoutes);
 app.use("/api/v1/products", productsRoutes);
 
+
+
 const PORT = process.env.PORT || 8100;
 const startServer = async () => {
   try {
