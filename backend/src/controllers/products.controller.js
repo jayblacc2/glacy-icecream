@@ -1,14 +1,12 @@
 import mongoose from "mongoose";
 import Product from "../models/product.model.js";
-
-//import cloudinary variables
+import { extractPublicId } from "../utils/extractPublicId.js";
 import { uploadImage, deleteImage } from "../config/cloudinary.js";
-import upload from "../middleware/upload.middleware.js";
 
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, image, category } = req.body;
-    if (!name || !description || !price || !image || !category) {
+    const { name, description, price, category } = req.body;
+    if (!name || !description || !price || !category) {
       return res.status(400).json({
         success: false,
         message: "All fields are required: name, description, price, category",
@@ -46,9 +44,6 @@ const createProduct = async (req, res) => {
         });
       }
     }
-
-
-
 
     const product = await Product.create({
       name,
@@ -183,14 +178,31 @@ const updateProduct = async (req, res) => {
     const updatedProduct = await Product.findByIdAndUpdate(id, req.body, {
       new: true,
     });
+
     if (!updatedProduct) {
-      res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    if (req.file) {
+      try {
+        const result = await uploadImage(req.file.buffer);
+        updatedProduct.image = result.secure_url;
+        await updatedProduct.save();
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Error uploading image",
+        });
+      }
     }
 
     res.status(200).json({
       success: true,
       message: "Product updated successfully",
-      updateProduct,
+      product: updatedProduct,
     });
   } catch (error) {
     console.error("Error updating product:", error);
@@ -211,22 +223,31 @@ const deleteProduct = async (req, res) => {
   }
 
   try {
-    const deletedProduct = await findByIdAndDelete(id);
-    if (!deleteProduct) {
+    const deletedProduct = await Product.findByIdAndDelete(id); // ✅ Fixed
+    if (!deletedProduct) {
       return res
         .status(404)
         .json({ success: false, message: "Product not found" });
     }
 
+    // Optional: Delete image from Cloudinary
+    if (deletedProduct.image) {
+      try {
+        const publicId = extractPublicId(deletedProduct.image); // You'll need this helper
+        await deleteImage(publicId);
+      } catch (err) {
+        console.warn("Failed to delete image from Cloudinary:", err);
+      }
+    }
+
     res
       .status(200)
-      .json({ success: true, message: "Product deleted absolutely" });
+      .json({ success: true, message: "Product deleted successfully" });
   } catch (error) {
-    console.error("Error updating product:", error);
+    console.error("Error deleting product:", error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
   }
 };
-
 export { createProduct, deleteProduct, getProduct, getProducts, updateProduct };
