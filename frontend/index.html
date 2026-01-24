@@ -82,12 +82,14 @@
                 <form class="login-form">
                   <h3>Sign In</h3>
                   <div class="form-control">
-                    <label for="username">
+                    <label for="email">
                       <input
-                        type="text"
-                        id="username"
-                        placeholder="Username"
-                        class="login-username"
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="email"
+                        class="login-email"
+                        required
                       />
                     </label>
                   </div>
@@ -98,6 +100,7 @@
                         id="password"
                         placeholder="Password"
                         class="login-password"
+                        required
                       />
                     </label>
                   </div>
@@ -113,12 +116,27 @@
                 <form class="signup-form visually-hidden">
                   <h3>Create Account</h3>
                   <div class="form-control">
-                    <label for="signup-username">
+                    <label for="signup-name">
                       <input
                         type="text"
-                        id="signup-username"
-                        placeholder="Username"
-                        class="signup-username"
+                        id="signup-name"
+                        name="signup_name"
+                        placeholder="Full Name"
+                        class="signup-name"
+                        required
+                        minlength="3"
+                      />
+                    </label>
+                  </div>
+                  <div class="form-control">
+                    <label for="signup-email">
+                      <input
+                        type="email"
+                        id="signup-email"
+                        name="signup_email"
+                        placeholder="Email"
+                        class="signup-email"
+                        required
                       />
                     </label>
                   </div>
@@ -129,6 +147,8 @@
                         id="signup-password"
                         placeholder="Password"
                         class="signup-password"
+                        required
+                        minlength="8"
                       />
                     </label>
                   </div>
@@ -139,6 +159,7 @@
                         id="confirm-password"
                         placeholder="Confirm Password"
                         class="confirm-password"
+                        required
                       />
                     </label>
                   </div>
@@ -189,7 +210,9 @@
           </button>
 
           <ul class="sidebar-nav">
-            <li><a href="pages/catalogs.html" class="sidebar-link">Catalog</a></li>
+            <li>
+              <a href="pages/catalogs.html" class="sidebar-link">Catalog</a>
+            </li>
             <li>
               <a href="#contact" class="sidebar-link">Delivery & Payment</a>
             </li>
@@ -225,50 +248,51 @@
       <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
       <div class="hero">
-      <div class="hero-content">
-        <h1 class="main-title">Sweet ice cream <br />with Strawberry Jam</h1>
-        <p class="lead">
-          Natural ice cream from fresh cream and milk with tasty strawberry jam
-          &dash; it's the idea dessert for family
-        </p>
-        <a href="#catalog" class="btn btn-light">Order</a>
-      </div>
-      <div class="hero-slide">
-        <div class="slide-bg"></div>
-        <div class="slider">
-          <div class="slides">
-            <div class="slide">
-              <img
-                class="slide-img-1"
-                src="images/icecream/icecream-1.png"
-                alt="Strawberry Jam Ice Cream"
-                loading="lazy"
-              />
-            </div>
-            <div class="slide">
-              <img
-                class="slide-img-1"
-                src="images/icecream/icecream-2.png"
-                alt="Pistachio Ice Cream"
-                loading="lazy"
-              />
-            </div>
-            <div class="slide">
-              <img
-                class="slide-img-1"
-                src="images/icecream/icecream-3.png"
-                alt="Blueberry Ice Cream"
-                loading="lazy"
-              />
+        <div class="hero-content">
+          <h1 class="main-title">Sweet ice cream <br />with Strawberry Jam</h1>
+          <p class="lead">
+            Natural ice cream from fresh cream and milk with tasty strawberry
+            jam &dash; it's the idea dessert for family
+          </p>
+          <a href="#catalog" class="btn btn-light">Order</a>
+        </div>
+        <div class="hero-slide">
+          <div class="slide-bg"></div>
+          <div class="slider">
+            <div class="slides">
+              <div class="slide">
+                <img
+                  class="slide-img-1"
+                  src="images/icecream/icecream-1.png"
+                  alt="Strawberry Jam Ice Cream"
+                  loading="lazy"
+                />
+              </div>
+              <div class="slide">
+                <img
+                  class="slide-img-1"
+                  src="images/icecream/icecream-2.png"
+                  alt="Pistachio Ice Cream"
+                  loading="lazy"
+                />
+              </div>
+              <div class="slide">
+                <img
+                  class="slide-img-1"
+                  src="images/icecream/icecream-3.png"
+                  alt="Blueberry Ice Cream"
+                  loading="lazy"
+                />
+              </div>
             </div>
           </div>
+          <button type="button" class="left" onclick="prev()">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button type="button" class="right" onclick="next()">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
         </div>
-        <button type="button" class="left" onclick="prev()">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-        <button type="button" class="right" onclick="next()">
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
       </div>
     </header>
     <main class="main">
@@ -382,7 +406,7 @@
       <section class="news py-3 container-center py-3">
         <article class="news-card blog-content">
           <a href="">
-          <small class="small">New trend on our blog</small>
+            <small class="small">New trend on our blog</small>
           </a>
           <h3 class="text-lg">
             10 Ways to Serve Fruit Sherbets icecream to the table

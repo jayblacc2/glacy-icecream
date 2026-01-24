@@ -1,128 +1,205 @@
-// Authentication functions for Glacy Ice Cream Store
+// Authentication functions for Glacy Ice Cream Store - Backend API Integration
 
 // Internal state
 let currentUser = null;
-let users = [];
+let authChecked = false;
 
-// Initialize auth state
+// API Base URL - Adjust this based on your Vite proxy configuration
+const API_BASE_URL = "/api/v1/users";
+
+// Initialize auth state by checking authentication status
 async function initializeAuth() {
-  currentUser = loadUser();
-  users = await loadUsers();
-}
-
-// Load users from combined JSON file
-async function loadUsers() {
   try {
-    const response = await fetch("data/userdb.json");
+    const response = await fetch(`${API_BASE_URL}/check-auth`, {
+      method: "GET",
+      credentials: "include", // Include cookies in request
+    });
+
     const data = await response.json();
-    const storedUsers = localStorage.getItem("glacy-users");
-    return storedUsers ? JSON.parse(storedUsers) : data.users || [];
+
+    if (data.success && data.isLoggedIn) {
+      currentUser = data.user;
+    } else {
+      currentUser = null;
+      // Clear any stale local storage data
+      localStorage.removeItem("glacy-current-user");
+    }
+
+    authChecked = true;
+    return data;
   } catch (error) {
-    console.error("Error loading users:", error);
-    return [];
+    console.error("Error initializing auth:", error);
+    currentUser = null;
+    authChecked = true;
+    return { success: false, isLoggedIn: false, user: null };
   }
 }
 
-// Save users to localStorage and simulate file persistence
-function saveUsers() {
-  localStorage.setItem("glacy-users", JSON.stringify(users));
-  // In a real application, this would make an API call to update the JSON file on the server
-  console.log("Users saved. In production, this would persist to the server.");
-}
+// Register new user via backend API
+async function register(name, email, password, confirmPassword) {
+  try {
+    // Frontend validation
+    if (!name || !email || !password || !confirmPassword) {
+      return { success: false, message: "All fields are required" };
+    }
 
-// Load current user session
-function  loadUser() {
-  const user = localStorage.getItem("glacy-current-user");
-  return user ? JSON.parse(user) : null;
-}
+    if (name.length < 3) {
+      return {
+        success: false,
+        message: "Name must be at least 3 characters",
+      };
+    }
 
-// Save current user session
-function saveUser(user) {
-  localStorage.setItem("glacy-current-user", JSON.stringify(user));
-  currentUser = user;
-}
+    if (password.length < 8) {
+      return {
+        success: false,
+        message: "Password must be at least 8 characters",
+      };
+    }
 
-// Register new user
-function register(username, password, confirmPassword) {
-  // Validation
-  if (!username || !password || !confirmPassword) {
-    return { success: false, message: "All fields are required" };
-  }
+    if (password !== confirmPassword) {
+      return { success: false, message: "Passwords do not match" };
+    }
 
-  if (password.length < 6) {
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return { success: false, message: "Please enter a valid email address" };
+    }
+
+    // Make API call to register user
+    const response = await fetch(`${API_BASE_URL}/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Include cookies in response
+      body: JSON.stringify({
+        name: name.trim(),
+        email: email.toLowerCase().trim(),
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      currentUser = data.user;
+      // Save user info to localStorage for client-side access
+      localStorage.setItem("glacy-current-user", JSON.stringify(data.user));
+      return {
+        success: true,
+        message: data.message,
+        user: data.user,
+      };
+    } else {
+      return {
+        success: false,
+        message: data.message || "Registration failed",
+      };
+    }
+  } catch (error) {
+    console.error("Error registering user:", error);
     return {
       success: false,
-      message: "Password must be at least 6 characters",
+      message: "Network error. Please try again.",
     };
   }
-
-  if (password !== confirmPassword) {
-    return { success: false, message: "Passwords do not match" };
-  }
-
-  // Check if user already exists
-  const existingUser = users.find((u) => u.username === username);
-  if (existingUser) {
-    return { success: false, message: "Username already exists" };
-  }
-
-  // Create new user
-  const newUser = {
-    id: Date.now().toString(),
-    username: username,
-    password: password, // In production, hash this!
-    createdAt: new Date().toISOString(),
-    cart: [],
-  };
-
-  users.push(newUser);
-  saveUsers();
-
-  // Simulate saving to JSON file (in production this would be server-side)
-  console.log('New user registered and saved to localStorage. In production, this would update the JSON file.');
-
-  return {
-    success: true,
-    message: "Account created successfully",
-    user: newUser,
-  };
 }
 
-// Login user
-function login(username, password) {
-  if (!username || !password) {
-    return { success: false, message: "Username and password are required" };
+// Login user via backend API
+async function login(email, password) {
+  try {
+    if (!email || !password) {
+      return { success: false, message: "Email and password are required" };
+    }
+
+    // Make API call to login user
+    const response = await fetch(`${API_BASE_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Include cookies in response
+      body: JSON.stringify({
+        email: email.toLowerCase().trim(),
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      currentUser = data.user;
+      // Save user info to localStorage for client-side access
+      localStorage.setItem("glacy-current-user", JSON.stringify(data.user));
+      return {
+        success: true,
+        message: data.message,
+        user: data.user,
+      };
+    } else {
+      return {
+        success: false,
+        message: data.message || "Login failed",
+      };
+    }
+  } catch (error) {
+    console.error("Error logging in:", error);
+    return {
+      success: false,
+      message: "Network error. Please try again.",
+    };
   }
-
-  const user = users.find(
-    (u) => u.username === username && u.password === password
-  );
-
-  if (!user) {
-    return { success: false, message: "Invalid username or password" };
-  }
-
-  // Create session
-  saveUser({
-    id: user.id,
-    username: user.username,
-  });
-
-  // Simulate authentication from JSON file
-  console.log('User authenticated successfully from stored user data.');
-
-  return { success: true, message: "Login successful", user: user };
 }
 
-// Logout user
-function logout() {
-  localStorage.removeItem("glacy-current-user");
-  currentUser = null;
-  return { success: true, message: "Logged out successfully" };
+// Logout user via backend API
+async function logout() {
+  try {
+    // Make API call to logout user
+    const response = await fetch(`${API_BASE_URL}/logout`, {
+      method: "POST",
+      credentials: "include", // Include cookies in request
+    });
+
+    const data = await response.json();
+
+    // Clear local state regardless of API response
+    currentUser = null;
+    localStorage.removeItem("glacy-current-user");
+
+    if (data.success) {
+      return {
+        success: true,
+        message: data.message || "Logged out successfully",
+      };
+    } else {
+      // Even if API fails, we've cleared local state
+      return {
+        success: true,
+        message: "Logged out successfully",
+      };
+    }
+  } catch (error) {
+    console.error("Error logging out:", error);
+    // Still clear local state on error
+    currentUser = null;
+    localStorage.removeItem("glacy-current-user");
+    return {
+      success: true,
+      message: "Logged out successfully",
+    };
+  }
 }
 
 // Check if user is logged in
 function isLoggedIn() {
+  // First check if we've initialized auth
+  if (!authChecked) {
+    console.warn("Auth not initialized. Call initializeAuth() first.");
+    return false;
+  }
+
   return currentUser !== null;
 }
 
@@ -131,23 +208,44 @@ function getCurrentUser() {
   return currentUser;
 }
 
-// Update user cart
-function updateUserCart(cartItems) {
-  if (!isLoggedIn()) return;
+// Update user cart - now handled by backend
+async function updateUserCart(cartItems) {
+  // In the new backend implementation, cart should be managed server-side
+  // This function is kept for backward compatibility but should be replaced
+  // with direct API calls to cart endpoints
+  console.warn("updateUserCart is deprecated. Use backend cart API directly.");
 
-  const userIndex = users.findIndex((u) => u.id === currentUser.id);
-  if (userIndex !== -1) {
-    users[userIndex].cart = cartItems;
-    saveUsers();
+  if (!isLoggedIn()) {
+    return { success: false, message: "User not logged in" };
   }
+
+  // Save to localStorage as fallback
+  const userData = JSON.parse(
+    localStorage.getItem("glacy-current-user") || "{}"
+  );
+  userData.cart = cartItems;
+  localStorage.setItem("glacy-current-user", JSON.stringify(userData));
+
+  return { success: true, message: "Cart updated locally" };
 }
 
-// Get user cart
+// Get user cart - now handled by backend
 function getUserCart() {
+  // In the new backend implementation, cart should be managed server-side
+  // This function is kept for backward compatibility but should be replaced
+  // with direct API calls to cart endpoints
+
   if (!isLoggedIn()) return [];
 
-  const user = users.find((u) => u.id === currentUser.id);
-  return user ? user.cart : [];
+  const userData = JSON.parse(
+    localStorage.getItem("glacy-current-user") || "{}"
+  );
+  return userData.cart || [];
+}
+
+// Re-check authentication status
+async function checkAuthStatus() {
+  return await initializeAuth();
 }
 
 // Initialize on module load
@@ -157,11 +255,13 @@ function getUserCart() {
 
 // Export functions
 export {
-  register,
+  checkAuthStatus,
+  getCurrentUser,
+  getUserCart,
+  initializeAuth,
+  isLoggedIn,
   login,
   logout,
-  isLoggedIn,
-  getCurrentUser,
+  register,
   updateUserCart,
-  getUserCart,
 };

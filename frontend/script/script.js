@@ -1,11 +1,11 @@
 import {
-  register,
+  getCurrentUser,
+  getUserCart,
+  isLoggedIn,
   login,
   logout,
-  isLoggedIn,
-  getCurrentUser,
+  register,
   updateUserCart,
-  getUserCart,
 } from "./auth.js";
 
 let cartItems = [];
@@ -233,7 +233,7 @@ function handleCheckout() {
 
   const totalAmount = document.querySelector(".total-amount").textContent;
   alert(
-    `Checkout for ${cartItems.length} items. Total: ${totalAmount}\n\nOrder placed successfully!`,
+    `Checkout for ${cartItems.length} items. Total: ${totalAmount}\n\nOrder placed successfully!`
   );
 
   cartItems = [];
@@ -362,12 +362,12 @@ function setupSearchFunctionality() {
       (icecream) =>
         icecream.name.toLowerCase().includes(searchTerm) ||
         icecream.description.toLowerCase().includes(searchTerm) ||
-        icecream.category.toLowerCase().includes(searchTerm),
+        icecream.category.toLowerCase().includes(searchTerm)
     );
 
     if (results.length > 0) {
       showToast(
-        `Found ${results.length} result${results.length > 1 ? "s" : ""}`,
+        `Found ${results.length} result${results.length > 1 ? "s" : ""}`
       );
       // Scroll to catalog
       document.getElementById("catalog").scrollIntoView({ behavior: "smooth" });
@@ -411,12 +411,13 @@ function updateAuthUI() {
 
   if (isLoggedIn()) {
     const user = getCurrentUser();
-    loginLabel.textContent = user.username;
+    // Display name instead of username since backend uses name field
+    loginLabel.textContent = user.name || user.email.split("@")[0];
 
     const loginContainer = document.getElementById("login-container");
     loginContainer.innerHTML = `
       <div class="user-profile">
-        <h3>Welcome, ${user.username}!</h3>
+        <h3>Welcome, ${user.name || user.email.split("@")[0]}!</h3>
         <p style="font-size: 1.3rem; color: #666; margin: 10px 0;">You are logged in</p>
         <button class="logout-btn" style="
           background-color: var(--bg-color-1);
@@ -457,8 +458,8 @@ function restoreLoginForms() {
     <form class="login-form">
       <h3>Sign In</h3>
       <div class="form-control">
-        <label for="username">
-          <input type="text" id="username" placeholder="Username" class="login-username" required>
+        <label for="email">
+          <input type="email" id="email" placeholder="Email" class="login-email" required>
         </label>
       </div>
       <div class="form-control">
@@ -475,13 +476,18 @@ function restoreLoginForms() {
     <form class="signup-form visually-hidden">
       <h3>Create Account</h3>
       <div class="form-control">
-        <label for="signup-username">
-          <input type="text" id="signup-username" placeholder="Username" class="signup-username" required>
+        <label for="signup-name">
+          <input type="text" id="signup-name" placeholder="Full Name" class="signup-name" required minlength="3">
+        </label>
+      </div>
+      <div class="form-control">
+        <label for="signup-email">
+          <input type="email" id="signup-email" placeholder="Email" class="signup-email" required>
         </label>
       </div>
       <div class="form-control">
         <label for="signup-password">
-          <input type="password" id="signup-password" placeholder="Password" class="signup-password" required minlength="6">
+          <input type="password" id="signup-password" placeholder="Password" class="signup-password" required minlength="8">
         </label>
       </div>
       <div class="form-control">
@@ -523,70 +529,82 @@ function attachFormListeners() {
 function handleLogin(e) {
   e.preventDefault();
 
-  const username = document.getElementById("username").value;
+  const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const result = login(username, password);
+  login(email, password)
+    .then((result) => {
+      if (result.success) {
+        const guestCart = localStorage.getItem("glacy-guest-cart");
+        if (guestCart) {
+          const guestItems = JSON.parse(guestCart);
+          const userCart = getUserCart();
 
-  if (result.success) {
-    const guestCart = localStorage.getItem("glacy-guest-cart");
-    if (guestCart) {
-      const guestItems = JSON.parse(guestCart);
-      const userCart = getUserCart();
+          guestItems.forEach((guestItem) => {
+            const existingItem = userCart.find(
+              (item) => item.name === guestItem.name
+            );
+            if (existingItem) {
+              existingItem.quantity += guestItem.quantity;
+            } else {
+              userCart.push(guestItem);
+            }
+          });
 
-      guestItems.forEach((guestItem) => {
-        const existingItem = userCart.find(
-          (item) => item.name === guestItem.name,
-        );
-        if (existingItem) {
-          existingItem.quantity += guestItem.quantity;
+          cartItems = userCart;
+          localStorage.removeItem("glacy-guest-cart");
         } else {
-          userCart.push(guestItem);
+          cartItems = getUserCart();
         }
-      });
 
-      cartItems = userCart;
-      localStorage.removeItem("glacy-guest-cart");
-    } else {
-      cartItems = getUserCart();
-    }
+        saveCart();
+        updateCart();
+        updateAuthUI();
 
-    saveCart();
-    updateCart();
-    updateAuthUI();
+        const loginContainer = document.getElementById("login-container");
+        loginContainer.classList.add("visually-hidden");
 
-    const loginContainer = document.getElementById("login-container");
-    loginContainer.classList.add("visually-hidden");
-
-    showToast(result.message);
-  } else {
-    showToast(result.message);
-  }
+        showToast(result.message);
+      } else {
+        showToast(result.message);
+      }
+    })
+    .catch((error) => {
+      console.error("Login error:", error);
+      showToast("Network error. Please try again.");
+    });
 }
 
 function handleRegister(e) {
   e.preventDefault();
 
-  const username = document.getElementById("signup-username").value;
+  const name = document.getElementById("signup-name").value;
+  const email = document.getElementById("signup-email").value;
   const password = document.getElementById("signup-password").value;
   const confirmPassword = document.getElementById("confirm-password").value;
 
-  const result = register(username, password, confirmPassword);
+  register(name, email, password, confirmPassword)
+    .then((result) => {
+      if (result.success) {
+        showToast(result.message + " Please login now.");
 
-  if (result.success) {
-    showToast(result.message + " Please login now.");
+        const loginForm = document.querySelector(".login-form");
+        const signupForm = document.querySelector(".signup-form");
+        signupForm.classList.add("visually-hidden");
+        loginForm.classList.remove("visually-hidden");
 
-    const loginForm = document.querySelector(".login-form");
-    const signupForm = document.querySelector(".signup-form");
-    signupForm.classList.add("visually-hidden");
-    loginForm.classList.remove("visually-hidden");
-
-    document.getElementById("signup-username").value = "";
-    document.getElementById("signup-password").value = "";
-    document.getElementById("confirm-password").value = "";
-  } else {
-    showToast(result.message);
-  }
+        document.getElementById("signup-name").value = "";
+        document.getElementById("signup-email").value = "";
+        document.getElementById("signup-password").value = "";
+        document.getElementById("confirm-password").value = "";
+      } else {
+        showToast(result.message);
+      }
+    })
+    .catch((error) => {
+      console.error("Registration error:", error);
+      showToast("Network error. Please try again.");
+    });
 }
 
 // ========================
@@ -723,7 +741,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const heroSlide = document.querySelector(".hero-slide");
     if (heroSlide) {
       heroSlide.addEventListener("mouseenter", () =>
-        clearInterval(sliderInterval),
+        clearInterval(sliderInterval)
       );
       heroSlide.addEventListener("mouseleave", startSlider);
     }

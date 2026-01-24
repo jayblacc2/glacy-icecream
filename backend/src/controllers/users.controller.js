@@ -34,13 +34,13 @@ const registerUser = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" },
+      { expiresIn: "1h" }
     );
 
     const refreshToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" },
+      { expiresIn: "1d" }
     );
 
     res.cookie("token", token, {
@@ -82,7 +82,7 @@ const userLogin = async (req, res) => {
     }
 
     const user = await User.findOne({ email: email.toLowerCase() }).select(
-      "+password",
+      "+password"
     );
     if (!user) {
       return res.status(404).json({
@@ -106,13 +106,13 @@ const userLogin = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" },
+      { expiresIn: "1h" }
     );
 
     const refreshToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" },
+      { expiresIn: "1d" }
     );
 
     // Set cookies
@@ -134,6 +134,8 @@ const userLogin = async (req, res) => {
         name: user.name,
         email: user.email,
         isLoggedIn: user.isLoggedIn,
+        role: user.role,
+        cart: user.cart,
       },
     });
   } catch (error) {

@@ -4,9 +4,10 @@
   "description": "Ice cream store website with frontend and backend",
   "main": "frontend/index.html",
   "scripts": {
-    "start": "npx serve frontend",
-    "dev": "npx serve frontend -p 3000",
-    "build": "echo 'Build process placeholder'",
+    "dev": "vite frontend",
+    "build": "vite build --config frontend/vite.config.js",
+    "preview": "vite preview --config frontend/vite.config.js",
+    "start": "npm run dev",
     "test": "echo 'Test process placeholder'",
     "version:major": "npm version major -m \"Bump to version %s\"",
     "version:minor": "npm version minor -m \"Bump to version %s\"",
@@ -20,9 +21,8 @@
   ],
   "author": "Your Name",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
-    "serve": "^14.2.0"
+    "vite": "^6.4.1"
   },
   "repository": {
     "type": "git",
