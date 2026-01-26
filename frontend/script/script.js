@@ -10,7 +10,6 @@ import {
 } from "./auth.js";
 
 let cartItems = [];
-let index = 0;
 let icecreams = [];
 
 // ========================
@@ -510,6 +509,9 @@ function restoreLoginForms() {
     attachFormListeners();
   });
 }
+const fragment = document.createDocumentFragment();
+const loginForm = document.createElement("form");
+loginForm.className = "login-form";
 
 function attachFormListeners() {
   const loginForm = document.querySelector(".login-form");
@@ -631,20 +633,21 @@ function handleRegister(e) {
 // ========================
 let slides;
 let totalSlides;
+let slideIndex = 0;
 
 function updateSlider() {
   if (slides) {
-    slides.style.transform = `translateX(-${index * 100}%)`;
+    slides.style.transform = `translateX(-${slideIndex * 100}%)`;
   }
 }
 
 function next() {
-  index = (index + 1) % totalSlides;
+  slideIndex = (slideIndex + 1) % totalSlides;
   updateSlider();
 }
 
 function prev() {
-  index = (index - 1 + totalSlides) % totalSlides;
+  slideIndex = (slideIndex - 1 + totalSlides) % totalSlides;
   updateSlider();
 }
 
