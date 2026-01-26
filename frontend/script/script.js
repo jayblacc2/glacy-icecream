@@ -439,7 +439,7 @@ function updateAuthUI() {
     const logoutBtn = loginContainer.querySelector(".logout-btn");
     logoutBtn.addEventListener("click", handleLogout);
   } else {
-    loginLabel.textContent = "login";
+    loginLabel.textContent = "User";
     restoreLoginForms();
   }
 }
@@ -460,6 +460,11 @@ function restoreLoginForms() {
   const loginContainer = document.getElementById("login-container");
   loginContainer.innerHTML = "";
   loginContainer.appendChild(createAuthForms());
+
+  // Reset form cache in form-toggle.js
+  if (window.resetFormCache) {
+    window.resetFormCache();
+  }
 
   requestAnimationFrame(() => {
     attachFormListeners();

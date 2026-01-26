@@ -13,6 +13,26 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchBox = document.querySelector(".search-box");
   const searchForm = document.querySelector(".search-form");
 
+  // Cached form references - avoid duplicate queries
+  let loginForm = null;
+  let signupForm = null;
+
+  // Helper function to get forms
+  function getForms() {
+    if (!loginForm) {
+      loginForm = loginContainer?.querySelector(".login-form");
+    }
+    if (!signupForm) {
+      signupForm = loginContainer?.querySelector(".signup-form");
+    }
+  }
+
+  // Helper function to reset cached form references (call after forms are regenerated)
+  window.resetFormCache = function() {
+    loginForm = null;
+    signupForm = null;
+  };
+
   // Toggle login form
   function toggleLogin(event) {
     event.stopPropagation();
@@ -24,8 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Toggle login container
     loginContainer.classList.toggle("visually-hidden");
     // Ensure sign-in form shows by default
-    const loginForm = loginContainer?.querySelector(".login-form");
-    const signupForm = loginContainer?.querySelector(".signup-form");
+    getForms();
     if (loginForm && signupForm) {
       loginForm.classList.remove("visually-hidden");
       signupForm.classList.add("visually-hidden");
@@ -40,8 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (loginContainer) {
       loginContainer.classList.add("visually-hidden");
     }
-    const signupForm = loginContainer?.querySelector(".signup-form");
-    const loginForm = loginContainer?.querySelector(".login-form");
+    getForms();
     if (signupForm) signupForm.classList.add("visually-hidden");
     if (loginForm) loginForm.classList.add("visually-hidden");
     searchBox.classList.add("visually-hidden");
@@ -78,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
       !event.target.closest("#search")
     ) {
       loginContainer.classList.add("visually-hidden");
-      const signupForm = loginContainer?.querySelector(".signup-form");
+      getForms();
       if (signupForm) signupForm.classList.add("visually-hidden");
       cartContainer.classList.add("visually-hidden");
       searchBox.classList.add("visually-hidden");
