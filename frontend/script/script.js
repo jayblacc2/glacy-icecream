@@ -1,3 +1,4 @@
+import { createAuthForms } from "../utils/auth-form.js";
 import {
   getAuthInitPromise,
   getCurrentUser,
@@ -457,61 +458,13 @@ async function handleLogout() {
 
 function restoreLoginForms() {
   const loginContainer = document.getElementById("login-container");
-  loginContainer.innerHTML = `
-    <form class="login-form">
-      <h3>Sign In</h3>
-      <div class="form-control">
-        <label for="email">
-          <input type="email" id="email" placeholder="Email" class="login-email" required>
-        </label>
-      </div>
-      <div class="form-control">
-        <label for="password">
-          <input type="password" id="password" placeholder="Password" class="login-password" required>
-        </label>
-      </div>
-      <div class="login-btn">
-        <button type="submit" class="login-submit">Login</button>
-        <a href="#" class="forgot-password">Forgot password?</a>
-        <button type="button" class="register-btn" id="show-signup">Register</button>
-      </div>
-    </form>
-    <form class="signup-form visually-hidden">
-      <h3>Create Account</h3>
-      <div class="form-control">
-        <label for="signup-name">
-          <input type="text" id="signup-name" placeholder="Full Name" class="signup-name" required minlength="3">
-        </label>
-      </div>
-      <div class="form-control">
-        <label for="signup-email">
-          <input type="email" id="signup-email" placeholder="Email" class="signup-email" required>
-        </label>
-      </div>
-      <div class="form-control">
-        <label for="signup-password">
-          <input type="password" id="signup-password" placeholder="Password" class="signup-password" required minlength="8">
-        </label>
-      </div>
-      <div class="form-control">
-        <label for="confirm-password">
-          <input type="password" id="confirm-password" placeholder="Confirm Password" class="confirm-password" required>
-        </label>
-      </div>
-      <div class="signup-btn">
-        <button type="submit" class="signup-submit">Register</button>
-        <button type="button" class="login-btn" id="show-login">Login</button>
-      </div>
-    </form>
-  `;
+  loginContainer.innerHTML = "";
+  loginContainer.appendChild(createAuthForms());
 
   requestAnimationFrame(() => {
     attachFormListeners();
   });
 }
-const fragment = document.createDocumentFragment();
-const loginForm = document.createElement("form");
-loginForm.className = "login-form";
 
 function attachFormListeners() {
   const loginForm = document.querySelector(".login-form");
