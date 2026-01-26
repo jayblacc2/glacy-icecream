@@ -501,6 +501,7 @@ function restoreLoginForms() {
       </div>
       <div class="signup-btn">
         <button type="submit" class="signup-submit">Register</button>
+        <button type="button" class="login-btn" id="show-login">Login</button>
       </div>
     </form>
   `;
@@ -522,12 +523,23 @@ function attachFormListeners() {
     signupForm.addEventListener("submit", handleRegister);
   }
 
+  // Form switching buttons
   const showSignupBtn = document.getElementById("show-signup");
-  if (showSignupBtn) {
+  const showLoginBtn = document.getElementById("show-login");
+
+  if (showSignupBtn && loginForm && signupForm) {
     showSignupBtn.addEventListener("click", (e) => {
       e.preventDefault();
       loginForm.classList.add("visually-hidden");
       signupForm.classList.remove("visually-hidden");
+    });
+  }
+
+  if (showLoginBtn && loginForm && signupForm) {
+    showLoginBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      signupForm.classList.add("visually-hidden");
+      loginForm.classList.remove("visually-hidden");
     });
   }
 }
@@ -776,9 +788,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Initialize auth - wait for auth to be initialized first
   await getAuthInitPromise();
-  updateAuthUI();
+  updateAuthUI(); // This will call restoreLoginForms() if not logged in
   loadCart();
-  attachFormListeners();
 
   // Handle window resize
   window.addEventListener("resize", updateCatalog);
