@@ -133,16 +133,13 @@ document.addEventListener("DOMContentLoaded", function () {
   if (searchToggle) {
     searchToggle.addEventListener("click", toggleSearch);
   }
-  
+
   // Prevent search box from closing when clicking inside it
   if (searchBox) {
-    searchBox.addEventListener("click", function(event) {
+    searchBox.addEventListener("click", function (event) {
       event.stopPropagation();
     });
   }
-  
-  document.addEventListener("click", closeAllDropdowns);
 
-  // Form submissions are now handled in script.js with real authentication
-  // Let search submit normally (GET)
+  document.addEventListener("click", closeAllDropdowns);
 });

@@ -1,11 +1,12 @@
-// Authentication functions for Glacy Ice Cream Store - Backend API Integration
-
-// Internal state
 let currentUser = null;
 let authChecked = false;
 
 // API Base URL - Adjust this based on your Vite proxy configuration
 const API_BASE_URL = "/api/v1/users";
+
+// Initialization promise - allows other modules to wait for auth to be ready
+let authInitPromise = null;
+let authInitResolve = null;
 
 // Initialize auth state by checking authentication status
 async function initializeAuth() {
@@ -26,19 +27,34 @@ async function initializeAuth() {
     }
 
     authChecked = true;
+    if (authInitResolve) {
+      authInitResolve(data);
+    }
     return data;
   } catch (error) {
     console.error("Error initializing auth:", error);
     currentUser = null;
     authChecked = true;
+    if (authInitResolve) {
+      authInitResolve({ success: false, isLoggedIn: false, user: null });
+    }
     return { success: false, isLoggedIn: false, user: null };
   }
 }
 
+// Get or create the initialization promise
+function getAuthInitPromise() {
+  if (!authInitPromise) {
+    authInitPromise = new Promise((resolve) => {
+      authInitResolve = resolve;
+    });
+  }
+  return authInitPromise;
+}
+
 // Register new user via backend API
-async function register(name, email, password, confirmPassword) {
+async function registerUser(name, email, password, confirmPassword) {
   try {
-    // Frontend validation
     if (!name || !email || !password || !confirmPassword) {
       return { success: false, message: "All fields are required" };
     }
@@ -210,16 +226,11 @@ function getCurrentUser() {
 
 // Update user cart - now handled by backend
 async function updateUserCart(cartItems) {
-  // In the new backend implementation, cart should be managed server-side
-  // This function is kept for backward compatibility but should be replaced
-  // with direct API calls to cart endpoints
   console.warn("updateUserCart is deprecated. Use backend cart API directly.");
 
   if (!isLoggedIn()) {
     return { success: false, message: "User not logged in" };
   }
-
-  // Save to localStorage as fallback
   const userData = JSON.parse(
     localStorage.getItem("glacy-current-user") || "{}"
   );
@@ -229,12 +240,7 @@ async function updateUserCart(cartItems) {
   return { success: true, message: "Cart updated locally" };
 }
 
-// Get user cart - now handled by backend
 function getUserCart() {
-  // In the new backend implementation, cart should be managed server-side
-  // This function is kept for backward compatibility but should be replaced
-  // with direct API calls to cart endpoints
-
   if (!isLoggedIn()) return [];
 
   const userData = JSON.parse(
@@ -262,6 +268,7 @@ export {
   isLoggedIn,
   login,
   logout,
-  register,
+  registerUser,
   updateUserCart,
+  getAuthInitPromise,
 };

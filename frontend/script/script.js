@@ -1,10 +1,11 @@
 import {
+  getAuthInitPromise,
   getCurrentUser,
   getUserCart,
   isLoggedIn,
   login,
   logout,
-  register,
+  registerUser,
   updateUserCart,
 } from "./auth.js";
 
@@ -411,13 +412,16 @@ function updateAuthUI() {
 
   if (isLoggedIn()) {
     const user = getCurrentUser();
-    // Display name instead of username since backend uses name field
-    loginLabel.textContent = user.name || user.email.split("@")[0];
+    // Display first name in uppercase
+    const displayName = (
+      user.name?.split(" ")[0] || user.email.split("@")[0]
+    ).toUpperCase();
+    loginLabel.textContent = displayName;
 
     const loginContainer = document.getElementById("login-container");
     loginContainer.innerHTML = `
       <div class="user-profile">
-        <h3>Welcome, ${user.name || user.email.split("@")[0]}!</h3>
+        <h3>Welcome, ${displayName}!</h3>
         <p style="font-size: 1.3rem; color: #666; margin: 10px 0;">You are logged in</p>
         <button class="logout-btn" style="
           background-color: var(--bg-color-1);
@@ -440,8 +444,8 @@ function updateAuthUI() {
   }
 }
 
-function handleLogout() {
-  logout();
+async function handleLogout() {
+  await logout();
   cartItems = [];
   updateCart();
   updateAuthUI();
@@ -501,7 +505,9 @@ function restoreLoginForms() {
     </form>
   `;
 
-  attachFormListeners();
+  requestAnimationFrame(() => {
+    attachFormListeners();
+  });
 }
 
 function attachFormListeners() {
@@ -583,10 +589,11 @@ function handleRegister(e) {
   const password = document.getElementById("signup-password").value;
   const confirmPassword = document.getElementById("confirm-password").value;
 
-  register(name, email, password, confirmPassword)
+  registerUser(name, email, password, confirmPassword)
     .then((result) => {
       if (result.success) {
         showToast(result.message + " Please login now.");
+        setTimeout(() => window.location.reload(), 1000);
 
         const loginForm = document.querySelector(".login-form");
         const signupForm = document.querySelector(".signup-form");
@@ -767,7 +774,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupSearchFunctionality(); // NEW FEATURE - Search now works!
   setupStickyNav();
 
-  // Initialize auth
+  // Initialize auth - wait for auth to be initialized first
+  await getAuthInitPromise();
   updateAuthUI();
   loadCart();
   attachFormListeners();

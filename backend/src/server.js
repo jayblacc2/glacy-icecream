@@ -1,4 +1,5 @@
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import express from "express";
 import connectDB from "./config/db.js";
@@ -14,15 +15,21 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+    origin: ["http://localhost:8000", "http://localhost:3000"],
     credentials: true,
   })
 );
+app.use(cookieParser());
 app.use(express.json());
 app.use("/api/v1/users", usersRoutes);
 app.use("/api/v1/products", productsRoutes);
 
 const PORT = process.env.PORT || 8100;
+/**
+ * Starts the server and listens on the specified port.
+ *
+ * @return {Promise<void>} - A promise that resolves when the server starts successfully, or rejects with an error if it fails to start.
+ */
 const startServer = async () => {
   try {
     await connectDB();
