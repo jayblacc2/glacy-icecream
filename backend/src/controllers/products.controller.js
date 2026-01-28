@@ -36,6 +36,8 @@ const createProduct = async (req, res) => {
       try {
         const result = await uploadImage(req.file.buffer);
         imageUrl = result.secure_url;
+        publicId = result.public_id;
+        uploadedBy = req.user._id;
       } catch (error) {
         console.error("Error uploading image:", error);
         return res.status(500).json({

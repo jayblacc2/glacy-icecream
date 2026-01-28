@@ -21,11 +21,29 @@ const ProductSchema = new Schema(
       set: (v) => (v ? mongoose.Types.Decimal128.fromString(v.toString()) : v),
     },
     image: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-
+      url: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true,
+        unique: true,
+        match: [
+          /^https:\/\/res\.cloudinary\.com\/glacy-store\/image\/upload\/(.*)$/,
+          /^https:\/\/res\.cloudinary\.com\/glacy-store\/image\/upload\/(.*)\.(.*)$/,
+        ],
+      },
+      publicId: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true,
+        unique: true,
+        match: [/^glacy-store\/(.*)$/, /^glacy-store\/(.*)\.(.*)$/],
+      },
+      uploadedBy: {
+        type: String,
+        ref: "User",
+      },
     },
     category: {
       type: String,
@@ -54,7 +72,7 @@ const ProductSchema = new Schema(
       },
     },
     toObject: { getters: true },
-  }
+  },
 );
 
 // Add index on category for faster queries

@@ -1,8 +1,9 @@
-import cors from "cors";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import connectDB from "./config/db.js";
+import postsRoutes from "./routes/posts.route.js";
 import productsRoutes from "./routes/products.route.js";
 import usersRoutes from "./routes/users.route.js";
 
@@ -23,6 +24,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api/v1/users", usersRoutes);
 app.use("/api/v1/products", productsRoutes);
+app.use("/api/v1/posts", postsRoutes);
 
 const PORT = process.env.PORT || 8100;
 /**
