@@ -99,7 +99,7 @@ function attachCartListeners() {
 
 // ========================
 // CART EVENT DELEGATION - FIX FOR QUANTITY BUTTONS
-// ======================== 
+// ========================
 function setupCartEventDelegation() {
   const cartItemsContainer = document.querySelector(".cart-items");
 
@@ -234,7 +234,7 @@ function handleCheckout() {
 
   const totalAmount = document.querySelector(".total-amount").textContent;
   alert(
-    `Checkout for ${cartItems.length} items. Total: ${totalAmount}\n\nOrder placed successfully!`
+    `Checkout for ${cartItems.length} items. Total: ${totalAmount}\n\nOrder placed successfully!`,
   );
 
   cartItems = [];
@@ -271,7 +271,7 @@ function showToast(message) {
 }
 
 // ========================
-// MOBILE MENU - FIX
+// MOBILE MENU
 // ========================
 function setupMobileMenu() {
   const burgerMenu = document.getElementById("burger-menu");
@@ -279,72 +279,51 @@ function setupMobileMenu() {
   const sidebarClose = document.getElementById("sidebar-close");
   const sidebarOverlay = document.getElementById("sidebar-overlay");
   const sidebarLinks = document.querySelectorAll(".sidebar-link");
-
-  // Sidebar buttons
   const sidebarSearch = document.getElementById("sidebar-search");
   const sidebarLogin = document.getElementById("sidebar-login");
   const sidebarCart = document.getElementById("sidebar-cart");
 
   if (!burgerMenu || !mobileSidebar) return;
 
-  // Open sidebar
-  burgerMenu.addEventListener("click", () => {
-    mobileSidebar.classList.add("active");
-    sidebarOverlay.classList.add("active");
-    // burgerMenu.classList.add("active"); // Removed - keep burger as menu icon
-    document.body.style.overflow = "hidden";
-  });
-
-  // Close sidebar
   const closeSidebar = () => {
     mobileSidebar.classList.remove("active");
     sidebarOverlay.classList.remove("active");
-    // burgerMenu.classList.remove("active"); // Removed - keep burger as menu icon
     document.body.style.overflow = "";
   };
 
-  if (sidebarClose) {
-    sidebarClose.addEventListener("click", closeSidebar);
-  }
-
-  if (sidebarOverlay) {
-    sidebarOverlay.addEventListener("click", closeSidebar);
-  }
-
-  // Close sidebar when clicking links
-  sidebarLinks.forEach((link) => {
-    link.addEventListener("click", closeSidebar);
+  burgerMenu.addEventListener("click", () => {
+    mobileSidebar.classList.add("active");
+    sidebarOverlay.classList.add("active");
+    document.body.style.overflow = "hidden";
   });
 
-  // Sidebar action buttons
-  if (sidebarSearch) {
-    sidebarSearch.addEventListener("click", () => {
-      closeSidebar();
-      const searchBox = document.querySelector(".search-box");
-      searchBox.classList.remove("visually-hidden");
-      document.getElementById("search").focus();
-    });
-  }
+  sidebarClose?.addEventListener("click", closeSidebar);
+  sidebarOverlay?.addEventListener("click", closeSidebar);
+  sidebarLinks.forEach((link) => link.addEventListener("click", closeSidebar));
 
-  if (sidebarLogin) {
-    sidebarLogin.addEventListener("click", () => {
-      closeSidebar();
-      const loginContainer = document.getElementById("login-container");
-      loginContainer.classList.remove("visually-hidden");
-    });
-  }
+  sidebarSearch?.addEventListener("click", () => {
+    closeSidebar();
+    document.querySelector(".search-box")?.classList.remove("visually-hidden");
+    document.getElementById("search")?.focus();
+  });
 
-  if (sidebarCart) {
-    sidebarCart.addEventListener("click", () => {
-      closeSidebar();
-      const cartContainer = document.getElementById("cart-container");
-      cartContainer.classList.remove("visually-hidden");
-    });
-  }
+  sidebarLogin?.addEventListener("click", () => {
+    closeSidebar();
+    document
+      .getElementById("login-container")
+      ?.classList.remove("visually-hidden");
+  });
+
+  sidebarCart?.addEventListener("click", () => {
+    closeSidebar();
+    document
+      .getElementById("cart-container")
+      ?.classList.remove("visually-hidden");
+  });
 }
 
 // ========================
-// SEARCH FUNCTIONALITY - NEW
+// SEARCH FUNCTIONALITY
 // ========================
 function setupSearchFunctionality() {
   const searchForm = document.querySelector(".search-form");
@@ -358,28 +337,23 @@ function setupSearchFunctionality() {
 
     if (!searchTerm) return;
 
-    // Filter ice creams
     const results = icecreams.filter(
       (icecream) =>
         icecream.name.toLowerCase().includes(searchTerm) ||
         icecream.description.toLowerCase().includes(searchTerm) ||
-        icecream.category.toLowerCase().includes(searchTerm)
+        icecream.category.toLowerCase().includes(searchTerm),
     );
 
     if (results.length > 0) {
       showToast(
-        `Found ${results.length} result${results.length > 1 ? "s" : ""}`
+        `Found ${results.length} result${results.length > 1 ? "s" : ""}`,
       );
-      // Scroll to catalog
       document.getElementById("catalog").scrollIntoView({ behavior: "smooth" });
-
-      // Highlight matching cards
       highlightSearchResults(searchTerm);
     } else {
       showToast("No results found");
     }
 
-    // Close search box
     document.querySelector(".search-box").classList.add("visually-hidden");
     searchInput.value = "";
   });
@@ -520,7 +494,7 @@ function handleLogin(e) {
 
           guestItems.forEach((guestItem) => {
             const existingItem = userCart.find(
-              (item) => item.name === guestItem.name
+              (item) => item.name === guestItem.name,
             );
             if (existingItem) {
               existingItem.quantity += guestItem.quantity;
@@ -721,7 +695,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const heroSlide = document.querySelector(".hero-slide");
     if (heroSlide) {
       heroSlide.addEventListener("mouseenter", () =>
-        clearInterval(sliderInterval)
+        clearInterval(sliderInterval),
       );
       heroSlide.addEventListener("mouseleave", startSlider);
     }
@@ -742,9 +716,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Setup all functionality
-  setupCartEventDelegation(); // CRITICAL FIX - Cart buttons now work!
-  setupMobileMenu(); // MOBILE FIX - Burger menu now works!
-  setupSearchFunctionality(); // NEW FEATURE - Search now works!
+  setupCartEventDelegation();
+  setupMobileMenu();
+  setupSearchFunctionality();
   setupStickyNav();
 
   // Initialize auth - wait for auth to be initialized first
