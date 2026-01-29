@@ -99,7 +99,7 @@ function attachCartListeners() {
 
 // ========================
 // CART EVENT DELEGATION - FIX FOR QUANTITY BUTTONS
-// ========================
+// ======================== 
 function setupCartEventDelegation() {
   const cartItemsContainer = document.querySelector(".cart-items");
 

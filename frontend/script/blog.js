@@ -1,14 +1,3 @@
-import { initializeHeader } from "../components/header.js";
-import { createAuthForms } from "../utils/auth-form.js";
-
-// Initialize header and auth forms immediately
-initializeHeader();
-
-// Initialize auth forms
-const loginContainer = document.getElementById("login-container");
-if (loginContainer) {
-  loginContainer.appendChild(createAuthForms());
-}
 
 const API_URL = "https://api.slingacademy.com/v1/sample-data/blog-posts";
 const LIMIT = 20;

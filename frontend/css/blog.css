@@ -7,54 +7,27 @@
 
 .blog-header {
   text-align: center;
-  padding: 2rem 2rem 3rem;
-  max-width: 800px;
-  margin: 0 auto;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
 }
 
 .blog-header h1 {
   font-size: 3.5rem;
-  color: var(--primary-color);
-  margin-bottom: 1rem;
+  color: var(--primary-color, #ff6b9d);
   font-family: "Yanone Kaffeesatz", sans-serif;
   font-weight: 700;
 }
 
 .blog-header p {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   color: var(--text-light);
-  line-height: 1.8;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-/* Back to Home Button */
-.back-home {
-  position: fixed;
-  top: 2rem;
-  left: 2rem;
-  background: white;
-  color: var(--primary-color);
-  border: 2px solid var(--primary-color);
-  padding: 0.8rem 1.5rem;
-  border-radius: 25px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  z-index: 100;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
 
-.back-home:hover {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--secondary-color)
-  );
-  color: white;
-  transform: translateX(-5px);
-}
+
+
 
 /* Blog Grid */
 .blog-container {
