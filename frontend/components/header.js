@@ -82,7 +82,7 @@ export function createHeader() {
             </button>
             <button class="sidebar-btn" id="sidebar-login">
               <i class="fa-solid fa-user"></i>
-              <span>Login</span>
+              <span>User</span>
             </button>
             <button class="sidebar-btn" id="sidebar-cart">
               <i class="fa-solid fa-cart-shopping"></i>

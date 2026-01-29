@@ -1,38 +1,7 @@
-/* Blog Page Specific Styles */
-:root {
-  --primary-color: #ff6b9d;
-  --secondary-color: #ff8fab;
-  --text-dark: #333;
-  --text-light: #666;
-  --bg-light: #ffeef8;
-  --bg-lighter: #e8f5ff;
-}
-
-/* Only reset blog-specific elements, not global */
-.blog-page * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Inter", sans-serif;
-  line-height: 1.6;
-  color: var(--text-dark);
-}
-
-/* Header placeholder styling */
-#header-placeholder {
-  width: 100%;
-}
+@import url("../css/style.css");
 
 .blog-page {
   min-height: 100vh;
-  background: linear-gradient(
-    135deg,
-    var(--bg-light) 0%,
-    var(--bg-lighter) 100%
-  );
   padding: 2rem 0;
 }
 
@@ -181,7 +150,6 @@ body {
   line-height: 1.6;
   margin-bottom: 1.5rem;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex: 1;
@@ -252,7 +220,7 @@ body {
 }
 
 .modal-content {
-  background: white;
+  background: var(--btn-light);
   border-radius: 25px;
   max-width: 900px;
   width: 100%;
@@ -279,7 +247,7 @@ body {
   top: 1.5rem;
   right: 1.5rem;
   background: var(--primary-color);
-  color: white;
+  color: var(--btn-light);
   border: none;
   width: 45px;
   height: 45px;

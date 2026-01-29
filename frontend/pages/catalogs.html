@@ -27,8 +27,8 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Slab:wght@400;500;700&family=Yanone+Kaffeesatz:wght@400;500;700;900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/catalogs.css" />
+
     <title>Ice Cream Catalog - Glacy</title>
   </head>
 
@@ -78,15 +78,15 @@
     <script type="module">
       import { initializeHeader } from "../components/header.js";
       import { createAuthForms } from "../utils/auth-form.js";
-      
+
       initializeHeader();
-      
+
       // Initialize auth forms
       const loginContainer = document.getElementById("login-container");
       if (loginContainer) {
         loginContainer.appendChild(createAuthForms());
       }
-      
+
       let icecreams = [];
       let currentFilter = "all";
       let selectedIceCream = null;
