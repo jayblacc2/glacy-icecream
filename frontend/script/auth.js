@@ -232,7 +232,7 @@ async function updateUserCart(cartItems) {
     return { success: false, message: "User not logged in" };
   }
   const userData = JSON.parse(
-    localStorage.getItem("glacy-current-user") || "{}"
+    localStorage.getItem("glacy-current-user") || "{}",
   );
   userData.cart = cartItems;
   localStorage.setItem("glacy-current-user", JSON.stringify(userData));
@@ -244,7 +244,7 @@ function getUserCart() {
   if (!isLoggedIn()) return [];
 
   const userData = JSON.parse(
-    localStorage.getItem("glacy-current-user") || "{}"
+    localStorage.getItem("glacy-current-user") || "{}",
   );
   return userData.cart || [];
 }
@@ -259,7 +259,7 @@ async function checkAuthStatus() {
   await initializeAuth();
 })();
 
-// Export functions
+// Export functions and state
 export {
   checkAuthStatus,
   getCurrentUser,
@@ -271,4 +271,6 @@ export {
   registerUser,
   updateUserCart,
   getAuthInitPromise,
+  currentUser,
+  authChecked,
 };

@@ -339,6 +339,7 @@ h1 {
   display: flex;
   flex: 0 0 auto;
 }
+
 #logo {
   margin: auto;
   text-align: center;
@@ -364,6 +365,11 @@ h1 {
   font-size: 1.4rem;
   align-self: center;
   padding: 1rem 2rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--dark-primary-color);
 }
 
 .nav-link:hover {
@@ -1187,7 +1193,6 @@ input::placeholder {
   transform: translateX(-5px);
 }
 
-
 /* ========================== */
 /* MOBILE BURGER MENU & SIDEBAR */
 /* ========================== */
@@ -1407,10 +1412,8 @@ input::placeholder {
 
   .nav-item {
     order: 1;
-
     display: flex;
     flex: 0 0 auto;
-
     align-items: center;
   }
 

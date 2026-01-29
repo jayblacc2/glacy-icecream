@@ -25,10 +25,6 @@
   margin: 0 auto;
 }
 
-
-
-
-
 /* Blog Grid */
 .blog-container {
   max-width: 1400px;
@@ -312,52 +308,50 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-}
 
-.btn-primary,
-.btn-secondary {
-  padding: 1rem 2.5rem;
-  border-radius: 50px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
-}
+  .btn-primary,
+  .btn-secondary {
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
 
-.btn-primary {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--secondary-color)
-  );
-  color: white;
-  box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
-}
+  .btn-primary {
+    background-color: var(--dark-primary-color);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+  }
 
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
-}
+  .btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+    transform: translateY(-2px);
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--dark-primary-color);
+  }
 
-.btn-secondary {
-  background: white;
-  color: var(--primary-color);
-  border: 2px solid var(--primary-color);
-}
+  .btn-secondary {
+    background: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+  }
 
-.btn-secondary:hover {
-  background: var(--primary-color);
-  color: white;
+  .btn-secondary:hover {
+    background: var(--primary-color);
+    color: white;
+  }
 }
 
 /* Loading State */
 .loading {
-  text-align: center;
   padding: 5rem 2rem;
   font-size: 1.5rem;
   color: var(--primary-color);
@@ -366,7 +360,7 @@
 .loading i {
   font-size: 3rem;
   animation: spin 1s linear infinite;
-  display: block;
+
   margin-bottom: 1rem;
 }
 
