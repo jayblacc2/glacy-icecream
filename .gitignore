@@ -1,4 +1,7 @@
 .vscode/
+.kilocode/
+.roo/
+
 #ignore my todo or issues to be fixed
 *.md    
 /package-lock.json
