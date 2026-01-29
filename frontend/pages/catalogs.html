@@ -77,8 +77,16 @@
 
     <script type="module">
       import { initializeHeader } from "../components/header.js";
+      import { createAuthForms } from "../utils/auth-form.js";
+      
       initializeHeader();
-
+      
+      // Initialize auth forms
+      const loginContainer = document.getElementById("login-container");
+      if (loginContainer) {
+        loginContainer.appendChild(createAuthForms());
+      }
+      
       let icecreams = [];
       let currentFilter = "all";
       let selectedIceCream = null;
