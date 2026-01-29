@@ -1,4 +1,10 @@
 /* Catalog Page Specific Styles */
+
+/* Header placeholder styling */
+#header-placeholder {
+  width: 100%;
+}
+
 .catalog-page {
   min-height: 100vh;
   padding: 2rem 0;

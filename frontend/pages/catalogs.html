@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -34,7 +34,6 @@
 
   <body>
     <div id="header-placeholder"></div>
-    <!-- Catalog Page -->
     <div class="catalog-page">
       <div class="catalog-header">
         <h1>Our Ice Cream Collection</h1>
@@ -77,6 +76,9 @@
     </div>
 
     <script type="module">
+      import { initializeHeader } from "../components/header.js";
+      initializeHeader();
+
       let icecreams = [];
       let currentFilter = "all";
       let selectedIceCream = null;
@@ -258,7 +260,7 @@
 
         // Check if item already exists in cart
         const existingItemIndex = cart.findIndex(
-          (item) => item.name === cartItem.name
+          (item) => item.name === cartItem.name,
         );
 
         if (existingItemIndex !== -1) {
@@ -382,10 +384,6 @@
       // Initialize
       loadIcecreams();
       setupFilters();
-      
-      // Initialize header
-      import { initializeHeader } from "../components/header.js";
-      initializeHeader();
     </script>
     <script type="module" src="../components/header.js"></script>
     <script src="../script/mobile-menu.js" defer></script>

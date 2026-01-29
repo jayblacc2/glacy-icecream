@@ -1,5 +1,8 @@
 import { initializeHeader } from "../components/header.js";
 
+// Initialize header immediately
+initializeHeader();
+
 const API_URL = "https://api.slingacademy.com/v1/sample-data/blog-posts";
 const LIMIT = 20;
 
@@ -297,4 +300,3 @@ document.addEventListener("keydown", (e) => {
 
 // Initialize on page load
 init();
-initializeHeader();
