@@ -33,12 +33,7 @@
   </head>
 
   <body>
-    <!-- Back to Home Button -->
-    <a href="../index.html" class="back-home">
-      <i class="fa-solid fa-arrow-left"></i>
-      Back to Home
-    </a>
-
+    <div id="header-placeholder"></div>
     <!-- Catalog Page -->
     <div class="catalog-page">
       <div class="catalog-header">
@@ -387,6 +382,13 @@
       // Initialize
       loadIcecreams();
       setupFilters();
+      
+      // Initialize header
+      import { initializeHeader } from "../components/header.js";
+      initializeHeader();
     </script>
+    <script type="module" src="../components/header.js"></script>
+    <script src="../script/mobile-menu.js" defer></script>
+    <script src="../script/form-toggle.js" defer></script>
   </body>
 </html>

@@ -1,79 +1,71 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta
-            name="description"
-            content="Ice Cream Blog - Latest articles, recipes, and news about ice cream"
-        />
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Ice Cream Blog - Latest articles, recipes, and news about ice cream"
+    />
 
-        <link
-            rel="shortcut icon"
-            href="../images/icons/favicon.png"
-            type="image/x-icon"
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-            integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Slab:wght@400;500;700&family=Yanone+Kaffeesatz:wght@400;500;700;900&display=swap"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" href="../css/style.css" />
-        <link rel="stylesheet" href="../css/blog.css" />
-        <title>Ice Cream Blog - Glacy</title>
-    </head>
+    <link
+      rel="shortcut icon"
+      href="../images/icons/favicon.png"
+      type="image/x-icon"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Slab:wght@400;500;700&family=Yanone+Kaffeesatz:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/blog.css" />
+    <title>Ice Cream Blog - Glacy</title>
+  </head>
 
-    <body>
-        <!-- Back to Home Button -->
-        <a href="../index.html" class="back-home">
-            <i class="fa-solid fa-arrow-left"></i>
-            Back to Home
-        </a>
+  <body>
+    <div id="header-placeholder"></div>
+    <div class="blog-page">
+      <div class="blog-header">
+        <h1>Ice Cream Stories & News</h1>
+        <p></p>
+        <p>
+          Discover the latest articles, recipes, tips, and sweet stories from
+          the world of ice cream. Stay updated with trends, flavors, and
+          everything delicious!
+        </p>
+      </div>
 
-        <!-- Blog Page -->
-        <div class="blog-page">
-            <div class="blog-header">
-                <h1>Ice Cream Stories & News</h1>
-                <p></p>
-                <p>
-                    Discover the latest articles, recipes, tips, and sweet
-                    stories from the world of ice cream. Stay updated with
-                    trends, flavors, and everything delicious!
-                </p>
-            </div>
-
-            <!-- Blog Container -->
-            <div class="blog-container">
-                <div class="blog-grid" id="blog-grid">
-                    <!-- Blog cards will be dynamically loaded here -->
-                    <div class="loading">
-                        <i class="fa-solid fa-spinner"></i>
-                        Loading delicious blog posts...
-                    </div>
-                </div>
-            </div>
+      <div class="blog-container">
+        <div class="blog-grid" id="blog-grid">
+          <div class="loading">
+            <i class="fa-solid fa-spinner"></i>
+            Loading delicious blog posts...
+          </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Modal Overlay -->
-        <div class="modal-overlay" id="modal-overlay">
-            <div class="modal-content">
-                <button class="modal-close" id="modal-close">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div id="modal-inner-content">
-                    <!-- Modal content will be dynamically loaded here -->
-                </div>
-            </div>
-        </div>
-    </body>
-    <script type="module" src="../script/blog.js"></script>
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" id="modal-close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div id="modal-inner-content"></div>
+      </div>
+    </div>
+  </body>
+  <script type="module" src="../script/blog.js"></script>
+  <script type="module" src="../components/header.js"></script>
+  <script src="../script/mobile-menu.js" defer></script>
+  <script src="../script/form-toggle.js" defer></script>
 </html>

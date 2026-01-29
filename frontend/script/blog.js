@@ -1,6 +1,7 @@
-// API Configuration
+import { initializeHeader } from "../components/header.js";
+
 const API_URL = "https://api.slingacademy.com/v1/sample-data/blog-posts";
-const LIMIT = 20; // Number of posts to fetch
+const LIMIT = 20;
 
 let blogs = [];
 let selectedBlog = null;
@@ -88,8 +89,8 @@ function createBlogCard(blog) {
   card.innerHTML = `
                 <div class="blog-card-image">
                     <img src="${imageUrl}" alt="${
-    blog.title
-  }" loading="lazy" onerror="this.src='../images/img1.png'">
+                      blog.title
+                    }" loading="lazy" onerror="this.src='../images/img1.png'">
                     <span class="blog-date">${date}</span>
                 </div>
                 <div class="blog-card-content">
@@ -169,8 +170,8 @@ function openModal(blog) {
   modalInnerContent.innerHTML = `
                 <div class="modal-header-image">
                     <img src="${imageUrl}" alt="${
-    blog.title
-  }" onerror="this.src='../images/img1.png'">
+                      blog.title
+                    }" onerror="this.src='../images/img1.png'">
                 </div>
                 <div class="modal-body">
                     <span class="modal-date">${date}</span>
@@ -189,7 +190,7 @@ function openModal(blog) {
                         <div class="modal-meta-item">
                             <i class="fa-solid fa-clock"></i>
                             <span>${estimateReadTime(
-                              blog.content
+                              blog.content,
                             )} min read</span>
                         </div>
                     </div>
@@ -296,3 +297,4 @@ document.addEventListener("keydown", (e) => {
 
 // Initialize on page load
 init();
+initializeHeader();
