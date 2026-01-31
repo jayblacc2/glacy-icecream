@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Product from "../models/product.model.js";
 import { extractPublicId } from "../utils/extractPublicId.js";
-import { uploadImage, deleteImage } from "../config/cloudinary.js";
+import { uploadImage, deleteImage } from "../utils/cloudinary.util.js";
 
 const createProduct = async (req, res) => {
   try {
@@ -31,13 +31,14 @@ const createProduct = async (req, res) => {
       });
     }
 
-    let imageUrl = null;
+    let imageData = null;
     if (req.file) {
       try {
-        const result = await uploadImage(req.file.buffer);
-        imageUrl = result.secure_url;
-        publicId = result.public_id;
-        uploadedBy = req.user._id;
+        const { public_id, secure_url } = await uploadImage(req.file.buffer);
+        imageData = {
+          publicId: public_id,
+          url: secure_url,
+        };
       } catch (error) {
         console.error("Error uploading image:", error);
         return res.status(500).json({
@@ -51,7 +52,7 @@ const createProduct = async (req, res) => {
       name,
       description,
       price,
-      image: imageUrl,
+      image: imageData,
       category: category.toLowerCase(),
     });
 
@@ -190,7 +191,10 @@ const updateProduct = async (req, res) => {
     if (req.file) {
       try {
         const result = await uploadImage(req.file.buffer);
-        updatedProduct.image = result.secure_url;
+        updatedProduct.image = {
+          url: result.secure_url,
+          publicId: result.public_id,
+        };
         await updatedProduct.save();
       } catch (error) {
         console.error("Error uploading image:", error);
@@ -225,7 +229,7 @@ const deleteProduct = async (req, res) => {
   }
 
   try {
-    const deletedProduct = await Product.findByIdAndDelete(id); // ✅ Fixed
+    const deletedProduct = await Product.findByIdAndDelete(id); //
     if (!deletedProduct) {
       return res
         .status(404)
@@ -235,7 +239,7 @@ const deleteProduct = async (req, res) => {
     // Optional: Delete image from Cloudinary
     if (deletedProduct.image) {
       try {
-        const publicId = extractPublicId(deletedProduct.image); // You'll need this helper
+        const publicId = deletedProduct.image.publicId;
         await deleteImage(publicId);
       } catch (err) {
         console.warn("Failed to delete image from Cloudinary:", err);

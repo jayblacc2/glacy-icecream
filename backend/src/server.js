@@ -16,9 +16,9 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: ["http://localhost:8000", "http://localhost:3000"],
+    origin: ["http://localhost:8000", "http://localhost:4000"],
     credentials: true,
-  })
+  }),
 );
 app.use(cookieParser());
 app.use(express.json());
@@ -30,7 +30,7 @@ const PORT = process.env.PORT || 8100;
 /**
  * Starts the server and listens on the specified port.
  *
- * @return {Promise<void>} - A promise that resolves when the server starts successfully, or rejects with an error if it fails to start.
+ * @return {Promise<void>} - A promise that resolves when the server is started.
  */
 const startServer = async () => {
   try {

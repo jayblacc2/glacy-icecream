@@ -23,26 +23,16 @@ const ProductSchema = new Schema(
     image: {
       url: {
         type: String,
-        required: true,
+        required: false,
         trim: true,
         lowercase: true,
         unique: true,
-        match: [
-          /^https:\/\/res\.cloudinary\.com\/glacy-store\/image\/upload\/(.*)$/,
-          /^https:\/\/res\.cloudinary\.com\/glacy-store\/image\/upload\/(.*)\.(.*)$/,
-        ],
       },
       publicId: {
         type: String,
-        required: true,
+        required: false,
         trim: true,
         lowercase: true,
-        unique: true,
-        match: [/^glacy-store\/(.*)$/, /^glacy-store\/(.*)\.(.*)$/],
-      },
-      uploadedBy: {
-        type: String,
-        ref: "User",
       },
     },
     category: {
