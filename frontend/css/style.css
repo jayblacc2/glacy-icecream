@@ -24,7 +24,11 @@ html {
 }
 
 body {
-  background: var(--bg-color-1);
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1) 0%,
+    var(--dark-primary-color) 100%
+  );
   font-family: "Inter", sans-serif;
   font-weight: 400;
   line-height: 1.6;
@@ -1219,9 +1223,6 @@ input::placeholder {
   transition: all 0.3s ease;
 }
 
-/* Burger menu active state removed - it stays as hamburger icon */
-/* Close functionality is handled by the X button inside the sidebar */
-
 /* Mobile Sidebar */
 .mobile-sidebar {
   position: fixed;
@@ -1286,8 +1287,13 @@ input::placeholder {
   transition: all 0.3s ease;
 }
 
-.sidebar-link:hover {
-  background: var(--bg-color-1);
+.sidebar-link:hover,
+.sidebar-link.active {
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1) 0%,
+    var(--dark-primary-color) 100%
+  );
   color: #fff;
   transform: translateX(5px);
 }
