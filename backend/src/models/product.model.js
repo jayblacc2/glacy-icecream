@@ -5,7 +5,9 @@ const ProductSchema = new Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
+      trim: true,
+      
+
     },
     description: {
       type: String,
@@ -26,7 +28,6 @@ const ProductSchema = new Schema(
         required: false,
         trim: true,
         lowercase: true,
-        unique: true,
       },
       publicId: {
         type: String,

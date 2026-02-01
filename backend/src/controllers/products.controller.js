@@ -1,19 +1,32 @@
 import mongoose from "mongoose";
 import Product from "../models/product.model.js";
-import { extractPublicId } from "../utils/extractPublicId.js";
 import { uploadImage, deleteImage } from "../utils/cloudinary.util.js";
 
 const createProduct = async (req, res) => {
   try {
     const { name, description, price, category } = req.body;
-    if (!name || !description || !price || !category) {
+    const trimmedName = name.trim();
+
+    // Validate price
+    if (isNaN(parseFloat(price)) || parseFloat(price) < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Price must be a valid positive number",
+      });
+    }
+
+    // Validate required fields
+    if (!trimmedName || !description || !price || !category) {
       return res.status(400).json({
         success: false,
         message: "All fields are required: name, description, price, category",
       });
     }
 
-    const existingProduct = await Product.findOne({ name });
+    // Check for existing product (case-insensitive)
+    const existingProduct = await Product.findOne({
+      name: { $regex: `^${trimmedName}$`, $options: "i" },
+    });
     if (existingProduct) {
       return res.status(409).json({
         success: false,
@@ -21,20 +34,23 @@ const createProduct = async (req, res) => {
       });
     }
 
+    // Validate category
     const validCategories = Product.schema.path("category").enumValues;
     if (!validCategories.includes(category.toLowerCase())) {
       return res.status(400).json({
         success: false,
-        message: `Invalid category. Valid categories: ${validCategories.join(
-          ", ",
-        )}`,
+        message: `Invalid category. Valid categories: ${validCategories.join(", ")}`,
       });
     }
 
+    // Handle image upload
     let imageData = null;
+    let uploadedPublicId = null;
+
     if (req.file) {
       try {
         const { public_id, secure_url } = await uploadImage(req.file.buffer);
+        uploadedPublicId = public_id;
         imageData = {
           publicId: public_id,
           url: secure_url,
@@ -48,26 +64,39 @@ const createProduct = async (req, res) => {
       }
     }
 
-    const product = await Product.create({
-      name,
-      description,
-      price,
-      image: imageData,
-      category: category.toLowerCase(),
-    });
+    // Create product
+    try {
+      const product = await Product.create({
+        name: trimmedName,
+        description,
+        price,
+        image: imageData,
+        category: category.toLowerCase(),
+      });
 
-    res.status(201).json({
-      success: true,
-      message: "Product added successfully",
-      product: {
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        category: product.category,
-        image: product.image,
-      },
-    });
+      res.status(201).json({
+        success: true,
+        message: "Product added successfully",
+        product: {
+          id: product.id,
+          name: product.name, // ✅ Fixed
+          description: product.description,
+          price: product.price,
+          category: product.category,
+          image: product.image,
+        },
+      });
+    } catch (error) {
+      // Cleanup uploaded image
+      if (uploadedPublicId) {
+        await deleteImage(uploadedPublicId).catch((err) => console.error(err));
+      }
+      console.error("Error creating product:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
+    }
   } catch (error) {
     console.error("Error creating product:", error);
     return res.status(500).json({
