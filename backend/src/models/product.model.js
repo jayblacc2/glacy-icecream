@@ -6,8 +6,6 @@ const ProductSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      
-
     },
     description: {
       type: String,
@@ -15,12 +13,11 @@ const ProductSchema = new Schema(
       trim: true,
     },
     price: {
-      type: mongoose.Schema.Types.Decimal128,
+      type: Number,
       required: true,
       min: 0,
       max: 1000000,
-      get: (v) => (v ? parseFloat(v.toString()) : v),
-      set: (v) => (v ? mongoose.Types.Decimal128.fromString(v.toString()) : v),
+
     },
     image: {
       url: {

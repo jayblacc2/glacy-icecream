@@ -1,8 +1,8 @@
 let currentUser = null;
 let authChecked = false;
 
-// API Base URL - Adjust this based on your Vite proxy configuration
-const API_BASE_URL = "/api/v1/users";
+// API Base URL 
+  const API_BASE_URL = "/api/v1/users";
 
 // Initialization promise - allows other modules to wait for auth to be ready
 let authInitPromise = null;

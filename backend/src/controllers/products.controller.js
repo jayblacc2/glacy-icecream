@@ -129,7 +129,7 @@ const getProducts = async (req, res) => {
 
     const [total, products] = await Promise.all([
       Product.countDocuments(filter),
-      Product.find(filter).skip(skip).limit(limit).lean(),
+      Product.find(filter).skip(skip).limit(limit),
     ]);
 
     if (products.length === 0) {
@@ -144,15 +144,24 @@ const getProducts = async (req, res) => {
         message,
       });
     }
-
     const totalPages = Math.ceil(total / limit);
 
+    const transformedProducts = products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      category: product.category,
+      image: product.image,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+    }));
     return res.status(200).json({
       success: true,
       message: category
         ? `Products in ${category} category retrieved successfully`
         : "Products retrieved successfully",
-      products,
+      products: transformedProducts,
       pagination: {
         currentPage: page,
         totalPages,

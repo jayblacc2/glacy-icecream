@@ -402,10 +402,11 @@
 
 /* Loading State */
 .loading {
+  grid-column: 1 / -1;
   text-align: center;
   padding: 3rem;
   font-size: 1.5rem;
-  color: #ff6b9d;
+  color: var(--btn-light);
 }
 
 /* Responsive Design */
@@ -477,4 +478,3 @@
     font-size: 0.9rem;
   }
 }
-

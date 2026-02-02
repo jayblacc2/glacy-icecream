@@ -3,13 +3,45 @@ let currentFilter = "all";
 let selectedIceCream = null;
 let quantity = 1;
 
-// Load ice cream data
+const API_BASE_URL = "/api/v1";
+
+// Load product data
 async function loadIcecreams() {
+  //add laoding state here
+  document.getElementById("catalog-grid").innerHTML =
+    '<div class="loading">Loading...</div>';
   try {
-    const response = await fetch("../data/userdb.json");
+    const response = await fetch(`${API_BASE_URL}/products`);
+    if (!response.ok) throw new Error(`API Error: ${response.status}`);
     const data = await response.json();
-    icecreams = data.icecreams;
-    renderCatalog();
+    if (data.success) {
+      icecreams = data.products;
+      renderCatalog();
+    }
+  } catch (error) {
+    console.error("Error loading ice creams:", error);
+    document.getElementById("catalog-grid").innerHTML =
+      '<div class="">Error loading ice creams. Please try again later.</div>';
+  } finally {
+    console.log("Some went wrong");
+  }
+}
+
+async function filterProducts(category) {
+  try {
+    document.getElementById("catalog-grid").innerHTML =
+      '<div class="loading">Loading...</div>';
+    const categoryParam = category == "all" ? "" : `?category=${category}`;
+    const response = await fetch(`${API_BASE_URL}/products${categoryParam}`);
+    if (!response.ok) throw new Error(`API Error: ${response.status}`);
+    const data = await response.json();
+    if (data.success) {
+      icecreams = data.products;
+      renderCatalog();
+    } else {
+      document.getElementById("catalog-grid").innerHTML =
+        '<div class="loading">Error loading ice creams.</div>';
+    }
   } catch (error) {
     console.error("Error loading ice creams:", error);
     document.getElementById("catalog-grid").innerHTML =
@@ -27,21 +59,9 @@ function renderCatalog() {
     return;
   }
 
-  // Filter ice creams
-  const filteredIcecreams =
-    currentFilter === "all"
-      ? icecreams
-      : icecreams.filter((ice) => ice.category === currentFilter);
-
-  if (filteredIcecreams.length === 0) {
-    catalogGrid.innerHTML =
-      '<div class="loading">No ice creams found in this category.</div>';
-    return;
-  }
-
   catalogGrid.innerHTML = "";
 
-  filteredIcecreams.forEach((icecream) => {
+  icecreams.forEach((icecream) => {
     const card = document.createElement("div");
     card.className = "ice-cream-card";
     card.dataset.id = icecream.id;
@@ -49,13 +69,13 @@ function renderCatalog() {
     card.innerHTML = `
             <span class="category-badge">${icecream.category}</span>
             <div class="card-img">
-              <img src="../${icecream.image}" alt="${icecream.name} ice cream" loading="lazy">
+              <img src="${icecream.image.url}" alt="${icecream.name} ice cream" loading="lazy">
             </div>
             <div class="card-contents">
               <h3>${icecream.name}</h3>
               <p>${icecream.description}</p>
               <div class="content-item">
-                <span class="card-price">₽${icecream.price}/кг</span>
+                <span class="card-price">$${icecream.price}/кг</span>
               </div>
             </div>
           `;
@@ -73,7 +93,7 @@ function openModal(icecream) {
   const modalBody = document.getElementById("modal-body");
   modalBody.innerHTML = `
           <div class="modal-image">
-            <img src="../${icecream.image}" alt="${icecream.name} ice cream">
+            <img src="${icecream.image.url}" alt="${icecream.name} ice cream" loading="lazy">
           </div>
           <div class="modal-details">
             <span class="category-badge">${icecream.category}</span>
@@ -81,7 +101,7 @@ function openModal(icecream) {
             <p class="description">${icecream.description}</p>
 
             <div class="price-section">
-              <span class="price">₽${icecream.price}</span>
+              <span class="price">$${icecream.price}</span>
               <span class="price-label">per kg</span>
             </div>
 
@@ -96,7 +116,7 @@ function openModal(icecream) {
 
             <button class="add-to-cart-btn" id="add-to-cart">
               <i class="fa-solid fa-cart-shopping"></i>
-              Add to Cart - ₽${icecream.price * quantity}
+              Add to Cart - $${icecream.price * quantity}
             </button>
 
             <div class="product-info">
@@ -228,23 +248,18 @@ function showToast(message, type = "success") {
   }, 3000);
 }
 
-// Filter functionality
-function setupFilters() {
+// Filter Product category
+function setupFilter() {
   const filterButtons = document.querySelectorAll(".filter-btn");
 
   filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      // Remove active class from all buttons
+    button.addEventListener("click", async () => {
       filterButtons.forEach((btn) => btn.classList.remove("active"));
-
-      // Add active class to clicked button
       button.classList.add("active");
-
       // Update current filter
-      currentFilter = button.dataset.category;
-
-      // Re-render catalog
-      renderCatalog();
+      const category = button.dataset.category;
+      currentFilter = category;
+      await filterProducts(category);
     });
   });
 }
@@ -295,5 +310,7 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Initialize
-loadIcecreams();
-setupFilters();
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadIcecreams();
+  setupFilter();
+});
