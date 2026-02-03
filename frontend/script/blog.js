@@ -1,3 +1,5 @@
+import { loading } from "../utils/loading.js";
+import { errorMessage, emptyMessage } from "../utils/error-message.js";
 
 const API_URL = "https://api.slingacademy.com/v1/sample-data/blog-posts";
 const LIMIT = 20;
@@ -13,12 +15,7 @@ async function init() {
 // Load blogs from Sling Academy API
 async function loadBlogs() {
   const blogGrid = document.getElementById("blog-grid");
-  blogGrid.innerHTML = `
-                <div class="loading">
-                    <i class="fa-solid fa-spinner"></i>
-                    Loading delicious blog posts...
-                </div>
-            `;
+  blogGrid.innerHTML = loading("Loading delicious blog posts");
 
   try {
     const url = `${API_URL}?limit=${LIMIT}`;
@@ -233,46 +230,23 @@ function estimateReadTime(content) {
 // Show error message
 function showError(error) {
   const blogGrid = document.getElementById("blog-grid");
-  blogGrid.innerHTML = `
-                <div class="error-message">
-                    <i class="fa-solid fa-exclamation-triangle"></i>
-                    <h2>Oops! Something went wrong</h2>
-                    <p>
-                        We couldn't load the blog posts. This might be due to network issues
-                        or the API being temporarily unavailable.
-                    </p>
-                    <p style="margin-top: 1rem;">
-                        <strong>Error:</strong> ${error.message}
-                    </p>
-                    <button
-                        onclick="loadBlogs()"
-                        style="margin-top: 1.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 1rem;"
-                    >
-                        Try Again
-                    </button>
-                </div>
-            `;
+  const errorDetails = `<p style="margin-top: 1rem;"><strong>Error:</strong> ${error.message}</p>`;
+  const retryButton = `<button class="retry-btn" onclick="loadBlogs()">Try Again</button>`;
+  blogGrid.innerHTML = errorMessage(
+    "Oops! Something went wrong",
+    `We couldn't load the blog posts. This might be due to network issues or the API being temporarily unavailable.${errorDetails}${retryButton}`,
+  );
 }
 
 // Show no blogs message
 function showNoBlogs() {
   const blogGrid = document.getElementById("blog-grid");
-  blogGrid.innerHTML = `
-                <div class="error-message">
-                    <i class="fa-solid fa-inbox"></i>
-                    <h2>No Blog Posts Found</h2>
-                    <p>
-                        There are no blog posts available at the moment.
-                        Please check back later for fresh content!
-                    </p>
-                    <button
-                        onclick="loadBlogs()"
-                        style="margin-top: 1.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 1rem;"
-                    >
-                        Reload
-                    </button>
-                </div>
-            `;
+  const reloadButton = `<button onclick="loadBlogs()" style="margin-top: 1.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 1rem;">Reload</button>`;
+  blogGrid.innerHTML = errorMessage(
+    "No Blog Posts Found",
+    `There are no blog posts available at the moment. Please check back later for fresh content!${reloadButton}`,
+    "fa-inbox",
+  );
 }
 
 // Event listeners

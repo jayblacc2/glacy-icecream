@@ -351,62 +351,6 @@
   }
 }
 
-/* Loading State */
-.loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  grid-column: 1 / -1;
-  padding: 5rem 2rem;
-  font-size: 1.5rem;
-  color: var(--btn-light);
-  text-align: center;
-  min-height: 300px;
-}
-
-.loading i {
-  font-size: 3rem;
-  animation: spin 1s linear infinite;
-
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.error-message {
-  text-align: center;
-  padding: 3rem 2rem;
-  max-width: 400px;
-  margin: 0 auto;
-  grid-column: 1 / -1;
-}
-
-.error-message i {
-  font-size: 4rem;
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-}
-
-.error-message h2 {
-  font-size: 2rem;
-  color: var(--text-dark);
-  margin-bottom: 1rem;
-}
-
-.error-message p {
-  font-size: 1.1rem;
-  color: var(--text-light);
-  line-height: 1.8;
-}
-
 /* API Key Input */
 .api-setup {
   max-width: 600px;

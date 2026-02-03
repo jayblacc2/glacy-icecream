@@ -1,3 +1,7 @@
+import { loading } from "../utils/loading.js";
+import { errorMessage, emptyMessage } from "../utils/error-message.js";
+import { showToast } from "../utils/toast-notification.js";
+
 let icecreams = [];
 let currentFilter = "all";
 let selectedIceCream = null;
@@ -7,9 +11,9 @@ const API_BASE_URL = "/api/v1";
 
 // Load product data
 async function loadIcecreams() {
-  //add laoding state here
-  document.getElementById("catalog-grid").innerHTML =
-    '<div class="loading">Loading...</div>';
+  document.getElementById("catalog-grid").innerHTML = loading(
+    "Loading ice cream treats",
+  );
   try {
     const response = await fetch(`${API_BASE_URL}/products`);
     if (!response.ok) throw new Error(`API Error: ${response.status}`);
@@ -20,8 +24,10 @@ async function loadIcecreams() {
     }
   } catch (error) {
     console.error("Error loading ice creams:", error);
-    document.getElementById("catalog-grid").innerHTML =
-      '<div class="">Error loading ice creams. Please try again later.</div>';
+    document.getElementById("catalog-grid").innerHTML = errorMessage(
+      "Oops! Something went wrong",
+      "Error loading ice creams. Please try again later.",
+    );
   } finally {
     console.log("Some went wrong");
   }
@@ -29,8 +35,9 @@ async function loadIcecreams() {
 
 async function filterProducts(category) {
   try {
-    document.getElementById("catalog-grid").innerHTML =
-      '<div class="loading">Loading...</div>';
+    document.getElementById("catalog-grid").innerHTML = loading(
+      "Loading filtered treat",
+    );
     const categoryParam = category == "all" ? "" : `?category=${category}`;
     const response = await fetch(`${API_BASE_URL}/products${categoryParam}`);
     if (!response.ok) throw new Error(`API Error: ${response.status}`);
@@ -39,13 +46,17 @@ async function filterProducts(category) {
       icecreams = data.products;
       renderCatalog();
     } else {
-      document.getElementById("catalog-grid").innerHTML =
-        '<div class="loading">Error loading ice creams.</div>';
+      document.getElementById("catalog-grid").innerHTML = errorMessage(
+        "Error",
+        "Error loading ice creams.",
+      );
     }
   } catch (error) {
     console.error("Error loading ice creams:", error);
-    document.getElementById("catalog-grid").innerHTML =
-      '<div class="loading">Error loading ice creams. Please try again later.</div>';
+    document.getElementById("catalog-grid").innerHTML = errorMessage(
+      "Oops! Something went wrong",
+      "Error loading ice creams. Please try again later.",
+    );
   }
 }
 
@@ -54,8 +65,7 @@ function renderCatalog() {
   const catalogGrid = document.getElementById("catalog-grid");
 
   if (!icecreams || icecreams.length === 0) {
-    catalogGrid.innerHTML =
-      '<div class="loading">No ice creams available.</div>';
+    catalogGrid.innerHTML = emptyMessage("No ice creams available.");
     return;
   }
 
@@ -218,36 +228,6 @@ function addToCart() {
   closeModal();
 }
 
-// Toast notification
-function showToast(message, type = "success") {
-  const toast = document.createElement("div");
-  toast.style.cssText = `
-          position: fixed;
-          top: 2rem;
-          right: 2rem;
-          background: ${
-            type === "success"
-              ? "linear-gradient(135deg, #4caf50, #66bb6a)"
-              : "linear-gradient(135deg, #ff6b9d, #ff8fab)"
-          };
-          color: white;
-          padding: 1rem 2rem;
-          border-radius: 10px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-          z-index: 10000;
-          animation: slideIn 0.3s ease;
-          font-weight: 600;
-        `;
-  toast.textContent = message;
-
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.animation = "slideOut 0.3s ease";
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
-
 // Filter Product category
 function setupFilter() {
   const filterButtons = document.querySelectorAll(".filter-btn");
@@ -282,32 +262,6 @@ document.addEventListener("keydown", (e) => {
     closeModal();
   }
 });
-
-// Add CSS animations
-const style = document.createElement("style");
-style.textContent = `
-        @keyframes slideIn {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-        @keyframes slideOut {
-          from {
-            transform: translateX(0);
-            opacity: 1;
-          }
-          to {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-        }
-      `;
-document.head.appendChild(style);
 
 // Initialize
 document.addEventListener("DOMContentLoaded", async () => {

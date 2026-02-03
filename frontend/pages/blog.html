@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/blog.css" />
     <title>Glacy-Store | Ice Cream Blog</title>
-    <script src="../script/form-toggle.js" defer></script>
+    <script type="module" src="../script/form-toggle.js"></script>
   </head>
 
   <body>
@@ -175,14 +175,8 @@
           everything delicious!
         </p>
       </div>
-
       <div class="blog-container">
-        <div class="blog-grid" id="blog-grid">
-          <div class="loading">
-            <i class="fa-solid fa-spinner"></i>
-            Loading delicious blog posts...
-          </div>
-        </div>
+        <div class="blog-grid" id="blog-grid"></div>
       </div>
     </div>
 

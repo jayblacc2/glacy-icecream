@@ -1,4 +1,4 @@
-import { createAuthForms } from "../utils/auth-form.js";
+import { showToast } from "../utils/toast-notification.js";
 import {
   getAuthInitPromise,
   getCurrentUser,
@@ -13,43 +13,58 @@ import {
 let cartItems = [];
 let icecreams = [];
 
-// ========================
-// LOAD DATA
-// ========================
-async function loadIcecreams() {
-  try {
-    const response = await fetch("data/userdb.json");
-    const data = await response.json();
-    icecreams = data.icecreams || [];
-  } catch (error) {
-    console.error("Error loading icecreams:", error);
-    icecreams = [];
-  }
-}
+const API_BASE_URL = "/api/v1";
 
 // ========================
 // CATALOG RENDERING
 // ========================
-function renderCatalog() {
+async function fetchCatalog(limit = 6) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products`);
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.success) {
+      icecreams = data.products;
+      return icecreams.slice(0, limit);
+    }
+  } catch (error) {
+    console.error("Error loading ice creams:", error);
+    return [];
+  }
+}
+
+function renderCatalog(products = icecreams) {
   const catalogContainer = document.getElementById("catalog-cards");
   if (!catalogContainer) return;
 
   catalogContainer.innerHTML = "";
 
-  icecreams.forEach((icecream) => {
+  if (!products || products.length === 0) {
+    catalogContainer.innerHTML =
+      '<p class="empty-catalog">No ice creams available</p>';
+    return;
+  }
+
+  products.forEach((icecream) => {
     const cardElement = document.createElement("div");
     cardElement.className = "card py-1 text-center";
+    cardElement.dataset.id = icecream.id;
+
+    const imageUrl = icecream.image?.url || icecream.image || "";
+    const price = icecream.price || 0;
 
     cardElement.innerHTML = `
       <div class="card-img">
-        <img src="${icecream.image}" alt="${icecream.name} ice cream" loading="lazy">
+        <img src="${imageUrl}" alt="${icecream.name} ice cream" loading="lazy">
       </div>
       <div class="card-contents">
         <h3 class="text-lg">${icecream.name}</h3>
         <p>${icecream.description}</p>
         <div class="content-item">
-          <span class="card-price">${icecream.price}₽/кг</span>
-          <span class="card-cart">
+          <span class="card-price">${price}₽/кг</span>
+          <span class="card-cart" data-id="${icecream.id}" data-name="${icecream.name}" data-price="${price}" data-image="${imageUrl}">
             <i class="fa-solid fa-cart-shopping"></i>
           </span>
         </div>
@@ -69,15 +84,16 @@ function attachCartListeners() {
   const cardCartButtons = document.querySelectorAll(".card-cart");
   cardCartButtons.forEach((button) => {
     button.addEventListener("click", (e) => {
-      const selectedCard = e.target.closest(".card");
-      const itemName = selectedCard.querySelector("h3")?.textContent || "";
-      const itemPrice =
-        selectedCard.querySelector(".card-price")?.textContent || "";
-      const itemImage = selectedCard.querySelector(".card-img img")?.src || "";
+      // Get data from the button's dataset for better reliability
+      const itemName = button.dataset.name || "";
+      const itemPrice = button.dataset.price || "";
+      const itemImage = button.dataset.image || "";
+      const itemId = button.dataset.id || "";
 
       const cartItem = {
+        id: itemId,
         name: itemName,
-        price: itemPrice,
+        price: `${itemPrice}₽/кг`,
         image: itemImage,
         quantity: 1,
       };
@@ -246,31 +262,6 @@ function handleCheckout() {
 }
 
 // ========================
-// TOAST NOTIFICATIONS
-// ========================
-function showToast(message) {
-  // Remove existing toast if any
-  const existingToast = document.querySelector(".toast-notification");
-  if (existingToast) {
-    existingToast.remove();
-  }
-
-  const toast = document.createElement("div");
-  toast.className = "toast-notification";
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  // Trigger animation
-  setTimeout(() => toast.classList.add("show"), 10);
-
-  // Remove after 3 seconds
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
-
-// ========================
 // MOBILE MENU
 // ========================
 function setupMobileMenu() {
@@ -325,17 +316,22 @@ function setupMobileMenu() {
 // ========================
 // SEARCH FUNCTIONALITY
 // ========================
-function setupSearchFunctionality() {
+async function setupSearchFunctionality() {
   const searchForm = document.querySelector(".search-form");
   const searchInput = document.getElementById("search");
 
   if (!searchForm || !searchInput) return;
 
-  searchForm.addEventListener("submit", (e) => {
+  searchForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const searchTerm = searchInput.value.trim().toLowerCase();
 
     if (!searchTerm) return;
+
+    // Fetch all products for search if not already loaded
+    if (icecreams.length === 0) {
+      await fetchCatalog();
+    }
 
     const results = icecreams.filter(
       (icecream) =>
@@ -381,69 +377,16 @@ function highlightSearchResults(searchTerm) {
 // ========================
 // AUTH FUNCTIONS
 // ========================
-function updateAuthUI() {
-  const loginLabel = document.querySelector(".login-label");
+// Note: updateAuthUI is now handled by form-toggle.js
+// We use the global window.updateAuthUI function set by form-toggle.js
 
-  if (isLoggedIn()) {
-    const user = getCurrentUser();
-    // Display first name in uppercase
-    const displayName = (
-      user.name?.split(" ")[0] || user.email.split("@")[0]
-    ).toUpperCase();
-    loginLabel.textContent = displayName;
+// Export cart-related functions for form-toggle.js to use
+window.cartItems = cartItems;
+window.updateCart = updateCart;
+window.showToast = showToast;
 
-    const loginContainer = document.getElementById("login-container");
-    loginContainer.innerHTML = `
-      <div class="user-profile">
-        <h3>Welcome, ${displayName}!</h3>
-        <p style="font-size: 1.3rem; color: #666; margin: 10px 0;">You are logged in</p>
-        <button class="logout-btn" style="
-          background-color: var(--bg-color-1);
-          color: #fff;
-          border: none;
-          border-radius: 4px;
-          padding: 10px 20px;
-          font-size: 1.4rem;
-          cursor: pointer;
-          width: 100%;
-        ">Logout</button>
-      </div>
-    `;
-
-    const logoutBtn = loginContainer.querySelector(".logout-btn");
-    logoutBtn.addEventListener("click", handleLogout);
-  } else {
-    loginLabel.textContent = "User";
-    restoreLoginForms();
-  }
-}
-
-async function handleLogout() {
-  await logout();
-  cartItems = [];
-  updateCart();
-  updateAuthUI();
-
-  const loginContainer = document.getElementById("login-container");
-  loginContainer.classList.add("visually-hidden");
-
-  showToast("Logged out successfully");
-}
-
-function restoreLoginForms() {
-  const loginContainer = document.getElementById("login-container");
-  loginContainer.innerHTML = "";
-  loginContainer.appendChild(createAuthForms());
-
-  // Reset form cache in form-toggle.js
-  if (window.resetFormCache) {
-    window.resetFormCache();
-  }
-
-  requestAnimationFrame(() => {
-    attachFormListeners();
-  });
-}
+// Export attachFormListeners for form-toggle.js to use
+window.attachFormListeners = attachFormListeners;
 
 function attachFormListeners() {
   const loginForm = document.querySelector(".login-form");
@@ -511,7 +454,11 @@ function handleLogin(e) {
 
         saveCart();
         updateCart();
-        updateAuthUI();
+
+        // Use the updateAuthUI from form-toggle.js
+        if (typeof window.updateAuthUI === "function") {
+          window.updateAuthUI();
+        }
 
         const loginContainer = document.getElementById("login-container");
         loginContainer.classList.add("visually-hidden");
@@ -680,9 +627,9 @@ function setupStickyNav() {
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("🍦 Glacy Store Initializing...");
 
-  // Load data
-  await loadIcecreams();
-  renderCatalog();
+  // Load data from API
+  const featuredProducts = await fetchCatalog(6);
+  renderCatalog(featuredProducts);
 
   // Initialize hero slider
   slides = document.querySelector(".slides");
@@ -722,8 +669,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupStickyNav();
 
   // Initialize auth - wait for auth to be initialized first
+  // Note: form-toggle.js handles updateAuthUI, but we need to wait for it
   await getAuthInitPromise();
-  updateAuthUI(); // This will call restoreLoginForms() if not logged in
+
+  // Use the updateAuthUI from form-toggle.js if available
+  if (typeof window.updateAuthUI === "function") {
+    await window.updateAuthUI();
+  }
+
   loadCart();
 
   // Handle window resize

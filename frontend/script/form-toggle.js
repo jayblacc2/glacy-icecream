@@ -1,6 +1,13 @@
-// Form and Cart Toggle Functionality
+// Form and Cart Toggle Functionality with Authentication Support
+import {
+  getAuthInitPromise,
+  getCurrentUser,
+  isLoggedIn,
+  logout,
+} from "./auth.js";
+import { createAuthForms } from "../utils/auth-form.js";
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   // Elements
   const loginIcon = document.querySelector(".login-icon");
   const loginLabel = document.querySelector(".login-label");
@@ -17,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let loginForm = null;
   let signupForm = null;
 
-  // Helper function to get forms
+
   function getForms() {
     if (!loginForm) {
       loginForm = loginContainer?.querySelector(".login-form");
@@ -27,8 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Helper function to reset cached form references (call after forms are regenerated)
-  window.resetFormCache = function() {
+  window.resetFormCache = function () {
     loginForm = null;
     signupForm = null;
   };
@@ -37,13 +43,13 @@ document.addEventListener("DOMContentLoaded", function () {
   function toggleLogin(event) {
     event.stopPropagation();
 
-    // Hide other containers
+
     cartContainer.classList.add("visually-hidden");
     searchBox.classList.add("visually-hidden");
 
-    // Toggle login container
+
     loginContainer.classList.toggle("visually-hidden");
-    // Ensure sign-in form shows by default
+
     getForms();
     if (loginForm && signupForm) {
       loginForm.classList.remove("visually-hidden");
@@ -108,14 +114,13 @@ document.addEventListener("DOMContentLoaded", function () {
   loginLabel.addEventListener("click", toggleLogin);
   cartIcon.addEventListener("click", toggleCart);
   cartLabel.addEventListener("click", toggleCart);
-  // Note: Form switching buttons (show-signup, show-login) are handled by script.js
+
   searchIcon.addEventListener("click", toggleSearch);
-  // Allow clicking the whole search pill
+
   if (searchToggle) {
     searchToggle.addEventListener("click", toggleSearch);
   }
 
-  // Prevent search box from closing when clicking inside it
   if (searchBox) {
     searchBox.addEventListener("click", function (event) {
       event.stopPropagation();
@@ -123,4 +128,95 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   document.addEventListener("click", closeAllDropdowns);
+
+  // ========================
+  // AUTH UI FUNCTIONS
+  // ========================
+
+  // Update authentication UI based on login state
+  async function updateAuthUI() {
+    if (!loginLabel || !loginContainer) return;
+
+    if (isLoggedIn()) {
+      const user = getCurrentUser();
+      // Display first name in uppercase
+      const displayName = (
+        user.name?.split(" ")[0] || user.email.split("@")[0]
+      ).toUpperCase();
+      loginLabel.textContent = displayName;
+
+      loginContainer.innerHTML = `
+        <div class="user-profile">
+          <h3>Welcome, ${displayName}!</h3>
+          <p style="">You are logged in</p>
+          <button class="logout-btn">Logout</button>
+        </div>
+      `;
+
+      const logoutBtn = loginContainer.querySelector(".logout-btn");
+      logoutBtn.addEventListener("click", handleLogout);
+    } else {
+      loginLabel.textContent = "User";
+      restoreLoginForms();
+    }
+  }
+
+  // Handle user logout
+  async function handleLogout() {
+    try {
+      await logout();
+
+      // Clear cart if updateCart function exists (from script.js)
+      if (typeof window.updateCart === "function") {
+        if (typeof window.cartItems !== "undefined") {
+          window.cartItems = [];
+        }
+        window.updateCart();
+      }
+
+      // Update UI
+      updateAuthUI();
+
+      // Hide login container
+      loginContainer.classList.add("visually-hidden");
+
+      // Show toast if available
+      if (typeof window.showToast === "function") {
+        window.showToast("Logged out successfully");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  }
+
+  // Restore login forms when user is not logged in
+  function restoreLoginForms() {
+    if (!loginContainer) return;
+
+    loginContainer.innerHTML = "";
+    loginContainer.appendChild(createAuthForms());
+
+    // Reset form cache
+    window.resetFormCache();
+
+    // Attach form listeners if script.js has the function
+    requestAnimationFrame(() => {
+      if (typeof window.attachFormListeners === "function") {
+        window.attachFormListeners();
+      }
+    });
+  }
+
+  // Export updateAuthUI for use by script.js
+  window.updateAuthUI = updateAuthUI;
+
+  // ========================
+  // INITIALIZE AUTH UI
+  // ========================
+  try {
+    await getAuthInitPromise();
+    await updateAuthUI();
+  } catch (error) {
+    console.error("Error initializing auth UI:", error);
+  }
 });
