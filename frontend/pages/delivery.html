@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Delivery & Payment - Fast, reliable ice cream delivery with temperature guarantee"
+    />
+    <link
+      rel="shortcut icon"
+      href="../images/icons/favicon.png"
+      type="image/x-icon"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Slab:wght@400;500;700&family=Yanone+Kaffeesatz:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/delivery.css" />
+    <title>Glacy-Store | Delivery & Payment</title>
+    <script type="module" src="../script/form-toggle.js"></script>
+  </head>
+
+  <body>
+    <header id="header" class="container-center">
+      <nav class="nav">
+        <div class="nav-item">
+          <div id="logo">
+            <a href="../index.html">
+              <img src="../images/icons/logo.svg" alt="site logo" />
+            </a>
+          </div>
+          <ul class="nav-list">
+            <li><a href="../index.html" class="nav-link">Home</a></li>
+            <li><a href="catalogs.html" class="nav-link">Catalog</a></li>
+            <li><a href="blog.html" class="nav-link">Blog</a></li>
+            <li><a href="about.html" class="nav-link">About us</a></li>
+            <li>
+              <a href="delivery.html" class="nav-link active"
+                >Delivery & Payment</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="nav-info">
+          <div class="nav-form">
+            <p>+1 317 234-67-33</p>
+            <div class="form-group search" id="search-toggle">
+              <img src="../images/icons/search.svg" alt="search" />
+              <div class="search-box visually-hidden" id="search-box">
+                <form class="search-form">
+                  <input
+                    type="search"
+                    id="search"
+                    name="q"
+                    placeholder="Search products"
+                    aria-label="Search"
+                    required
+                  />
+                  <button type="submit" class="btn-search">
+                    <span class="search-text visually-hidden">Search</span>
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+            <div class="form-group form-login">
+              <i class="fa-solid fa-user login-icon"></i>
+              <span for="login" class="login-label">User</span>
+              <div
+                class="login-container visually-hidden"
+                id="login-container"
+              ></div>
+            </div>
+
+            <div class="form-group form-cart">
+              <i class="fa-solid fa-cart-shopping cart-icon"></i>
+              <label for="cart" class="cart-label">Empty</label>
+              <div class="cart-container visually-hidden" id="cart-container">
+                <h3>Your Cart</h3>
+                <div class="cart-items">
+                  <!-- Cart items will be dynamically added here -->
+                  <p class="empty-cart-message">Your cart is empty</p>
+                </div>
+                <div class="cart-total">
+                  <p>Total: <span class="total-amount">$0.00</span></p>
+                  <button class="checkout-btn">Checkout</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Burger Menu Button -->
+        <button class="burger-menu" id="burger-menu" aria-label="Toggle menu">
+          <span class="burger-line"></span>
+          <span class="burger-line"></span>
+          <span class="burger-line"></span>
+        </button>
+      </nav>
+
+      <!-- Mobile Sidebar Menu -->
+      <div class="mobile-sidebar" id="mobile-sidebar">
+        <div class="sidebar-content">
+          <button
+            class="sidebar-close"
+            id="sidebar-close"
+            aria-label="Close menu"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+
+          <ul class="sidebar-nav">
+            <li><a href="../index.html" class="sidebar-link">Home</a></li>
+            <li>
+              <a href="catalogs.html" class="sidebar-link">Catalog</a>
+            </li>
+            <li><a href="blog.html" class="sidebar-link">Blog</a></li>
+
+            <li>
+              <a href="about.html" class="sidebar-link">About us</a>
+            </li>
+            <li>
+              <a href="delivery.html" class="sidebar-link active"
+                >Delivery & Payment</a
+              >
+            </li>
+          </ul>
+
+          <div class="sidebar-actions">
+            <div class="sidebar-phone">
+              <i class="fa-solid fa-phone"></i>
+              <p>+1 317 234-67-33</p>
+            </div>
+
+            <button class="sidebar-btn" id="sidebar-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>Search</span>
+            </button>
+
+            <button class="sidebar-btn" id="sidebar-login">
+              <i class="fa-solid fa-user"></i>
+              <span>Login</span>
+            </button>
+
+            <button class="sidebar-btn" id="sidebar-cart">
+              <i class="fa-solid fa-cart-shopping"></i>
+              <span>Cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Overlay -->
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    </header>
+
+    <main class="delivery-page">
+      <!-- Hero Section -->
+      <section class="delivery-hero">
+        <div class="delivery-hero-content">
+          <h1 class="delivery-title">Delivery & Payment</h1>
+          <p class="delivery-lead">
+            Fast, reliable ice cream delivery with our temperature-controlled
+            packaging. Your frozen treats arrive perfectly frozen, every time.
+          </p>
+        </div>
+        <div class="floating-icecream">
+          <img
+            src="../images/icecream/icecream-1.png"
+            alt="Strawberry Ice Cream"
+            class="float-img img-1"
+          />
+          <img
+            src="../images/icecream/icecream-2.png"
+            alt="Pistachio Ice Cream"
+            class="float-img img-2"
+          />
+          <img
+            src="../images/icecream/icecream-3.png"
+            alt="Blueberry Ice Cream"
+            class="float-img img-3"
+          />
+        </div>
+      </section>
+
+      <!-- Delivery Methods Section -->
+      <section class="delivery-methods container-center">
+        <div class="section-header">
+          <span class="section-tag">How It Works</span>
+          <h2 class="section-title">Delivery Methods</h2>
+          <p class="section-subtitle">
+            Choose the delivery option that works best for you
+          </p>
+        </div>
+        <div class="methods-grid">
+          <div class="method-card">
+            <div class="method-icon">
+              <i class="fa-solid fa-truck-fast"></i>
+            </div>
+            <h3>Local Delivery</h3>
+            <p>
+              Same-day delivery within our local area. Perfect when you're
+              craving ice cream now!
+            </p>
+            <ul class="method-features">
+              <li><i class="fa-solid fa-check"></i> Same-day delivery</li>
+              <li><i class="fa-solid fa-check"></i> Within 5 miles</li>
+              <li><i class="fa-solid fa-check"></i> Free on orders $30+</li>
+            </ul>
+            <span class="method-price">From $4.99</span>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">
+              <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3>Nationwide Shipping</h3>
+            <p>
+              Can't visit us? We'll ship our ice cream anywhere in the country
+              with insulated packaging.
+            </p>
+            <ul class="method-features">
+              <li><i class="fa-solid fa-check"></i> All 50 states</li>
+              <li><i class="fa-solid fa-check"></i> Insulated packaging</li>
+              <li><i class="fa-solid fa-check"></i> Tracking included</li>
+            </ul>
+            <span class="method-price">From $14.99</span>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">
+              <i class="fa-solid fa-shop"></i>
+            </div>
+            <h3>Store Pickup</h3>
+            <p>
+              Order online and pick up at our store. Freshly packed and ready
+              for you!
+            </p>
+            <ul class="method-features">
+              <li><i class="fa-solid fa-check"></i> Ready in 2 hours</li>
+              <li><i class="fa-solid fa-check"></i> No delivery fee</li>
+              <li><i class="fa-solid fa-check"></i> Flexible timing</li>
+            </ul>
+            <span class="method-price">Free</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Delivery Coverage Section -->
+      <section class="delivery-coverage">
+        <div class="container-center">
+          <div class="section-header">
+            <span class="section-tag">Service Areas</span>
+            <h2 class="section-title">Delivery Coverage</h2>
+          </div>
+          <div class="coverage-grid">
+            <div class="coverage-map">
+              <div class="map-placeholder">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <p>Delivery Zone Map</p>
+              </div>
+            </div>
+            <div class="coverage-info">
+              <div class="coverage-item">
+                <div class="coverage-zone">
+                  <span class="zone-badge zone-1">Zone 1</span>
+                  <div class="zone-details">
+                    <h4>Downtown & Surrounding</h4>
+                    <p>Within 2 miles</p>
+                  </div>
+                </div>
+                <span class="delivery-time">30-45 min</span>
+                <span class="delivery-fee">Free $30+</span>
+              </div>
+              <div class="coverage-item">
+                <div class="coverage-zone">
+                  <span class="zone-badge zone-2">Zone 2</span>
+                  <div class="zone-details">
+                    <h4>Extended Area</h4>
+                    <p>2-5 miles</p>
+                  </div>
+                </div>
+                <span class="delivery-time">45-60 min</span>
+                <span class="delivery-fee">$4.99</span>
+              </div>
+              <div class="coverage-item">
+                <div class="coverage-zone">
+                  <span class="zone-badge zone-3">Zone 3</span>
+                  <div class="zone-details">
+                    <h4>Greater Metropolitan</h4>
+                    <p>5-10 miles</p>
+                  </div>
+                </div>
+                <span class="delivery-time">60-90 min</span>
+                <span class="delivery-fee">$7.99</span>
+              </div>
+              <div class="coverage-item">
+                <div class="coverage-zone">
+                  <span class="zone-badge zone-4">Zone 4</span>
+                  <div class="zone-details">
+                    <h4>Extended Metro</h4>
+                    <p>10-15 miles</p>
+                  </div>
+                </div>
+                <span class="delivery-time">90-120 min</span>
+                <span class="delivery-fee">$9.99</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Temperature Guarantee Section -->
+      <section class="temp-guarantee container-center">
+        <div class="guarantee-content">
+          <div class="guarantee-icon">
+            <i class="fa-solid fa-snowflake"></i>
+          </div>
+          <div class="guarantee-text">
+            <h2>Temperature Guarantee</h2>
+            <p>
+              Our specialized thermo-packaging keeps your ice cream at the
+              perfect temperature (-10°F to -5°F) from our shop to your door. We
+              use:
+            </p>
+            <ul class="guarantee-features">
+              <li>
+                <i class="fa-solid fa-check-circle"></i> Premium insulated boxes
+              </li>
+              <li><i class="fa-solid fa-check-circle"></i> Dry ice pellets</li>
+              <li><i class="fa-solid fa-check-circle"></i> Thermal liners</li>
+              <li>
+                <i class="fa-solid fa-check-circle"></i> Temperature monitoring
+              </li>
+            </ul>
+            <p class="guarantee-note">
+              <strong>100% Satisfaction Guarantee:</strong> If your ice cream
+              arrives melted or damaged, we'll replace it free of charge.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Payment Options Section -->
+      <section class="payment-options container-center">
+        <div class="section-header">
+          <span class="section-tag">Secure Payments</span>
+          <h2 class="section-title">Payment Methods</h2>
+          <p class="section-subtitle">
+            We offer multiple secure payment options for your convenience
+          </p>
+        </div>
+        <div class="payment-grid">
+          <div class="payment-card">
+            <div class="payment-icon">
+              <i class="fa-regular fa-credit-card"></i>
+            </div>
+            <h3>Credit & Debit Cards</h3>
+            <p>
+              We accept all major credit and debit cards including Visa,
+              Mastercard, American Express, and Discover.
+            </p>
+            <div class="payment-icons">
+              <i class="fa-brands fa-cc-visa"></i>
+              <i class="fa-brands fa-cc-mastercard"></i>
+              <i class="fa-brands fa-cc-amex"></i>
+              <i class="fa-brands fa-cc-discover"></i>
+            </div>
+          </div>
+          <div class="payment-card">
+            <div class="payment-icon">
+              <i class="fa-brands fa-paypal"></i>
+            </div>
+            <h3>PayPal</h3>
+            <p>
+              Pay securely with your PayPal account. Fast, easy, and protected
+              buyer guarantee.
+            </p>
+          </div>
+          <div class="payment-card">
+            <div class="payment-icon">
+              <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+            <h3>Apple Pay & Google Pay</h3>
+            <p>
+              Quick and secure mobile payment options for seamless checkout on
+              any device.
+            </p>
+          </div>
+          <div class="payment-card">
+            <div class="payment-icon">
+              <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
+            <h3>Cash on Delivery</h3>
+            <p>
+              Pay with cash when your order arrives. Available for local
+              delivery orders only.
+            </p>
+          </div>
+        </div>
+        <div class="payment-security">
+          <i class="fa-solid fa-lock"></i>
+          <span
+            >All payments are securely processed and encrypted. Your data is
+            safe with us.</span
+          >
+        </div>
+      </section>
+
+   
+      <section class="order-section">
+        <div class="container-center">
+          <div class="order-header">
+            <span class="order-badge">Start Your Order</span>
+            <h2 class="order-title">Delivery Request</h2>
+            <p class="order-desc">Complete the form below and we'll deliver your ice cream fresh and frozen!</p>
+          </div>
+
+          <div class="order-card">
+            <form id="order-form" class="order-form">
+           
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-icon"><i class="fa-solid fa-user"></i></span>
+                  Personal Information
+                </h3>
+                <div class="form-grid">
+                  <div class="input-wrapper">
+                    <label for="order-name" class="input-label">Full Name</label>
+                    <div class="input-field">
+                      <i class="fa-solid fa-user input-icon"></i>
+                      <input type="text" id="order-name" name="name" placeholder="Enter your full name" required>
+                    </div>
+                  </div>
+
+                  <div class="input-wrapper">
+                    <label for="order-phone" class="input-label">Phone Number</label>
+                    <div class="input-field">
+                      <i class="fa-solid fa-phone input-icon"></i>
+                      <input type="tel" id="order-phone" name="phone" placeholder="+1 (555) 000-0000" required>
+                    </div>
+                  </div>
+
+                  <div class="input-wrapper">
+                    <label for="order-email" class="input-label">Email Address</label>
+                    <div class="input-field">
+                      <i class="fa-solid fa-envelope input-icon"></i>
+                      <input type="email" id="order-email" name="email" placeholder="your@email.com" required>
+                    </div>
+                  </div>
+
+                  <div class="input-wrapper">
+                    <label for="order-method" class="input-label">Delivery Method</label>
+                    <div class="input-field select-field">
+                      <i class="fa-solid fa-truck input-icon"></i>
+                      <select id="order-method" name="method" required>
+                        <option value="">Choose method...</option>
+                        <option value="local">Local Delivery</option>
+                        <option value="pickup">Store Pickup</option>
+                      </select>
+                      <i class="fa-solid fa-chevron-down select-arrow"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+             
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-icon"><i class="fa-solid fa-map-location-dot"></i></span>
+                  Delivery Address
+                </h3>
+                <div class="form-grid">
+                  <div class="input-wrapper full-width">
+                    <label for="order-address" class="input-label">Street Address</label>
+                    <div class="input-field">
+                      <i class="fa-solid fa-location-dot input-icon"></i>
+                      <input type="text" id="order-address" name="address" placeholder="123 Main Street, Apt 4B">
+                    </div>
+                  </div>
+
+                  <div class="input-wrapper">
+                    <label for="order-city" class="input-label">City</label>
+                    <div class="input-field">
+                      <i class="fa-solid fa-city input-icon"></i>
+                      <input type="text" id="order-city" name="city" placeholder="Los Angeles">
+                    </div>
+                  </div>
+
+                  <div class="input-wrapper">
+                    <label for="order-zip" class="input-label">ZIP Code</label>
+                    <div class="input-field">
+                      <i class="fa-solid fa-hashtag input-icon"></i>
+                      <input type="text" id="order-zip" name="zip" placeholder="90001">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-icon"><i class="fa-solid fa-calendar-check"></i></span>
+                  Preferred Schedule
+                </h3>
+                <div class="form-grid">
+                  <div class="input-wrapper">
+                    <label for="order-date" class="input-label">Delivery Date</label>
+                    <div class="input-field">
+                      <i class="fa-solid fa-calendar input-icon"></i>
+                      <input type="date" id="order-date" name="date">
+                    </div>
+                  </div>
+
+                  <div class="input-wrapper">
+                    <label for="order-time" class="input-label">Time Slot</label>
+                    <div class="input-field select-field">
+                      <i class="fa-solid fa-clock input-icon"></i>
+                      <select id="order-time" name="time">
+                        <option value="">Select time...</option>
+                        <option value="10:00-12:00">10:00 AM - 12:00 PM</option>
+                        <option value="12:00-14:00">12:00 PM - 2:00 PM</option>
+                        <option value="14:00-16:00">2:00 PM - 4:00 PM</option>
+                        <option value="16:00-18:00">4:00 PM - 6:00 PM</option>
+                        <option value="18:00-20:00">6:00 PM - 8:00 PM</option>
+                      </select>
+                      <i class="fa-solid fa-chevron-down select-arrow"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Comments -->
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span class="section-icon"><i class="fa-solid fa-comment-dots"></i></span>
+                  Additional Information
+                </h3>
+                <div class="input-wrapper full-width">
+                  <label for="order-comments" class="input-label">Order Comments</label>
+                  <div class="input-field textarea-field">
+                    <i class="fa-solid fa-pen input-icon textarea-icon"></i>
+                    <textarea id="order-comments" name="comments" rows="4" placeholder="Any special instructions, allergies, or delivery notes..."></textarea>
+                  </div>
+                </div>
+              </div>
+
+          
+              <div class="form-submit-area">
+                <button type="submit" class="order-submit-btn">
+                  <span class="btn-text">Place Order</span>
+                  <span class="btn-icon"><i class="fa-solid fa-arrow-right"></i></span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="faq-section container-center">
+        <div class="section-header">
+          <span class="section-tag">Questions?</span>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How long does delivery take?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                Local delivery typically takes 30-90 minutes depending on your
+                distance from our store. You'll receive a confirmation email
+                with an estimated delivery time once your order is confirmed.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How is the ice cream kept frozen during delivery?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                We use premium insulated packaging with dry ice and thermal
+                liners. Our packaging is designed to keep ice cream frozen for
+                up to 24 hours. Every package includes temperature monitors to
+                ensure quality.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What if I'm not home when delivery arrives?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                For local delivery, our driver will attempt to contact you. If
+                you're not available, we can leave the package at your door
+                (with your permission) or reschedule for a convenient time.
+                Perishables cannot be left unattended without confirmation.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Can I modify or cancel my order?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                You can modify or cancel your order up to 2 hours before the
+                scheduled delivery time. Please call us at +1 317 234-67-33 or
+                email support@glacystore.com to make changes.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Is there a minimum order amount for delivery?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                Yes, the minimum order amount for local delivery is $20. Orders
+                over $30 qualify for free local delivery. There is no minimum
+                for store pickup.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Do you deliver to apartments and offices?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>
+                Yes! We deliver to apartments, offices, and other locations
+                within our service area. Please provide detailed delivery
+                instructions including building name, unit number, or floor
+                information.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Info Section -->
+      <section class="delivery-contact container-center">
+        <div class="contact-card">
+          <div class="contact-item">
+            <i class="fa-solid fa-phone"></i>
+            <h4>Phone</h4>
+            <p>+1 317 234-67-33</p>
+          </div>
+          <div class="contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            <h4>Email</h4>
+            <p>delivery@glacystore.com</p>
+          </div>
+          <div class="contact-item">
+            <i class="fa-solid fa-clock"></i>
+            <h4>Delivery Hours</h4>
+            <p>Daily: 10:00 AM - 9:00 PM</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="center footer-contents">
+        <div class="social">
+          <a href="#" class="social-link">
+            <img src="../images/icons/vk.png" alt="VK" />
+          </a>
+          <a href="#" class="social-link">
+            <img src="../images/icons/Facebook.png" alt="Facebook" />
+          </a>
+          <a href="#" class="social-link">
+            <img src="../images/icons/Instagram.png" alt="Instagram" />
+          </a>
+        </div>
+        <ul class="footer-menu">
+          <li><a href="#">For suppliers</a></li>
+          <li><a href="#">Our Documents</a></li>
+          <li><a href="#">About production</a></li>
+          <li><a href="#">Environmental standards</a></li>
+        </ul>
+
+        <div class="footer-made">
+          <p>Copyright &copy; 2022 made ❤️ by <a href="#"> Jayblacc </a></p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <script type="module" src="../script/script.js"></script>
+    <script type="module" src="../script/delivery.js"></script>
+  </body>
+</html>
