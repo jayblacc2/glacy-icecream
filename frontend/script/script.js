@@ -2,13 +2,12 @@ import { showToast } from "../utils/toast-notification.js";
 import {
   getAuthInitPromise,
   getCurrentUser,
-  getUserCart,
   isLoggedIn,
   login,
   logout,
   registerUser,
-  updateUserCart,
 } from "./auth.js";
+import { fetchCart, addItemToCart, updateCartItem, removeCartItem, clearCart, syncCart } from "./cart.service.js";
 
 let cartItems = [];
 let icecreams = [];
@@ -83,32 +82,22 @@ function renderCatalog(products = icecreams) {
 function attachCartListeners() {
   const cardCartButtons = document.querySelectorAll(".card-cart");
   cardCartButtons.forEach((button) => {
-    button.addEventListener("click", (e) => {
-      // Get data from the button's dataset for better reliability
-      const itemName = button.dataset.name || "";
-      const itemPrice = button.dataset.price || "";
-      const itemImage = button.dataset.image || "";
+    button.addEventListener("click", async (e) => {
       const itemId = button.dataset.id || "";
+      const itemName = button.dataset.name || "";
 
-      const cartItem = {
-        id: itemId,
-        name: itemName,
-        price: `${itemPrice}₽/кг`,
-        image: itemImage,
-        quantity: 1,
-      };
-
-      const existingItem = cartItems.find((item) => item.name === itemName);
-      if (existingItem) {
-        existingItem.quantity++;
-        showToast(`Added another ${itemName} to cart!`);
-      } else {
-        cartItems.push(cartItem);
-        showToast(`${itemName} added to cart!`);
+      if (!itemId) {
+        showToast("Product ID missing");
+        return;
       }
 
-      updateCart();
-      saveCart();
+      const result = await addItemToCart(itemId, 1);
+      if (result.success) {
+        showToast(`${itemName} added to cart!`);
+        await loadCart();
+      } else {
+        showToast(result.message || "Failed to add to cart");
+      }
     });
   });
 }
@@ -122,66 +111,53 @@ function setupCartEventDelegation() {
   if (!cartItemsContainer) return;
 
   // Use event delegation for dynamically added buttons
-  cartItemsContainer.addEventListener("click", (e) => {
+  cartItemsContainer.addEventListener("click", async (e) => {
     const target = e.target;
 
     // Increase quantity
     if (target.classList.contains("increase-qty")) {
-      const index = parseInt(target.dataset.index);
-      if (cartItems[index]) {
-        cartItems[index].quantity++;
-        updateCart();
-        saveCart();
+      const productId = target.dataset.id;
+      const item = cartItems.find((item) => item.productId === productId || item.id === productId);
+      if (item) {
+        const result = await updateCartItem(productId, item.quantity + 1);
+        if (result.success) {
+          await loadCart();
+        }
       }
     }
 
     // Decrease quantity
     if (target.classList.contains("decrease-qty")) {
-      const index = parseInt(target.dataset.index);
-      if (cartItems[index]) {
-        if (cartItems[index].quantity > 1) {
-          cartItems[index].quantity--;
+      const productId = target.dataset.id;
+      const item = cartItems.find((item) => item.productId === productId || item.id === productId);
+      if (item) {
+        if (item.quantity > 1) {
+          const result = await updateCartItem(productId, item.quantity - 1);
+          if (result.success) {
+            await loadCart();
+          }
         } else {
           // Remove item if quantity becomes 0
-          cartItems.splice(index, 1);
+          const result = await removeCartItem(productId);
+          if (result.success) {
+            await loadCart();
+            showToast(`${item.name} removed from cart`);
+          }
         }
-        updateCart();
-        saveCart();
       }
     }
 
     // Remove item
     if (target.classList.contains("remove-item")) {
-      const index = parseInt(target.dataset.index);
-      if (cartItems[index]) {
-        const itemName = cartItems[index].name;
-        cartItems.splice(index, 1);
-        updateCart();
-        saveCart();
-        showToast(`${itemName} removed from cart`);
+      const productId = target.dataset.id;
+      const item = cartItems.find((item) => item.productId === productId || item.id === productId);
+      const result = await removeCartItem(productId);
+      if (result.success) {
+        await loadCart();
+        showToast(`${item?.name || "Item"} removed from cart`);
       }
     }
   });
-}
-
-function loadCart() {
-  if (isLoggedIn()) {
-    cartItems = getUserCart();
-  } else {
-    const savedCart = localStorage.getItem("glacy-guest-cart");
-    if (savedCart) {
-      cartItems = JSON.parse(savedCart);
-    }
-  }
-  updateCart();
-}
-
-function saveCart() {
-  if (isLoggedIn()) {
-    updateUserCart(cartItems);
-  } else {
-    localStorage.setItem("glacy-guest-cart", JSON.stringify(cartItems));
-  }
 }
 
 function updateCart() {
@@ -196,39 +172,42 @@ function updateCart() {
   if (cartItems.length === 0) {
     cartItemsContainer.innerHTML =
       '<p class="empty-cart-message">Your cart is empty</p>';
-    totalAmountElement.textContent = "₽0";
+    totalAmountElement.textContent = "₹0";
     cartLabel.textContent = "Empty";
     return;
   }
 
   let total = 0;
-  cartItems.forEach((item, index) => {
+  cartItems.forEach((item) => {
     const cartItemElement = document.createElement("div");
     cartItemElement.className = "cart-item";
 
-    const priceMatch = item.price.match(/\d+/);
-    const itemPrice = priceMatch ? parseInt(priceMatch[0]) : 0;
+    const priceMatch = item.price?.toString().match(/\d+/);
+    const itemPrice = priceMatch ? parseFloat(priceMatch[0]) : 0;
     const itemTotal = itemPrice * item.quantity;
     total += itemTotal;
 
+    const imageUrl = item.image?.url || item.image || "";
+    const productId = item.productId || item.id || "";
+
     cartItemElement.innerHTML = `
-      <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+      <img src="${imageUrl}" alt="${item.name}" class="cart-item-image">
       <div class="cart-item-info">
         <h4>${item.name}</h4>
-        <p>${item.price}</p>
+        <p>₹${itemPrice}/kg</p>
       </div>
       <div class="cart-item-controls">
-        <button class="decrease-qty" data-index="${index}" aria-label="Decrease quantity">-</button>
+        <button class="decrease-qty" data-id="${productId}" aria-label="Decrease quantity">-</button>
         <span class="cart-item-quantity">${item.quantity}</span>
-        <button class="increase-qty" data-index="${index}" aria-label="Increase quantity">+</button>
-        <button class="remove-item" data-index="${index}" aria-label="Remove item">×</button>
+        <button class="increase-qty" data-id="${productId}" aria-label="Increase quantity">+</button>
+        <button class="remove-item" data-id="${productId}" aria-label="Remove item">×</button>
       </div>
     `;
 
     cartItemsContainer.appendChild(cartItemElement);
   });
 
-  totalAmountElement.textContent = `₽${total}`;
+  totalAmountElement.textContent = `₹${total}`;
   cartLabel.textContent = `${cartItems.length} item${
     cartItems.length > 1 ? "s" : ""
   }`;
@@ -238,6 +217,13 @@ function updateCart() {
     checkoutBtn.disabled = false;
     checkoutBtn.onclick = handleCheckout;
   }
+}
+
+function loadCart() {
+  fetchCart().then((cart) => {
+    cartItems = cart;
+    updateCart();
+  });
 }
 
 function handleCheckout() {
@@ -253,9 +239,10 @@ function handleCheckout() {
     `Checkout for ${cartItems.length} items. Total: ${totalAmount}\n\nOrder placed successfully!`,
   );
 
-  cartItems = [];
-  updateCart();
-  saveCart();
+  clearCart().then(() => {
+    cartItems = [];
+    updateCart();
+  });
 
   const cartContainer = document.getElementById("cart-container");
   cartContainer.classList.add("visually-hidden");
@@ -424,36 +411,28 @@ function attachFormListeners() {
 function handleLogin(e) {
   e.preventDefault();
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email")?.value;
+  const password = document.getElementById("password")?.value;
 
   login(email, password)
-    .then((result) => {
+    .then(async (result) => {
       if (result.success) {
-        const guestCart = localStorage.getItem("glacy-guest-cart");
-        if (guestCart) {
-          const guestItems = JSON.parse(guestCart);
-          const userCart = getUserCart();
-
-          guestItems.forEach((guestItem) => {
-            const existingItem = userCart.find(
-              (item) => item.name === guestItem.name,
-            );
-            if (existingItem) {
-              existingItem.quantity += guestItem.quantity;
-            } else {
-              userCart.push(guestItem);
-            }
-          });
-
-          cartItems = userCart;
-          localStorage.removeItem("glacy-guest-cart");
+        // Get guest cart and sync with user cart
+        const guestCart = JSON.parse(localStorage.getItem("glacy-guest-cart") || "[]");
+        if (guestCart.length > 0) {
+          // Sync guest cart with backend
+          const syncResult = await syncCart(guestCart);
+          if (syncResult.success) {
+            cartItems = syncResult.cart || [];
+            localStorage.removeItem("glacy-guest-cart");
+            showToast("Cart synced with your account!");
+          }
         } else {
-          cartItems = getUserCart();
+          // Load user cart from backend
+          cartItems = await fetchCart();
         }
 
-        saveCart();
-        updateCart();
+        await loadCart();
 
         // Use the updateAuthUI from form-toggle.js
         if (typeof window.updateAuthUI === "function") {
@@ -461,7 +440,7 @@ function handleLogin(e) {
         }
 
         const loginContainer = document.getElementById("login-container");
-        loginContainer.classList.add("visually-hidden");
+        loginContainer?.classList.add("visually-hidden");
 
         showToast(result.message);
       } else {

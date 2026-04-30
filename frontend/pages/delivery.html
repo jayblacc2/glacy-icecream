@@ -29,6 +29,10 @@
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/delivery.css" />
     <title>Glacy-Store | Delivery & Payment</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <script type="module" src="../script/form-toggle.js"></script>
   </head>
 
@@ -265,10 +269,11 @@
           </div>
           <div class="coverage-grid">
             <div class="coverage-map">
-              <div class="map-placeholder">
-                <i class="fa-solid fa-map-location-dot"></i>
-                <p>Delivery Zone Map</p>
-              </div>
+              <div id="delivery-map" class="map-container"></div>
+              <button id="get-location-btn" class="get-location-btn">
+                <i class="fa-solid fa-location-crosshairs"></i>
+                Get My Location
+              </button>
             </div>
             <div class="coverage-info">
               <div class="coverage-item">
@@ -700,15 +705,18 @@
         </ul>
 
         <div class="footer-made">
-          <p>Copyright &copy; 2022 made ❤️ by <a href="#"> Jayblacc </a></p>
+          <p>Copyright &copy; <span id="current-year">2022</span> made ❤️ by <a href="#"> Jayblacc </a></p>
         </div>
       </div>
     </footer>
 
     <!-- Toast Notification Container -->
     <div id="toast-container"></div>
-
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <script type="module" src="../script/script.js"></script>
-    <script type="module" src="../script/delivery.js"></script>
+    <script src="../script/delivery.js"></script>
   </body>
 </html>

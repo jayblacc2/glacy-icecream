@@ -1,7 +1,7 @@
 import { loading } from "../utils/loading.js";
 import { errorMessage, emptyMessage } from "../utils/error-message.js";
 
-const API_URL = "https://api.slingacademy.com/v1/sample-data/blog-posts";
+const API_URL = "/api/v1/posts";
 const LIMIT = 20;
 
 let blogs = [];
@@ -12,42 +12,51 @@ async function init() {
   await loadBlogs();
 }
 
-// Load blogs from Sling Academy API
+// Load blogs from backend API
 async function loadBlogs() {
   const blogGrid = document.getElementById("blog-grid");
+  if (!blogGrid) {
+    console.error("blog-grid element not found!");
+    return;
+  }
   blogGrid.innerHTML = loading("Loading delicious blog posts");
 
   try {
     const url = `${API_URL}?limit=${LIMIT}`;
+    console.log("Fetching from:", url);
+
     const response = await fetch(url);
+    console.log("Response status:", response.status);
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log("API response:", data);
 
-    if (!data.blogs || data.blogs.length === 0) {
+    if (!data.success || !data.data || data.data.length === 0) {
+      console.log("No blogs or API returned error:", data);
       showNoBlogs();
       return;
     }
 
-    // Transform API data to match our format
-    blogs = data.blogs.map((blog) => ({
-      id: blog.id,
-      title: blog.title,
-      content: blog.content_text || blog.description,
-      description: blog.description,
-      published: blog.created_at,
-      updated: blog.updated_at,
-      url: `https://slingacademy.com/article/${blog.id}`,
+    // Transform backend data to match our format
+    blogs = data.data.map((post) => ({
+      id: post._id,
+      title: post.title,
+      content: post.content,
+      description: post.excerpt,
+      published: post.publishedAt,
+      updated: post.publishedAt,
+      photo_url: post.featuredImage,
+      category: "blog",
       author: {
-        displayName: blog.user?.name || "Anonymous",
+        displayName: post.author || "Anonymous",
       },
-      photo_url: blog.photo_url,
-      category: blog.category,
     }));
 
+    console.log("Loaded blogs:", blogs.length);
     renderBlogs();
   } catch (error) {
     console.error("Error loading blogs:", error);
@@ -77,10 +86,8 @@ function createBlogCard(blog) {
   // Format date
   const date = formatDate(blog.published);
 
-  // Use description or strip HTML from content
-  const description = blog.description
-    ? blog.description.substring(0, 150) + "..."
-    : stripHTML(blog.content).substring(0, 150) + "...";
+  // Show truncated content in card (full content in modal)
+  const description = stripHTML(blog.content).substring(0, 150) + "...";
 
   card.innerHTML = `
                 <div class="blog-card-image">
@@ -160,55 +167,59 @@ function openModal(blog) {
 
   const imageUrl = blog.photo_url || extractImage(blog);
   const date = formatDate(blog.published);
-  const description = blog.description || stripHTML(blog.content);
+  const formattedContent = formatContent(blog.content);
 
   const modalInnerContent = document.getElementById("modal-inner-content");
   modalInnerContent.innerHTML = `
-                <div class="modal-header-image">
-                    <img src="${imageUrl}" alt="${
-                      blog.title
-                    }" onerror="this.src='../images/img1.png'">
-                </div>
-                <div class="modal-body">
-                    <span class="modal-date">${date}</span>
-                    <h2 class="modal-title">${blog.title}</h2>
-                    <div class="modal-meta">
-                        <div class="modal-meta-item">
-                            <i class="fa-solid fa-user"></i>
-                            <span>${
-                              blog.author?.displayName || "Anonymous"
-                            }</span>
-                        </div>
-                        <div class="modal-meta-item">
-                            <i class="fa-solid fa-calendar"></i>
-                            <span>${date}</span>
-                        </div>
-                        <div class="modal-meta-item">
-                            <i class="fa-solid fa-clock"></i>
-                            <span>${estimateReadTime(
-                              blog.content,
-                            )} min read</span>
-                        </div>
-                    </div>
-                    <div class="modal-description">
-                        ${description.substring(0, 500)}...
-                    </div>
-                    <div class="modal-cta">
-                        <a href="${
-                          blog.url
-                        }" target="_blank" class="btn-primary" rel="noopener noreferrer">
-                            <i class="fa-solid fa-external-link-alt"></i>
-                            Read Full Article
-                        </a>
-                        <button class="btn-secondary" onclick="closeModal()">
-                            Close
-                        </button>
-                    </div>
-                </div>
-            `;
+    <div class="modal-header-image">
+      <img src="${imageUrl}" alt="${blog.title}" onerror="this.src='../images/img1.png'">
+    </div>
+    <div class="modal-body">
+      <div class="modal-header-content">
+        <span class="modal-date">${date}</span>
+        <h2 class="modal-title">${blog.title}</h2>
+        <div class="modal-meta">
+          <div class="modal-meta-item">
+            <i class="fa-solid fa-user"></i>
+            <span>${blog.author?.displayName || "Anonymous"}</span>
+          </div>
+          <div class="modal-meta-item">
+            <i class="fa-solid fa-clock"></i>
+            <span>${estimateReadTime(blog.content)} min read</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-content-area">
+        <p class="modal-excerpt">${blog.description}</p>
+        <div class="modal-content-full">${formattedContent}</div>
+      </div>
+
+      <div class="modal-cta">
+        <button class="btn-close-modal" id="btn-close-modal">
+          Close
+        </button>
+      </div>
+    </div>
+  `;
+
+  const closeBtn = document.getElementById("btn-close-modal");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeModal);
+  }
 
   document.getElementById("modal-overlay").classList.add("active");
   document.body.style.overflow = "hidden";
+}
+
+// Format content text into paragraphs
+function formatContent(content) {
+  if (!content) return "";
+  const paragraphs = content.split(/\n\n|\n/).filter((p) => p.trim());
+  if (paragraphs.length > 1) {
+    return paragraphs.map((p) => `<p>${p.trim()}</p>`).join("");
+  }
+  return `<p>${content}</p>`;
 }
 
 // Close modal

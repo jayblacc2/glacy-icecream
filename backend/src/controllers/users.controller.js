@@ -112,7 +112,7 @@ const userLogin = async (req, res) => {
     const refreshToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "7d" }
     );
 
     // Set cookies
@@ -258,6 +258,7 @@ const checkAuthStatus = async (req, res) => {
           name: user.name,
           email: user.email,
           role: user.role,
+          cart: user.cart,
         },
       });
     } catch (error) {

@@ -1,0 +1,130 @@
+{
+  "posts": [
+    {
+      "title": "welcome to glacy ice cream store",
+      "excerpt": "discover our story and passion for creating the finest homemade ice cream",
+      "content": "At Glacy Ice Cream, we believe that every scoop tells a story. Our journey began in 2015 with a simple mission: to craft the most delicious, authentic ice cream using only the finest ingredients. From our humble beginnings as a small family shop to becoming a beloved community staple, we've remained committed to quality, creativity, and customer satisfaction. Our master ice cream makers use traditional techniques combined with innovative flavors to create unforgettable frozen treats that bring joy to every customer.",
+      "author": "Glacy Team",
+      "publishedAt": "2024-01-15T10:30:00Z",
+      "featuredImage": "/images/img3.png",
+      "views": 1245
+    },
+    {
+      "title": "our seasonal summer collection",
+      "excerpt": "explore our refreshing summer flavors designed to beat the heat",
+      "content": "Summer is here, and we've crafted an extraordinary collection of seasonal flavors that capture the essence of the season. Our master chefs have been working tirelessly to develop innovative combinations that are both refreshing and indulgent. From tropical fruit sorbets to creamy coconut creations, each flavor is designed to provide the perfect cool-down on a hot summer day. We use only the freshest, locally-sourced fruits and premium ingredients to ensure every bite bursts with natural flavor.",
+      "author": "Chef Maria",
+      "publishedAt": "2024-06-01T14:20:00Z",
+      "featuredImage": "/images/img3.png",
+      "views": 892
+    },
+    {
+      "title": "the art of homemade waffle cones",
+      "excerpt": "learn how we craft our signature waffle cones from scratch daily",
+      "content": "There's nothing quite like the aroma of freshly baked waffle cones wafting through our shop each morning. Our signature waffle cones are made from scratch using a secret family recipe that's been passed down through generations. We start with the finest bourbon vanilla, pure cane sugar, and fresh eggs, creating a batter that's cooked to golden perfection on our vintage waffle irons. Each cone is carefully shaped while still warm, resulting in a crisp, sweet vessel that perfectly complements our premium ice cream.",
+      "author": "Baker Tom",
+      "publishedAt": "2024-03-22T08:15:00Z",
+      "featuredImage": "/images/bg-1.jpg",
+      "views": 2156
+    },
+    {
+      "title": "holiday specials: peppermint bark & eggnog nog",
+      "excerpt": "limited edition holiday flavors available now through december",
+      "content": "Get into the holiday spirit with our special limited-edition flavors! Our Peppermint Bark features creamy vanilla ice cream swirled with peppermint candy pieces and dark chocolate chunks. The Egg Nog Nog combines rich, spiced custard ice cream with a hint of nutmeg and rum extract (non-alcoholic). Both flavors are available for a limited time only, so don't miss out on these festive treats perfect for holiday gatherings and cozy nights in.",
+      "author": "Holiday Team",
+      "publishedAt": "2024-11-15T09:00:00Z",
+      "featuredImage": "/images/contacts.jpeg",
+      "views": 543
+    },
+    {
+      "title": "vegan & dairy-free options expanded",
+      "excerpt": "new plant-based ice cream alternatives for every diet",
+      "content": "We're excited to announce an expansion of our vegan and dairy-free offerings! Using premium coconut milk, oat milk, and cashew bases, we've created delicious alternatives that maintain the creamy texture and rich flavor our customers love. Try our Mango Coconut Swirl, Chocolate Avocado, or Strawberry Basil varieties - all completely dairy-free and packed with natural ingredients. Perfect for those with lactose intolerance, vegans, or anyone looking for a lighter frozen treat option.",
+      "author": "Nutrition Team",
+      "publishedAt": "2024-08-20T16:45:00Z",
+      "featuredImage": "/images/img1.png",
+      "views": 789
+    },
+    {
+      "title": "ice cream cake decorating workshop",
+      "excerpt": "join our monthly hands-on classes to create custom celebration cakes",
+      "content": "Learn the art of ice cream cake creation in our monthly workshops! Our expert decorators will guide you through layering cake and ice cream, creating beautiful piping designs, and adding personalized touches. Each participant takes home their own custom-made ice cream cake (serves 8-10) plus the skills to recreate the magic at home. Workshops include all materials, instruction, and dessert tasting. Perfect for birthdays, anniversaries, or anyone who loves creating memorable desserts.",
+      "author": "Events Team",
+      "publishedAt": "2024-05-10T11:30:00Z",
+      "featuredImage": "/images/img2.png",
+      "views": 324
+    }
+  ],
+  "products": [
+    {
+      "name": "classic vanilla bean",
+      "description": "Our signature vanilla made with Madagascar vanilla beans and fresh cream",
+      "price": 8.99,
+      "image": {
+        "url": "/images/img3.png",
+        "publicId": "icecream-1"
+      },
+      "category": "classic"
+    },
+    {
+      "name": "strawberry cheesecake swirl",
+      "description": "Creamy cheesecake ice cream swirled with strawberry compote and graham cracker pieces",
+      "price": 10.99,
+      "image": {
+        "url": "/images/img3.png",
+        "publicId": "icecream-2"
+      },
+      "category": "dessert"
+    },
+    {
+      "name": "mango sorbet",
+      "description": "Refreshing dairy-free sorbet made with ripe Alphonso mangoes",
+      "price": 9.49,
+      "image": {
+        "url": "/images/img2.png",
+        "publicId": "icecream-3"
+      },
+      "category": "fruit"
+    },
+    {
+      "name": "salted caramel crunch",
+      "description": "Rich caramel ice cream with homemade caramel swirls and sea salt",
+      "price": 11.49,
+      "image": {
+        "url": "/images/img3.png",
+        "publicId": "icecream-1"
+      },
+      "category": "caramel"
+    },
+    {
+      "name": "dark chocolate truffle",
+      "description": "Premium dark chocolate ice cream with Belgian chocolate chunks",
+      "price": 10.49,
+      "image": {
+        "url": "/images/img3.png",
+        "publicId": "icecream-2"
+      },
+      "category": "chocolate"
+    },
+    {
+      "name": "pistachio delight",
+      "description": "Authentic pistachio ice cream with real pistachio pieces and almond essence",
+      "price": 12.99,
+      "image": {
+        "url": "/images/img3.png",
+        "publicId": "icecream-3"
+      },
+      "category": "nut"
+    },
+    {
+      "name": "mint chocolate chip",
+      "description": "Cool mint ice cream loaded with dark chocolate chips",
+      "price": 9.99,
+      "image": {
+        "url": "/images/img3.png",
+        "publicId": "icecream-1"
+      },
+      "category": "mint"
+    }
+  ]
+}

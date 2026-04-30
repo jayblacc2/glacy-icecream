@@ -1,237 +1,224 @@
-// Delivery & Payment Page JavaScript
-import { showToast } from "../utils/toast-notification.js";
+// Initialize delivery map with Leaflet
+// Leaflet is loaded via CDN in delivery.html
 
-// DOM Elements
-const deliveryForm = document.getElementById("delivery-request-form");
-const faqQuestions = document.querySelectorAll(".faq-question");
-const deliveryDateInput = document.getElementById("delivery-date");
+(function() {
+  'use strict';
 
-// Set minimum date to today
-function setMinDate() {
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const minDate = tomorrow.toISOString().split("T")[0];
-  deliveryDateInput.setAttribute("min", minDate);
-}
+  // Store location coordinates (example: Indianapolis, IN)
+  var STORE_LOCATION = {
+    lat: 39.7684,
+    lng: -86.1581,
+    name: "Glacy Ice Cream Store"
+  };
 
-// Initialize date picker
-if (deliveryDateInput) {
-  setMinDate();
-}
-
-// Form Validation
-function validateForm(formData) {
-  const errors = [];
-
-  // Name validation
-  if (!formData.name || formData.name.trim().length < 2) {
-    errors.push("Please enter your full name");
-  }
-
-  // Phone validation
-  const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
-  if (!formData.phone || !phoneRegex.test(formData.phone.trim())) {
-    errors.push("Please enter a valid phone number");
-  }
-
-  // Email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!formData.email || !emailRegex.test(formData.email.trim())) {
-    errors.push("Please enter a valid email address");
-  }
-
-  // Delivery method validation
-  if (!formData.method) {
-    errors.push("Please select a delivery method");
-  }
-
-  // Address validation for local delivery
-  if (formData.method === "local") {
-    if (!formData.address || formData.address.trim().length < 5) {
-      errors.push("Please enter your delivery address");
+  // Define delivery zones with coordinates
+  var DELIVERY_ZONES = [
+    {
+      id: 'zone-1',
+      name: 'Zone 1 - Downtown & Surrounding',
+      color: '#4CAF50',
+      radius: 3200,
+      deliveryTime: '30-45 min',
+      deliveryFee: 'Free $30+',
+      center: [39.7684, -86.1581]
+    },
+    {
+      id: 'zone-2',
+      name: 'Zone 2 - Extended Area',
+      color: '#2196F3',
+      radius: 8000,
+      deliveryTime: '45-60 min',
+      deliveryFee: '$4.99',
+      center: [39.7684, -86.1581]
+    },
+    {
+      id: 'zone-3',
+      name: 'Zone 3 - Greater Metropolitan',
+      color: '#FF9800',
+      radius: 16000,
+      deliveryTime: '60-90 min',
+      deliveryFee: '$7.99',
+      center: [39.7684, -86.1581]
+    },
+    {
+      id: 'zone-4',
+      name: 'Zone 4 - Extended Metro',
+      color: '#F44336',
+      radius: 24000,
+      deliveryTime: '90-120 min',
+      deliveryFee: '$9.99',
+      center: [39.7684, -86.1581]
     }
-    if (!formData.city || formData.city.trim().length < 2) {
-      errors.push("Please enter your city");
-    }
-    if (!formData.zip || formData.zip.trim().length < 5) {
-      errors.push("Please enter your ZIP code");
-    }
-  }
+  ];
 
-  // Date validation
-  if (!formData.date) {
-    errors.push("Please select a delivery date");
-  }
+  var map = null;
+  var zoneCircles = [];
 
-  return errors;
-}
-
-// Format phone number
-function formatPhoneNumber(input) {
-  let value = input.value.replace(/\D/g, "");
-  let formattedValue = "";
-
-  if (value.length > 0) {
-    formattedValue += "+1 ";
-  }
-  if (value.length > 1) {
-    formattedValue += "(" + value.substring(1, 4);
-  }
-  if (value.length > 4) {
-    formattedValue += ") " + value.substring(4, 7);
-  }
-  if (value.length > 7) {
-    formattedValue += "-" + value.substring(7, 11);
-  }
-
-  input.value = formattedValue;
-}
-
-// Phone number input formatting
-const phoneInput = document.getElementById("delivery-phone");
-if (phoneInput) {
-  phoneInput.addEventListener("input", function () {
-    formatPhoneNumber(this);
-  });
-}
-
-// Handle form submission
-if (deliveryForm) {
-  deliveryForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    // Collect form data
-    const formData = {
-      name: document.getElementById("delivery-name").value,
-      phone: document.getElementById("delivery-phone").value,
-      email: document.getElementById("delivery-email").value,
-      method: document.getElementById("delivery-method").value,
-      address: document.getElementById("delivery-address").value,
-      city: document.getElementById("delivery-city").value,
-      zip: document.getElementById("delivery-zip").value,
-      date: document.getElementById("delivery-date").value,
-      time: document.getElementById("delivery-time").value,
-      comments: document.getElementById("delivery-comments").value,
-    };
-
-    // Validate form
-    const errors = validateForm(formData);
-
-    if (errors.length > 0) {
-      showToast(errors[0], "error");
+  // Initialize the map
+  function initMap() {
+    var L = window.L;
+    if (!L) {
+      console.error('Leaflet not loaded');
       return;
     }
 
-    // Show loading state
-    const submitBtn = deliveryForm.querySelector(".submit-btn");
-    const originalText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML =
-      '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+    var mapContainer = document.getElementById('delivery-map');
+    if (!mapContainer) {
+      console.error('Map container not found');
+      return;
+    }
 
-    // Simulate API call (replace with actual API call)
-    setTimeout(() => {
-      // Success
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalText;
+    map = L.map('delivery-map').setView([STORE_LOCATION.lat, STORE_LOCATION.lng], 13);
 
-      showToast(
-        "Delivery request submitted successfully! We'll contact you shortly.",
-        "success",
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 18
+    }).addTo(map);
+
+    // Add store marker
+    var storeIcon = L.divIcon({
+      className: 'store-marker',
+      html: '<div class="store-icon"><i class="fa-solid fa-store"></i></div>',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40]
+    });
+
+    L.marker([STORE_LOCATION.lat, STORE_LOCATION.lng], { icon: storeIcon })
+      .addTo(map)
+      .bindPopup('<strong>Glacy Ice Cream Store</strong><br>123 Main Street<br>Indianapolis, IN 46201');
+
+    // Add delivery zone circles
+    DELIVERY_ZONES.forEach(function(zone) {
+      var circle = L.circle([zone.center[0], zone.center[1]], {
+        color: zone.color,
+        fillColor: zone.color,
+        fillOpacity: 0.15,
+        radius: zone.radius,
+        weight: 2
+      }).addTo(map);
+
+      circle.bindPopup(
+        '<strong>' + zone.name + '</strong><br>' +
+        '<span style="color: ' + zone.color + '">●</span> ' + zone.deliveryTime + '<br>' +
+        '<span style="color: ' + zone.color + '">●</span> ' + zone.deliveryFee
       );
 
-      // Reset form
-      deliveryForm.reset();
-      setMinDate();
-    }, 2000);
-  });
-}
-
-// FAQ Accordion functionality
-faqQuestions.forEach((question) => {
-  question.addEventListener("click", function () {
-    const faqItem = this.parentElement;
-    const isActive = faqItem.classList.contains("active");
-
-    // Close all FAQ items
-    faqQuestions.forEach((q) => {
-      q.parentElement.classList.remove("active");
+      zoneCircles.push(circle);
     });
 
-    // Open clicked item if it wasn't active
-    if (!isActive) {
-      faqItem.classList.add("active");
-    }
-  });
-});
-
-// Smooth scroll to FAQ when clicking on FAQ links
-document.querySelectorAll('a[href^="#faq-"]').forEach((anchor) => {
-  anchor.addEventListener("click", function (e) {
-    e.preventDefault();
-    const targetId = this.getAttribute("href").substring(1);
-    const targetElement = document.getElementById(targetId);
-    if (targetElement) {
-      targetElement.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
+    // Add click handler to show zone info
+    zoneCircles.forEach(function(circle) {
+      circle.on('click', function(e) {
+        map.setView(e.latlng, 13);
       });
-    }
-  });
-});
-
-// Delivery method change handler
-const deliveryMethodSelect = document.getElementById("delivery-method");
-const addressFields = [
-  document.getElementById("delivery-address"),
-  document.getElementById("delivery-city"),
-  document.getElementById("delivery-zip"),
-];
-
-if (deliveryMethodSelect) {
-  deliveryMethodSelect.addEventListener("change", function () {
-    const method = this.value;
-
-    // Show/hide address fields based on delivery method
-    addressFields.forEach((field) => {
-      if (method === "pickup") {
-        field.parentElement.style.opacity = "0.5";
-        field.disabled = true;
-        field.value = "";
-      } else {
-        field.parentElement.style.opacity = "1";
-        field.disabled = false;
-      }
     });
-  });
-}
 
-// Initialize: hide address fields if pickup is selected
-if (deliveryMethodSelect && deliveryMethodSelect.value === "pickup") {
-  addressFields.forEach((field) => {
-    field.parentElement.style.opacity = "0.5";
-    field.disabled = true;
-  });
-}
+    // Add legend
+    addLegend();
+  }
 
-// Add input validation feedback
-const formInputs = deliveryForm.querySelectorAll(
-  "input[required], select[required]",
-);
+  // Add legend to map
+  function addLegend() {
+    var L = window.L;
+    if (!L || !map) return;
 
-formInputs.forEach((input) => {
-  input.addEventListener("blur", function () {
-    if (this.value.trim() === "") {
-      this.style.borderColor = "#f44336";
+    var legend = L.control({ position: 'bottomright' });
+
+    legend.onAdd = function(map) {
+      var div = L.DomUtil.create('div', 'delivery-legend');
+      div.innerHTML = '<h4>Delivery Zones</h4>';
+
+      DELIVERY_ZONES.forEach(function(zone) {
+        div.innerHTML +=
+          '<div class="legend-item">' +
+            '<span class="legend-color" style="background-color: ' + zone.color + '"></span>' +
+            '<span class="legend-label">' + zone.name + '</span>' +
+          '</div>';
+      });
+
+      return div;
+    };
+
+    legend.addTo(map);
+  }
+
+  // Get user's location
+  function getUserLocation() {
+    var L = window.L;
+    if (!L) {
+      if (window.showToast) {
+        window.showToast('Map not loaded', 'error');
+      }
+      return;
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          var latitude = position.coords.latitude;
+          var longitude = position.coords.longitude;
+          map.setView([latitude, longitude], 13);
+
+          // Add user marker
+          var userIcon = L.divIcon({
+            className: 'user-marker',
+            html: '<div class="user-icon"><i class="fa-solid fa-location-dot"></i></div>',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+          });
+
+          L.marker([latitude, longitude], { icon: userIcon })
+            .addTo(map)
+            .bindPopup('<strong>Your Location</strong>')
+            .openPopup();
+        },
+        function(error) {
+          console.error('Error getting location:', error);
+          if (window.showToast) {
+            window.showToast('Unable to get your location', 'error');
+          }
+        }
+      );
     } else {
-      this.style.borderColor = "#e0e0e0";
+      if (window.showToast) {
+        window.showToast('Geolocation not supported', 'error');
+      }
+    }
+  }
+
+  // Calculate delivery fee based on distance
+  function calculateDeliveryFee(lat, lng) {
+    var distance = map.distance([lat, lng], [STORE_LOCATION.lat, STORE_LOCATION.lng]);
+    var distanceMiles = distance * 0.621371; // Convert meters to miles
+
+    if (distanceMiles <= 2) {
+      return { fee: 0, zone: 'zone-1', time: '30-45 min' };
+    } else if (distanceMiles <= 5) {
+      return { fee: 4.99, zone: 'zone-2', time: '45-60 min' };
+    } else if (distanceMiles <= 10) {
+      return { fee: 7.99, zone: 'zone-3', time: '60-90 min' };
+    } else if (distanceMiles <= 15) {
+      return { fee: 9.99, zone: 'zone-4', time: '90-120 min' };
+    } else {
+      return { fee: null, zone: null, time: 'Outside delivery area' };
+    }
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    initMap();
+
+    // Add "Get My Location" button functionality
+    var getLocationBtn = document.getElementById('get-location-btn');
+    if (getLocationBtn) {
+      getLocationBtn.addEventListener('click', getUserLocation);
     }
   });
 
-  input.addEventListener("input", function () {
-    this.style.borderColor = "#e0e0e0";
-  });
-});
-
-console.log("Delivery page loaded successfully");
+  // Export functions to window for external use
+  window.deliveryMap = {
+    initMap: initMap,
+    getUserLocation: getUserLocation,
+    calculateDeliveryFee: calculateDeliveryFee
+  };
+})();

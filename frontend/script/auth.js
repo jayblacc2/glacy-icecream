@@ -219,34 +219,61 @@ function isLoggedIn() {
   return currentUser !== null;
 }
 
-// Get current user
-function getCurrentUser() {
-  return currentUser;
-}
-
-// Update user cart - now handled by backend
+// Update user cart - sync with backend API
 async function updateUserCart(cartItems) {
-  console.warn("updateUserCart is deprecated. Use backend cart API directly.");
-
   if (!isLoggedIn()) {
     return { success: false, message: "User not logged in" };
   }
-  const userData = JSON.parse(
-    localStorage.getItem("glacy-current-user") || "{}",
-  );
-  userData.cart = cartItems;
-  localStorage.setItem("glacy-current-user", JSON.stringify(userData));
 
-  return { success: true, message: "Cart updated locally" };
+  try {
+    const result = await syncCart(cartItems);
+    if (result.success) {
+      const userData = JSON.parse(
+        localStorage.getItem("glacy-current-user") || "{}",
+      );
+      userData.cart = result.cart || cartItems;
+      localStorage.setItem("glacy-current-user", JSON.stringify(userData));
+      return { success: true, message: "Cart updated", cart: result.cart };
+    }
+    return { success: false, message: result.message || "Failed to update cart" };
+  } catch (error) {
+    console.error("Error updating cart:", error);
+    return { success: false, message: "Network error" };
+  }
 }
 
-function getUserCart() {
+async function syncCartToBackend(cartItems) {
+  if (!isLoggedIn()) return { success: false };
+
+  try {
+    const result = await syncCart(cartItems);
+    return result;
+  } catch (error) {
+    console.error("Error syncing cart:", error);
+    return { success: false };
+  }
+}
+
+async function fetchUserCart() {
   if (!isLoggedIn()) return [];
 
-  const userData = JSON.parse(
-    localStorage.getItem("glacy-current-user") || "{}",
-  );
-  return userData.cart || [];
+  try {
+    const cart = await fetchCart();
+    const userData = JSON.parse(
+      localStorage.getItem("glacy-current-user") || "{}",
+    );
+    userData.cart = cart;
+    localStorage.setItem("glacy-current-user", JSON.stringify(userData));
+    return cart;
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    return [];
+  }
+}
+
+// Get current user
+function getCurrentUser() {
+  return currentUser;
 }
 
 // Re-check authentication status
@@ -262,13 +289,14 @@ async function checkAuthStatus() {
 // Export functions and state
 export {
   checkAuthStatus,
+  fetchUserCart,
   getCurrentUser,
-  getUserCart,
   initializeAuth,
   isLoggedIn,
   login,
   logout,
   registerUser,
+  syncCartToBackend,
   updateUserCart,
   getAuthInitPromise,
   currentUser,

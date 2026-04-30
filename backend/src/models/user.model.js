@@ -7,7 +7,6 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
-      lowercase: true,
       minlength: 3,
       maxlength: 50,
     },
@@ -36,20 +35,22 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    cart: [
-      {
-        productId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
+    cart: {
+      type: [
+        {
+          productId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product",
+            required: true,
+          },
+          name: { type: String, required: true },
+          price: { type: Number, required: true },
+          quantity: { type: Number, required: true },
+          image: { type: String, required: true },
         },
-        name: { type: String, required: true },
-        price: { type: String, required: true },
-        quantity: { type: Number, required: true },
-        image: { type: String, required: true },
-      },
-    ],
-    default: [],
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );

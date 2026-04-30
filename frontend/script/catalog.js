@@ -1,6 +1,8 @@
 import { loading } from "../utils/loading.js";
 import { errorMessage, emptyMessage } from "../utils/error-message.js";
 import { showToast } from "../utils/toast-notification.js";
+import { isLoggedIn } from "./auth.js";
+import { addItemToCart } from "./cart.service.js";
 
 let icecreams = [];
 let currentFilter = "all";
@@ -16,8 +18,12 @@ async function loadIcecreams() {
   );
   try {
     const response = await fetch(`${API_BASE_URL}/products`);
+    console.log("Catalog API response status:", response.status);
+
     if (!response.ok) throw new Error(`API Error: ${response.status}`);
     const data = await response.json();
+    console.log("Catalog API data:", data);
+
     if (data.success) {
       icecreams = data.products;
       renderCatalog();
@@ -26,52 +32,40 @@ async function loadIcecreams() {
     console.error("Error loading ice creams:", error);
     document.getElementById("catalog-grid").innerHTML = errorMessage(
       "Oops! Something went wrong",
-      "Error loading ice creams. Please try again later.",
+      `Error loading ice creams: ${error.message}. Please try again later.`,
     );
   } finally {
     console.log("Some went wrong");
   }
 }
 
-async function filterProducts(category) {
-  try {
-    document.getElementById("catalog-grid").innerHTML = loading(
-      "Loading filtered treat",
-    );
-    const categoryParam = category == "all" ? "" : `?category=${category}`;
-    const response = await fetch(`${API_BASE_URL}/products${categoryParam}`);
-    if (!response.ok) throw new Error(`API Error: ${response.status}`);
-    const data = await response.json();
-    if (data.success) {
-      icecreams = data.products;
-      renderCatalog();
-    } else {
-      document.getElementById("catalog-grid").innerHTML = errorMessage(
-        "Error",
-        "Error loading ice creams.",
-      );
-    }
-  } catch (error) {
-    console.error("Error loading ice creams:", error);
-    document.getElementById("catalog-grid").innerHTML = errorMessage(
-      "Oops! Something went wrong",
-      "Error loading ice creams. Please try again later.",
-    );
-  }
+function filterProducts(category) {
+  currentFilter = category;
+  console.log("Filtering by category:", category);
+  renderCatalog();
 }
 
 // Render catalog
 function renderCatalog() {
   const catalogGrid = document.getElementById("catalog-grid");
+  if (!catalogGrid) return;
 
-  if (!icecreams || icecreams.length === 0) {
-    catalogGrid.innerHTML = emptyMessage("No ice creams available.");
+  let filteredIcecreams = icecreams;
+
+  if (currentFilter !== "all") {
+    filteredIcecreams = icecreams.filter(
+      (icecream) => icecream.category.toLowerCase() === currentFilter.toLowerCase(),
+    );
+  }
+
+  if (!filteredIcecreams || filteredIcecreams.length === 0) {
+    catalogGrid.innerHTML = emptyMessage("No ice creams available in this category.");
     return;
   }
 
   catalogGrid.innerHTML = "";
 
-  icecreams.forEach((icecream) => {
+  filteredIcecreams.forEach((icecream) => {
     const card = document.createElement("div");
     card.className = "ice-cream-card";
     card.dataset.id = icecream.id;
@@ -192,40 +186,23 @@ function updateQuantityDisplay() {
 }
 
 // Add to cart functionality
-function addToCart() {
+async function addToCart() {
   if (!selectedIceCream) return;
 
-  const cartItem = {
-    name: selectedIceCream.name,
-    price: `₽${selectedIceCream.price}`,
-    image: selectedIceCream.image,
-    quantity: quantity,
-  };
-
-  // Get existing cart from localStorage
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  // Check if item already exists in cart
-  const existingItemIndex = cart.findIndex(
-    (item) => item.name === cartItem.name,
-  );
-
-  if (existingItemIndex !== -1) {
-    // Update quantity if item exists
-    cart[existingItemIndex].quantity += quantity;
-  } else {
-    // Add new item to cart
-    cart.push(cartItem);
+  const productId = selectedIceCream.id || selectedIceCream._id;
+  if (!productId) {
+    showToast("Product ID missing", "error");
+    return;
   }
 
-  // Save cart to localStorage
-  localStorage.setItem("cart", JSON.stringify(cart));
+  const result = await addItemToCart(productId, quantity);
 
-  // Show success message
-  showToast(`${selectedIceCream.name} added to cart!`, "success");
-
-  // Close modal
-  closeModal();
+  if (result.success) {
+    showToast(`${selectedIceCream.name} added to cart!`, "success");
+    closeModal();
+  } else {
+    showToast(result.message || "Failed to add to cart", "error");
+  }
 }
 
 // Filter Product category
@@ -233,13 +210,12 @@ function setupFilter() {
   const filterButtons = document.querySelectorAll(".filter-btn");
 
   filterButtons.forEach((button) => {
-    button.addEventListener("click", async () => {
+    button.addEventListener("click", () => {
       filterButtons.forEach((btn) => btn.classList.remove("active"));
       button.classList.add("active");
-      // Update current filter
       const category = button.dataset.category;
       currentFilter = category;
-      await filterProducts(category);
+      filterProducts(category);
     });
   });
 }

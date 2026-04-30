@@ -22,7 +22,6 @@ const postSchema = new Schema(
 
     content: {
       type: String,
-      set: (v) => v.charAt(0).toUpperCase(),
       required: [true, "Content is required"],
       trim: true,
     },
@@ -44,9 +43,9 @@ const postSchema = new Schema(
       type: String,
       validate: {
         validator: function (v) {
-          return !v || /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(v);
+          return !v || /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(v) || /^\/images\/.*\.(jpg|jpeg|png|gif|webp)$/i.test(v);
         },
-        message: (props) => `${props.value} is not a valid image URL!`,
+        message: (props) => `${props.value} is not a valid image URL or path!`,
       },
     },
 
