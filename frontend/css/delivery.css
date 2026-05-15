@@ -1,0 +1,1341 @@
+@import url("animation.css");
+@import url("style.css");
+
+/* ==========================
+   DELIVERY PAGE STYLES
+   ========================== */
+
+.delivery-page {
+  min-height: 100vh;
+}
+
+.delivery-hero {
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1) 0%,
+    var(--dark-primary-color) 100%
+  );
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 8rem 2rem 4rem;
+}
+
+.delivery-hero-content {
+  text-align: center;
+  z-index: 2;
+  max-width: 800px;
+}
+
+.delivery-title {
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-size: 5rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 3px;
+}
+
+.delivery-lead {
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 300;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.floating-icecream {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.floating-icecream .float-img {
+  position: absolute;
+  width: 150px;
+  opacity: 0.3;
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-icecream .img-1 {
+  top: 15%;
+  left: 5%;
+  animation-delay: 0s;
+}
+
+.floating-icecream .img-2 {
+  top: 20%;
+  right: 10%;
+  animation-delay: 2s;
+}
+
+.floating-icecream .img-3 {
+  bottom: 15%;
+  left: 15%;
+  animation-delay: 4s;
+}
+
+/* ==========================
+   SECTION HEADER
+   ========================== */
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-tag {
+  display: inline-block;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1),
+    var(--dark-primary-color)
+  );
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section-title {
+  font-size: 3rem;
+  color: var(--primary-color);
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+  font-size: 1.3rem;
+  color: var(--primary-color);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ==========================
+   DELIVERY METHODS
+   ========================== */
+
+.delivery-methods {
+  padding: 4rem 0;
+}
+
+.methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.method-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: var(--box-shadow);
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.method-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 35px rgba(255, 107, 157, 0.3);
+}
+
+.method-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1),
+    var(--dark-primary-color)
+  );
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.method-icon i {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.method-card h3 {
+  font-size: 1.8rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-weight: 700;
+}
+
+.method-card p {
+  font-size: 1.1rem;
+  color: var(--primary-text-color);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.method-features {
+  list-style: none;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  width: 100%;
+}
+
+.method-features li {
+  font-size: 1rem;
+  color: var(--primary-text-color);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.method-features i {
+  color: var(--bg-color-1);
+  font-size: 0.9rem;
+}
+
+.method-price {
+  display: inline-block;
+  background: var(--primary-color);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: auto;
+}
+
+/* ==========================
+   DELIVERY COVERAGE
+   ========================== */
+
+.delivery-coverage {
+  padding: 5rem 0;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.coverage-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.coverage-map {
+  background: white;
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: var(--box-shadow);
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.map-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--primary-text-color);
+}
+
+.map-placeholder i {
+  font-size: 4rem;
+  color: var(--bg-color-1);
+  margin-bottom: 1rem;
+}
+
+.map-placeholder p {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.get-location-btn {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1),
+    var(--dark-primary-color)
+  );
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.get-location-btn:hover {
+  background: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.get-location-btn:active {
+  transform: translateY(0);
+}
+
+/* Leaflet Map Styles */
+.leaflet-container {
+  background: #f8f8f8;
+}
+
+.leaflet-control-attribution {
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.leaflet-control-zoom {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-control-zoom a {
+  background-color: white;
+  color: #333;
+  font-weight: 600;
+  font-size: 1.2rem;
+  }
+
+.leaflet-control-zoom a:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Store Marker */
+.store-marker {
+  background: white;
+  border: 3px solid var(--primary-color);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.store-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  font-size: 1.5rem;
+}
+
+/* User Marker */
+.user-marker {
+  background: white;
+  border: 3px solid #2196F3;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.user-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2196F3;
+  font-size: 1.2rem;
+}
+
+/* Map Legend */
+.delivery-legend {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-size: 0.9rem;
+}
+
+.delivery-legend h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  font-size: 0.85rem;
+  color: var(--primary-text-color);
+}
+
+/* Popup Styles */
+.leaflet-popup-content-wrapper {
+  font-family: "Inter", sans-serif;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+  margin: 0;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 0.95rem;
+  color: var(--primary-text-color);
+}
+
+.leaflet-popup-content-wrapper .leaflet-popup-tip {
+  background: white;
+}
+
+.leaflet-popup-content-wrapper a {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.leaflet-popup-content-wrapper strong {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+/* Responsive Map */
+@media (max-width: 768px) {
+  .coverage-map {
+    height: 300px;
+  }
+
+  .get-location-btn {
+    bottom: 0.75rem;
+    right: 0.75rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .delivery-legend {
+    font-size: 0.8rem;
+    padding: 0.75rem;
+  }
+
+  .delivery-legend h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .legend-item {
+    gap: 0.5rem;
+  }
+
+  .legend-color {
+    width: 14px;
+    height: 14px;
+  }
+
+  .legend-label {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .coverage-map {
+    height: 250px;
+  }
+
+  .get-location-btn {
+    bottom: 0.5rem;
+    right: 0.5rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.75rem;
+  }
+}
+
+.coverage-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.coverage-item {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: var(--box-shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.coverage-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.2);
+}
+
+.coverage-zone {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.zone-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: white;
+}
+
+.zone-1 {
+  background: #4caf50;
+}
+
+.zone-2 {
+  background: #2196f3;
+}
+
+.zone-3 {
+  background: #ff9800;
+}
+
+.zone-4 {
+  background: #f44336;
+}
+
+.zone-details h4 {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-bottom: 0.3rem;
+}
+
+.zone-details p {
+  font-size: 0.9rem;
+  color: var(--primary-text-color);
+}
+
+.delivery-time {
+  background: var(--bg-color-1);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.delivery-fee {
+  background: var(--primary-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ==========================
+   TEMPERATURE GUARANTEE
+   ========================== */
+
+.temp-guarantee {
+  padding: 5rem 0;
+}
+
+.guarantee-content {
+  background: linear-gradient(
+    135deg,
+    rgba(254, 175, 195, 0.1),
+    rgba(236, 61, 96, 0.1)
+  );
+  border-radius: 25px;
+  padding: 4rem;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  border: 2px solid var(--bg-color-1);
+}
+
+.guarantee-icon {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1),
+    var(--dark-primary-color)
+  );
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.guarantee-icon i {
+  font-size: 4rem;
+  color: white;
+}
+
+.guarantee-text {
+  flex: 1;
+}
+
+.guarantee-text h2 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.guarantee-text p {
+  font-size: 1.2rem;
+  color: var(--primary-text-color);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.guarantee-features {
+  list-style: none;
+  margin-bottom: 2rem;
+}
+
+.guarantee-features li {
+  font-size: 1.1rem;
+  color: var(--primary-text-color);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.guarantee-features i {
+  color: var(--bg-color-1);
+  font-size: 1.2rem;
+}
+
+.guarantee-note {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border-left: 4px solid var(--bg-color-1);
+}
+
+.guarantee-note strong {
+  color: var(--primary-color);
+}
+
+/* ==========================
+   PAYMENT OPTIONS
+   ========================== */
+
+.payment-options {
+  padding: 5rem 0;
+}
+
+.payment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.payment-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: var(--box-shadow);
+  transition: all 0.4s ease;
+  text-align: center;
+}
+
+.payment-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 35px rgba(255, 107, 157, 0.3);
+}
+
+.payment-icon {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1),
+    var(--dark-primary-color)
+  );
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.payment-icon i {
+  font-size: 2rem;
+  color: white;
+}
+
+.payment-card h3 {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-weight: 700;
+}
+
+.payment-card p {
+  font-size: 1rem;
+  color: var(--primary-text-color);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.payment-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.payment-icons i {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+}
+
+.payment-security {
+  text-align: center;
+  margin-top: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 1.1rem;
+  color: var(--primary-text-color);
+}
+
+.payment-security i {
+  color: var(--bg-color-1);
+  font-size: 1.5rem;
+}
+
+.order-section {
+  padding: 6rem 0;
+  background: linear-gradient(135deg, #fef9fb 0%, #fff0f3 100%);
+}
+
+.order-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.order-badge {
+  display: inline-block;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1),
+    var(--dark-primary-color)
+  );
+  color: white;
+  padding: 0.6rem 2rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(236, 61, 96, 0.3);
+}
+
+.order-title {
+  font-size: 3.5rem;
+  color: var(--primary-color);
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+
+.order-desc {
+  font-size: 1.25rem;
+  color: var(--primary-text-color);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.order-card {
+  background: white;
+  border-radius: 30px;
+  padding: 3.5rem;
+  box-shadow: 0 20px 60px rgba(236, 61, 96, 0.1);
+  max-width: 900px;
+  margin: 0 auto;
+  border: 1px solid rgba(254, 175, 195, 0.3);
+}
+
+.form-section {
+  margin-bottom: 3rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(254, 175, 195, 0.2);
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 2rem;
+}
+
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.4rem;
+  color: var(--primary-color);
+  font-weight: 700;
+  margin-bottom: 1.8rem;
+  font-family: "Inter", sans-serif;
+}
+
+.section-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1),
+    var(--dark-primary-color)
+  );
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+
+/* Form Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-wrapper.full-width {
+  grid-column: 1 / -1;
+}
+
+.input-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #fafafa;
+  border: 2px solid #e8e8e8;
+  border-radius: 14px;
+  padding: 0 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus-within {
+  background: white;
+  border-color: var(--bg-color-1);
+  box-shadow: 0 0 0 4px rgba(254, 175, 195, 0.15);
+}
+
+.input-icon {
+  color: var(--bg-color-1);
+  font-size: 1.1rem;
+  margin-right: 0.8rem;
+  flex-shrink: 0;
+}
+
+.input-field input,
+.input-field select,
+.input-field textarea {
+  flex: 1;
+  padding: 1rem 0;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  color: var(--primary-color);
+  font-family: "Inter", sans-serif;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+}
+
+.input-field input::placeholder,
+.input-field textarea::placeholder {
+  color: #aaa;
+  font-weight: 400;
+}
+
+.select-field {
+  position: relative;
+  cursor: pointer;
+}
+
+.select-field select {
+  cursor: pointer;
+  appearance: none;
+  padding-right: 2rem;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 1.2rem;
+  color: var(--bg-color-1);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.textarea-field {
+  padding: 1rem 1.2rem;
+  align-items: flex-start;
+}
+
+.textarea-icon {
+  margin-top: 0.3rem;
+}
+
+.textarea-field textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+/* Submit Button */
+.form-submit-area {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.order-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-1),
+    var(--dark-primary-color)
+  );
+  color: white;
+  border: none;
+  padding: 1.2rem 3rem;
+  border-radius: 50px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(236, 61, 96, 0.35);
+}
+
+.order-submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(236, 61, 96, 0.45);
+}
+
+.order-submit-btn:active {
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  transition: transform 0.3s ease;
+}
+
+.order-submit-btn:hover .btn-icon {
+  transform: translateX(5px);
+}
+
+/* ==========================
+   FAQ SECTION
+   ========================== */
+
+.faq-section {
+  padding: 5rem 0;
+}
+
+.faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  background: white;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.faq-question:hover {
+  background: rgba(254, 175, 195, 0.1);
+}
+
+.faq-question span {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  flex: 1;
+}
+
+.faq-question i {
+  color: var(--bg-color-1);
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-question i {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.3s ease,
+    padding 0.3s ease;
+  background: rgba(254, 175, 195, 0.05);
+}
+
+.faq-item.active .faq-answer {
+  max-height: 500px;
+  padding: 1.5rem;
+}
+
+.faq-answer p {
+  font-size: 1.1rem;
+  color: var(--primary-text-color);
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* ==========================
+   DELIVERY CONTACT
+   ========================== */
+
+.delivery-contact {
+  padding: 3rem 2rem;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.contact-card {
+  background: white;
+  border-radius: 25px;
+  padding: 3rem;
+  box-shadow: var(--box-shadow);
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.contact-item {
+  text-align: center;
+  flex: 1;
+  min-width: 200px;
+}
+
+.contact-item i {
+  font-size: 2.5rem;
+  color: var(--bg-color-1);
+  margin-bottom: 1rem;
+}
+
+.contact-item h4 {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.contact-item p {
+  font-size: 1.1rem;
+  color: var(--primary-text-color);
+}
+
+/* ==========================
+   RESPONSIVE DESIGN
+   ========================== */
+
+@media (max-width: 1024px) {
+  .coverage-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .coverage-map {
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .delivery-hero {
+    min-height: 60vh;
+    padding: 6rem 1.5rem 3rem;
+  }
+
+  .delivery-title {
+    font-size: 3rem;
+  }
+
+  .delivery-lead {
+    font-size: 1.6rem;
+  }
+
+  .floating-icecream .float-img {
+    width: 80px;
+  }
+
+  .floating-icecream .float-img.img-2,
+  .floating-icecream .float-img.img-3 {
+    width: 60px;
+  }
+
+  .methods-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* New Order Form Responsive */
+  .order-title {
+    font-size: 2.5rem;
+  }
+
+  .order-card {
+    padding: 2.5rem;
+    margin: 0 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .form-section-title {
+    font-size: 1.2rem;
+  }
+
+  .section-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+
+  .guarantee-content {
+    flex-direction: column;
+    text-align: center;
+    padding: 2.5rem;
+  }
+
+  .contact-card {
+    flex-direction: column;
+  }
+
+  .section-title {
+    font-size: 2.2rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .delivery-hero {
+    min-height: 50vh;
+    padding: 5rem 1rem 2rem;
+  }
+
+  .delivery-title {
+    font-size: 2.5rem;
+  }
+
+  .delivery-lead {
+    font-size: 1.4rem;
+  }
+
+  .floating-icecream {
+    display: none;
+  }
+
+  .method-card,
+  .payment-card {
+    padding: 2rem;
+  }
+
+  /* New Order Form Mobile */
+  .order-section {
+    padding: 4rem 0;
+  }
+
+  .order-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .order-badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 1.5rem;
+  }
+
+  .order-title {
+    font-size: 2rem;
+  }
+
+  .order-desc {
+    font-size: 1.1rem;
+  }
+
+  .order-card {
+    padding: 1.8rem;
+    border-radius: 20px;
+  }
+
+  .form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.8rem;
+  }
+
+  .form-section-title {
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .section-icon {
+    width: 25px;
+    height: 25px;
+    font-size: 0.9rem;
+  }
+
+  .form-grid {
+    gap: 1.2rem;
+  }
+
+  .input-field {
+    padding: 0 1rem;
+  }
+
+  .input-field input,
+  .input-field select {
+    padding: 0.85rem 0;
+  }
+
+  .input-label {
+    font-size: 0.9rem;
+  }
+
+  .order-submit-btn {
+    width: 100%;
+    padding: 1.1rem 2rem;
+    font-size: 1.1rem;
+    justify-content: center;
+  }
+
+  .contact-card {
+    padding: 2rem;
+  }
+
+  .section-header {
+    margin-bottom: 2rem;
+  }
+
+  .delivery-methods,
+  .payment-options,
+  .faq-section,
+  .delivery-contact {
+    padding: 3rem 0;
+  }
+}
+
+/* ==========================
+   ACCESSIBILITY
+   ========================== */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--bg-color-1);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .floating-icecream .float-img {
+    animation: none;
+  }
+
+  .method-card,
+  .payment-card,
+  .coverage-item {
+    transition: none;
+  }
+}

@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Manage your Glacy Store profile"/>
+<link rel="shortcut icon" href="../images/icons/favicon.png" type="image/x-icon"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Slab:wght@400;500;700&family=Yanone+Kaffeesatz:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="stylesheet" href="../css/style.css"/>
+<link rel="stylesheet" href="../css/profile.css"/>
+<title>Glacy-Store | My Profile</title>
+<script type="module" src="../script/form-toggle.js"></script>
+</head>
+
+<body>
+<header id="header" class="container-center">
+  <nav class="nav">
+    <div class="nav-item">
+      <div id="logo">
+        <a href="../index.html"><img src="../images/icons/logo.svg" alt="site logo"/></a>
+      </div>
+      <ul class="nav-list">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="catalogs.html" class="nav-link">Catalog</a></li>
+        <li><a href="blog.html" class="nav-link">Blog</a></li>
+        <li><a href="about.html" class="nav-link">About us</a></li>
+        <li><a href="delivery.html" class="nav-link">Delivery & Payment</a></li>
+      </ul>
+    </div>
+    <div class="nav-info">
+      <div class="nav-form">
+        <p>+1 317 234-67-33</p>
+        <div class="form-group search" id="search-toggle">
+          <img src="../images/icons/search.svg" alt="search"/>
+          <div class="search-box visually-hidden" id="search-box">
+            <form class="search-form">
+              <input type="search" id="search" name="q" placeholder="Search products" aria-label="Search" required/>
+              <button type="submit" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+          </div>
+        </div>
+        <div class="form-group form-login">
+          <i class="fa-solid fa-user login-icon"></i>
+          <span class="login-label">User</span>
+          <div class="login-container visually-hidden" id="login-container"></div>
+        </div>
+        <div class="form-group form-cart">
+          <i class="fa-solid fa-cart-shopping cart-icon"></i>
+          <label for="cart" class="cart-label">Empty</label>
+          <div class="cart-container visually-hidden" id="cart-container">
+            <h3>Your Cart</h3>
+            <div class="cart-items"><p class="empty-cart-message">Your cart is empty</p></div>
+            <div class="cart-total"><p>Total: <span class="total-amount">$0.00</span></p><button class="checkout-btn">Checkout</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="burger-menu" id="burger-menu" aria-label="Toggle menu">
+      <span class="burger-line"></span><span class="burger-line"></span><span class="burger-line"></span>
+    </button>
+  </nav>
+
+  <div class="mobile-sidebar" id="mobile-sidebar">
+    <div class="sidebar-content">
+      <button class="sidebar-close" id="sidebar-close" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
+      <ul class="sidebar-nav">
+        <li><a href="../index.html" class="sidebar-link">Home</a></li>
+        <li><a href="catalogs.html" class="sidebar-link">Catalog</a></li>
+        <li><a href="blog.html" class="sidebar-link">Blog</a></li>
+        <li><a href="about.html" class="sidebar-link">About us</a></li>
+        <li><a href="delivery.html" class="sidebar-link">Delivery & Payment</a></li>
+        <li><a href="profile.html" class="sidebar-link active">My Profile</a></li>
+      </ul>
+      <div class="sidebar-actions">
+        <div class="sidebar-phone"><i class="fa-solid fa-phone"></i><p>+1 317 234-67-33</p></div>
+        <button class="sidebar-btn" id="sidebar-search"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+        <button class="sidebar-btn" id="sidebar-login"><i class="fa-solid fa-user"></i><span>Login</span></button>
+        <button class="sidebar-btn" id="sidebar-cart"><i class="fa-solid fa-cart-shopping"></i><span>Cart</span></button>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+</header>
+
+<main class="profile-page">
+  <!-- Profile Hero Banner -->
+  <div class="profile-hero">
+    <div class="profile-hero-overlay"></div>
+    <div class="profile-hero-content container-center">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar-ring">
+          <div class="profile-avatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <span class="profile-status online" title="Online"></span>
+        </div>
+        <button class="avatar-edit-btn" title="Change avatar"><i class="fa-solid fa-camera"></i></button>
+      </div>
+      <div class="profile-hero-info">
+        <h1 class="profile-name" id="hero-name">Loading...</h1>
+        <p class="profile-role" id="hero-role">Member</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-center">
+    <!-- Profile Stats Bar -->
+    <div class="profile-stats-bar">
+      <div class="stat-item">
+        <span class="stat-value" id="stat-orders">0</span>
+        <span class="stat-label">Orders</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-member">--</span>
+        <span class="stat-label">Member Since</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-spent">$0</span>
+        <span class="stat-label">Total Spent</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-completion">0%</span>
+        <span class="stat-label">Profile</span>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="profile-layout">
+      <!-- Left Sidebar -->
+      <aside class="profile-sidebar">
+        <nav class="profile-nav">
+          <button class="profile-nav-item active" data-tab="overview">
+            <div class="nav-icon"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="nav-text">
+              <span class="nav-title">Overview</span>
+              <span class="nav-desc">Account summary</span>
+            </div>
+          </button>
+          <button class="profile-nav-item" data-tab="profile">
+            <div class="nav-icon"><i class="fa-solid fa-user-pen"></i></div>
+            <div class="nav-text">
+              <span class="nav-title">Edit Profile</span>
+              <span class="nav-desc">Personal information</span>
+            </div>
+          </button>
+          <button class="profile-nav-item" data-tab="security">
+            <div class="nav-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="nav-text">
+              <span class="nav-title">Security</span>
+              <span class="nav-desc">Password & auth</span>
+            </div>
+          </button>
+          <button class="profile-nav-item" data-tab="orders">
+            <div class="nav-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+            <div class="nav-text">
+              <span class="nav-title">Orders</span>
+              <span class="nav-desc">Purchase history</span>
+            </div>
+          </button>
+        </nav>
+
+        <!-- Profile Completion Card -->
+        <div class="completion-card">
+          <div class="completion-header">
+            <i class="fa-solid fa-bullseye"></i>
+            <span>Profile Completion</span>
+          </div>
+          <div class="completion-bar">
+            <div class="completion-progress" id="completion-progress" style="width: 60%"></div>
+          </div>
+          <p class="completion-text" id="completion-text">Complete your profile for better experience</p>
+        </div>
+      </aside>
+
+      <!-- Right Content Area -->
+      <div class="profile-main">
+        <!-- Overview Tab -->
+        <div class="tab-panel active" id="panel-overview">
+          <div class="panel-header">
+            <h2><i class="fa-solid fa-chart-pie"></i> Overview</h2>
+            <p class="panel-subtitle">Quick summary of your account</p>
+          </div>
+
+          <div class="info-cards-grid">
+            <div class="info-card">
+              <div class="info-card-icon" style="background: linear-gradient(135deg, #FEAFBF, #EC3D60);">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div class="info-card-content">
+                <h3>Personal Info</h3>
+                <p id="overview-name">--</p>
+                <p id="overview-email" class="text-muted">--</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div class="info-card-content">
+                <h3>Contact</h3>
+                <p id="overview-contact">--</p>
+                <span class="badge verified"><i class="fa-solid fa-check"></i> Verified</span>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                <i class="fa-solid fa-calendar-check"></i>
+              </div>
+              <div class="info-card-content">
+                <h3>Account Status</h3>
+                <p>Active</p>
+                <span class="badge active"><i class="fa-solid fa-circle"></i> Active</span>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                <i class="fa-solid fa-crown"></i>
+              </div>
+              <div class="info-card-content">
+                <h3>Membership</h3>
+                <p id="overview-role">Standard</p>
+                <span class="badge default">Free Plan</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="recent-activity">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
+            <div class="activity-list" id="activity-list">
+              <div class="activity-empty">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Loading your activity...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Profile Tab -->
+        <div class="tab-panel" id="panel-profile">
+          <div class="panel-header">
+            <h2><i class="fa-solid fa-user-pen"></i> Edit Profile</h2>
+            <p class="panel-subtitle">Update your personal information</p>
+          </div>
+
+          <form id="profile-form" class="modern-form">
+            <div class="form-grid">
+              <div class="input-wrapper full-width">
+                <label for="profile-name" class="input-label"><i class="fa-solid fa-user"></i> Full Name</label>
+                <div class="input-field">
+                  <i class="fa-solid fa-user input-icon"></i>
+                  <input type="text" id="profile-name" name="name" placeholder="Enter your full name" required/>
+                </div>
+                <span class="error-message" id="name-error"></span>
+              </div>
+
+              <div class="input-wrapper full-width">
+                <label for="profile-email" class="input-label"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                <div class="input-field">
+                  <i class="fa-solid fa-envelope input-icon"></i>
+                  <input type="email" id="profile-email" name="email" placeholder="your@email.com" required/>
+                </div>
+                <span class="error-message" id="email-error"></span>
+              </div>
+
+              <div class="input-wrapper full-width">
+                <label class="input-label"><i class="fa-solid fa-calendar"></i> Member Since</label>
+                <div class="input-field">
+                  <i class="fa-solid fa-calendar input-icon"></i>
+                  <input type="text" id="profile-created" placeholder="Loading..." readonly/>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" id="btn-reset">Reset</button>
+              <button type="submit" class="btn-primary" id="btn-save-profile">
+                <span class="btn-text">Save Changes</span>
+                <span class="btn-loader"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Security Tab -->
+        <div class="tab-panel" id="panel-security">
+          <div class="panel-header">
+            <h2><i class="fa-solid fa-shield-halved"></i> Security</h2>
+            <p class="panel-subtitle">Manage your password and account security</p>
+          </div>
+
+          <div class="security-section">
+            <div class="security-item">
+              <div class="security-info">
+                <h3>Password</h3>
+                <p>Last changed: <span id="last-password-change">Never</span></p>
+              </div>
+              <button class="btn-outline" id="btn-toggle-password">Change Password</button>
+            </div>
+
+            <form id="password-form" class="modern-form password-form-hidden">
+              <div class="form-grid">
+                <div class="input-wrapper full-width">
+                  <label for="current-password" class="input-label"><i class="fa-solid fa-lock"></i> Current Password</label>
+                  <div class="input-field">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <input type="password" id="current-password" name="currentPassword" placeholder="Enter current password"/>
+                    <button type="button" class="toggle-password" data-target="current-password"><i class="fa-solid fa-eye"></i></button>
+                  </div>
+                  <span class="error-message" id="current-password-error"></span>
+                </div>
+
+                <div class="input-wrapper full-width">
+                  <label for="new-password" class="input-label"><i class="fa-solid fa-lock"></i> New Password</label>
+                  <div class="input-field">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <input type="password" id="new-password" name="newPassword" placeholder="Enter new password"/>
+                    <button type="button" class="toggle-password" data-target="new-password"><i class="fa-solid fa-eye"></i></button>
+                  </div>
+                  <span class="error-message" id="new-password-error"></span>
+                </div>
+
+                <!-- Password Strength Meter -->
+                <div class="password-strength full-width" id="password-strength">
+                  <div class="strength-bar">
+                    <div class="strength-segment" data-strength="1"></div>
+                    <div class="strength-segment" data-strength="2"></div>
+                    <div class="strength-segment" data-strength="3"></div>
+                    <div class="strength-segment" data-strength="4"></div>
+                  </div>
+                  <span class="strength-text" id="strength-text">Enter a password</span>
+                </div>
+
+                <div class="input-wrapper full-width">
+                  <label for="confirm-password" class="input-label"><i class="fa-solid fa-lock"></i> Confirm New Password</label>
+                  <div class="input-field">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm new password"/>
+                    <button type="button" class="toggle-password" data-target="confirm-password"><i class="fa-solid fa-eye"></i></button>
+                  </div>
+                  <span class="error-message" id="confirm-password-error"></span>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn-secondary" id="btn-cancel-password">Cancel</button>
+                <button type="submit" class="btn-primary" id="btn-save-password">
+                  <span class="btn-text">Update Password</span>
+                  <span class="btn-loader"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="security-divider"></div>
+
+          <div class="security-item">
+            <div class="security-info">
+              <h3>Account Deletion</h3>
+              <p>Permanently delete your account and all data</p>
+            </div>
+            <button class="btn-danger" id="btn-delete-account">Delete Account</button>
+          </div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div class="tab-panel" id="panel-orders">
+          <div class="panel-header">
+            <h2><i class="fa-solid fa-bag-shopping"></i> Order History</h2>
+            <p class="panel-subtitle">View and track your orders</p>
+          </div>
+
+          <div class="orders-container" id="orders-container">
+            <div class="empty-state">
+              <div class="empty-icon">
+                <i class="fa-solid fa-box-open"></i>
+              </div>
+              <h3>No orders yet</h3>
+              <p>You haven't placed any orders yet. Start exploring our delicious ice cream collection!</p>
+              <a href="catalogs.html" class="btn-primary">
+                <i class="fa-solid fa-ice-cream"></i> Browse Catalog
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="center footer-contents">
+    <div class="social">
+      <a href="#" class="social-link"><img src="../images/icons/vk.png" alt="VK"/></a>
+      <a href="#" class="social-link"><img src="../images/icons/Facebook.png" alt="Facebook"/></a>
+      <a href="#" class="social-link"><img src="../images/icons/Instagram.png" alt="Instagram"/></a>
+    </div>
+    <ul class="footer-menu">
+      <li><a href="#">For suppliers</a></li>
+      <li><a href="#">Our Documents</a></li>
+      <li><a href="#">About production</a></li>
+      <li><a href="#">Environmental standards</a></li>
+    </ul>
+    <div class="footer-made">
+      <p>Copyright &copy; <span id="current-year"></span> made ❤️ by <a href="#"> Jayblacc </a></p>
+    </div>
+  </div>
+</footer>
+
+<div id="toast-container"></div>
+
+<script type="module" src="../script/script.js"></script>
+<script type="module" src="../script/profile.js"></script>
+</body>
+</html>

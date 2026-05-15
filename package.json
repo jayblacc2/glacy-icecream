@@ -1,23 +1,35 @@
 {
-  "name": "glacy",
+  "name": "glacy-store",
   "version": "1.0.0",
-  "description": "\"# glacy\"  git init git add README.md git commit -m \"first commit\" git branch -M main git remote add origin https://github.com/jideman2k/glacy.git git push -u origin main\r #\u0000 \u0000g\u0000l\u0000a\u0000c\u0000y\u0000\r\u0000 \u0000",
-  "main": "index.js",
+  "description": "Ice cream store website with frontend and backend",
+  "main": "frontend/index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite frontend",
+    "build": "vite build --config frontend/vite.config.js",
+    "preview": "vite preview --config frontend/vite.config.js",
+    "start": "npm run dev",
+    "test": "echo 'Test process placeholder'",
+    "version:major": "npm version major -m \"Bump to version %s\"",
+    "version:minor": "npm version minor -m \"Bump to version %s\"",
+    "version:patch": "npm version patch -m \"Bump to version %s\""
+  },
+  "keywords": [
+    "ice-cream",
+    "store",
+    "ecommerce",
+    "vanilla-js"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^6.4.1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jideman2k/glacy.git"
+    "url": "https://github.com/yourusername/glacy-store.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jideman2k/glacy/issues"
+    "url": "https://github.com/yourusername/glacy-store/issues"
   },
-  "homepage": "https://github.com/jideman2k/glacy#readme",
-  "dependencies": {
-    "live-server": "^1.2.1"
-  }
+  "homepage": "https://github.com/yourusername/glacy-store#readme"
 }

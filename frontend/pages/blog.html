@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Ice Cream Blog - Latest articles, recipes, and news about ice cream"
+    />
+
+    <link
+      rel="shortcut icon"
+      href="../images/icons/favicon.png"
+      type="image/x-icon"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Slab:wght@400;500;700&family=Yanone+Kaffeesatz:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/blog.css" />
+    <title>Glacy-Store | Ice Cream Blog</title>
+    <script type="module" src="../script/form-toggle.js"></script>
+  </head>
+
+  <body>
+    <header id="header" class="container-center">
+      <nav class="nav">
+        <div class="nav-item">
+          <div id="logo">
+            <a href="../index.html">
+              <img src="../images/icons/logo.svg" alt="site logo" />
+            </a>
+          </div>
+          <ul class="nav-list">
+            <li><a href="../index.html" class="nav-link">Home</a></li>
+            <li><a href="catalogs.html" class="nav-link">Catalog</a></li>
+            <li><a href="blog.html" class="nav-link active">Blog</a></li>
+            <li><a href="about.html" class="nav-link">About us</a></li>
+            <li>
+              <a href="delivery.html" class="nav-link"
+                >Delivery & Payment</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="nav-info">
+          <div class="nav-form">
+            <p>+1 317 234-67-33</p>
+            <div class="form-group search" id="search-toggle">
+              <img src="../images/icons/search.svg" alt="search" />
+              <div class="search-box visually-hidden" id="search-box">
+                <form class="search-form">
+                  <input
+                    type="search"
+                    id="search"
+                    name="q"
+                    placeholder="Search products"
+                    aria-label="Search"
+                    required
+                  />
+                  <button type="submit" class="btn-search">
+                    <span class="search-text visually-hidden">Search</span>
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+            <div class="form-group form-login">
+              <i class="fa-solid fa-user login-icon"></i>
+              <span for="login" class="login-label">User</span>
+              <div
+                class="login-container visually-hidden"
+                id="login-container"
+              ></div>
+            </div>
+
+            <div class="form-group form-cart">
+              <i class="fa-solid fa-cart-shopping cart-icon"></i>
+              <label for="cart" class="cart-label">Empty</label>
+              <div class="cart-container visually-hidden" id="cart-container">
+                <h3>Your Cart</h3>
+                <div class="cart-items">
+                  <!-- Cart items will be dynamically added here -->
+                  <p class="empty-cart-message">Your cart is empty</p>
+                </div>
+                <div class="cart-total">
+                  <p>Total: <span class="total-amount">$0.00</span></p>
+                  <button class="checkout-btn">Checkout</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Burger Menu Button -->
+        <button class="burger-menu" id="burger-menu" aria-label="Toggle menu">
+          <span class="burger-line"></span>
+          <span class="burger-line"></span>
+          <span class="burger-line"></span>
+        </button>
+      </nav>
+
+      <!-- Mobile Sidebar Menu -->
+      <div class="mobile-sidebar" id="mobile-sidebar">
+        <div class="sidebar-content">
+          <button
+            class="sidebar-close"
+            id="sidebar-close"
+            aria-label="Close menu"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+
+          <ul class="sidebar-nav">
+            <li><a href="../index.html" class="sidebar-link">Home</a></li>
+            <li>
+              <a href="catalogs.html" class="sidebar-link">Catalog</a>
+            </li>
+            <li><a href="blog.html" class="sidebar-link active">Blog</a></li>
+
+            <li>
+              <a href="about.html" class="sidebar-link">About us</a>
+            </li>
+            <li>
+              <a href="delivery.html" class="sidebar-link"
+                >Delivery & Payment</a
+              >
+            </li>
+          </ul>
+
+          <div class="sidebar-actions">
+            <div class="sidebar-phone">
+              <i class="fa-solid fa-phone"></i>
+              <p>+1 317 234-67-33</p>
+            </div>
+
+            <button class="sidebar-btn" id="sidebar-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>Search</span>
+            </button>
+
+            <button class="sidebar-btn" id="sidebar-login">
+              <i class="fa-solid fa-user"></i>
+              <span>Login</span>
+            </button>
+
+            <button class="sidebar-btn" id="sidebar-cart">
+              <i class="fa-solid fa-cart-shopping"></i>
+              <span>Cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Overlay -->
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    </header>
+    <div class="blog-page">
+      <div class="blog-header">
+        <h1>Ice Cream Stories & News</h1>
+        <p>
+          Discover the latest articles, recipes, tips, and sweet stories from
+          the world of ice cream. Stay updated with trends, flavors, and
+          everything delicious!
+        </p>
+      </div>
+      <div class="blog-container">
+        <div class="blog-grid" id="blog-grid"></div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" id="modal-close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div id="modal-inner-content"></div>
+      </div>
+    </div>
+
+    <script type="module" src="../script/script.js"></script>
+  </body>
+  <script type="module" src="../script/blog.js"></script>
+</html>
