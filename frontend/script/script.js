@@ -7,7 +7,7 @@ import {
   logout,
   registerUser,
 } from "./auth.js";
-import { fetchCart, addItemToCart, updateCartItem, removeCartItem, clearCart, syncCart } from "./cart.service.js";
+import { fetchCart, addItemToCart, updateCartItem, removeCartItem, syncCart } from "./cart.service.js";
 
 let cartItems = [];
 let icecreams = [];
@@ -228,26 +228,18 @@ function loadCart() {
 
 function handleCheckout() {
   if (!isLoggedIn()) {
-    alert("Please login to proceed with checkout");
+    showToast("Please login to proceed with checkout", "error");
     const loginContainer = document.getElementById("login-container");
-    loginContainer.classList.remove("visually-hidden");
+    if (loginContainer) loginContainer.classList.remove("visually-hidden");
     return;
   }
 
-  const totalAmount = document.querySelector(".total-amount").textContent;
-  alert(
-    `Checkout for ${cartItems.length} items. Total: ${totalAmount}\n\nOrder placed successfully!`,
-  );
-
-  clearCart().then(() => {
-    cartItems = [];
-    updateCart();
-  });
-
-  const cartContainer = document.getElementById("cart-container");
-  cartContainer.classList.add("visually-hidden");
+  const isInPagesDir = window.location.pathname.includes("/pages/");
+  window.location.href = (isInPagesDir ? "" : "pages/") + "profile.html?tab=orders";
 }
 
+// ========================
+// MOBILE MENU
 // ========================
 // MOBILE MENU
 // ========================
@@ -657,6 +649,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   loadCart();
+
+  // Listen for cart updates from other modules (e.g. catalog.js)
+  document.addEventListener("cart-updated", loadCart);
 
   // Handle window resize
   window.addEventListener("resize", updateCatalog);

@@ -71,8 +71,7 @@ const getCart = async (req, res) => {
 
 const updateCartItem = async (req, res) => {
   try {
-    const { productId } = req.params;
-    const { quantity } = req.body;
+    const { productId, quantity } = req.body;
     const user = req.user;
 
     if (quantity === undefined || quantity < 1) {

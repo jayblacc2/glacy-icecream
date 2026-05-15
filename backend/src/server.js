@@ -7,6 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import cartRoutes from "./routes/cart.route.js";
+import orderRoutes from "./routes/order.route.js";
 import postsRoutes from "./routes/posts.route.js";
 import productsRoutes from "./routes/products.route.js";
 import usersRoutes from "./routes/users.route.js";
@@ -41,6 +42,7 @@ app.use("/api/v1/users", usersRoutes);
 app.use("/api/v1/products", productsRoutes);
 app.use("/api/v1/posts", postsRoutes);
 app.use("/api/v1/cart", cartRoutes);
+app.use("/api/v1/orders", orderRoutes);
 
 const PORT = process.env.PORT || 8100;
 /**

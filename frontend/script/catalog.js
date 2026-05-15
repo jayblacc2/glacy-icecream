@@ -199,6 +199,7 @@ async function addToCart() {
 
   if (result.success) {
     showToast(`${selectedIceCream.name} added to cart!`, "success");
+    document.dispatchEvent(new CustomEvent("cart-updated"));
     closeModal();
   } else {
     showToast(result.message || "Failed to add to cart", "error");

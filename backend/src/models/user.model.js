@@ -35,6 +35,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    avatar: {
+      url: { type: String, default: '' },
+      public_id: { type: String, default: '' },
+    },
     cart: {
       type: [
         {
