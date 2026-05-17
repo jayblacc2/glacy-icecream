@@ -55,6 +55,12 @@ export function createAuthForms() {
   forgotLink.href = "#";
   forgotLink.className = "forgot-password";
   forgotLink.textContent = "Forgot password?";
+  forgotLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (typeof window.showToast === "function") {
+      window.showToast("Password reset coming soon!", "success");
+    }
+  });
   loginBtnDiv.appendChild(forgotLink);
 
   const registerBtn = document.createElement("button");

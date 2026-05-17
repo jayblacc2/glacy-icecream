@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Glacy Store Admin Panel"/>
+<link rel="shortcut icon" href="../images/icons/favicon.png" type="image/x-icon"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Slab:wght@400;500;700&family=Yanone+Kaffeesatz:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"/>
+<link rel="stylesheet" href="../css/style.css"/>
+<link rel="stylesheet" href="../css/admin.css"/>
+<title>Glacy-Store | Admin</title>
+</head>
+<body>
+<header id="header" class="container-center">
+  <nav class="nav">
+    <div class="nav-item">
+      <div id="logo">
+        <a href="../index.html"><img src="../images/icons/logo.svg" alt="site logo"/></a>
+      </div>
+      <ul class="nav-list">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="catalogs.html" class="nav-link">Catalog</a></li>
+        <li><a href="blog.html" class="nav-link">Blog</a></li>
+        <li><a href="about.html" class="nav-link">About us</a></li>
+        <li><a href="delivery.html" class="nav-link">Delivery & Payment</a></li>
+      </ul>
+    </div>
+    <div class="nav-info">
+      <div class="nav-form">
+        <p>+1 317 234-67-33</p>
+        <div class="form-group search" id="search-toggle">
+          <img src="../images/icons/search.svg" alt="search"/>
+          <div class="search-box visually-hidden" id="search-box">
+            <form class="search-form">
+              <input type="search" id="search" name="q" placeholder="Search products" aria-label="Search" required/>
+              <button type="submit" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+          </div>
+        </div>
+        <div class="form-group form-login">
+          <i class="fa-solid fa-user login-icon"></i>
+          <span class="login-label">User</span>
+          <div class="login-container visually-hidden" id="login-container"></div>
+        </div>
+        <div class="form-group form-cart">
+          <i class="fa-solid fa-cart-shopping cart-icon"></i>
+          <span class="cart-label">Empty</span>
+          <div class="cart-container visually-hidden" id="cart-container">
+            <h3>Your Cart</h3>
+            <div class="cart-items"><p class="empty-cart-message">Your cart is empty</p></div>
+            <div class="cart-total"><p>Total: <span class="total-amount">$0.00</span></p><button class="checkout-btn">Checkout</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="burger-menu" id="burger-menu" aria-label="Toggle menu">
+      <span class="burger-line"></span><span class="burger-line"></span><span class="burger-line"></span>
+    </button>
+  </nav>
+  <div class="mobile-sidebar" id="mobile-sidebar">
+    <div class="sidebar-content">
+      <button class="sidebar-close" id="sidebar-close" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
+      <ul class="sidebar-nav">
+        <li><a href="../index.html" class="sidebar-link">Home</a></li>
+        <li><a href="catalogs.html" class="sidebar-link">Catalog</a></li>
+        <li><a href="blog.html" class="sidebar-link">Blog</a></li>
+        <li><a href="about.html" class="sidebar-link">About us</a></li>
+        <li><a href="delivery.html" class="sidebar-link">Delivery & Payment</a></li>
+        <li><a href="profile.html" class="sidebar-link">My Profile</a></li>
+      </ul>
+      <div class="sidebar-actions">
+        <div class="sidebar-phone"><i class="fa-solid fa-phone"></i><p>+1 317 234-67-33</p></div>
+        <button class="sidebar-btn" id="sidebar-search"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+        <button class="sidebar-btn" id="sidebar-login"><i class="fa-solid fa-user"></i><span>Login</span></button>
+        <button class="sidebar-btn" id="sidebar-cart"><i class="fa-solid fa-cart-shopping"></i><span>Cart</span></button>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+</header>
+
+<main class="admin-page">
+  <div class="admin-layout container-center">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Admin Panel</span>
+      </div>
+      <nav class="admin-nav">
+        <button class="admin-nav-item active" data-tab="products">
+          <i class="fa-solid fa-box"></i> Products
+        </button>
+        <button class="admin-nav-item" data-tab="posts">
+          <i class="fa-solid fa-newspaper"></i> Blog Posts
+        </button>
+        <button class="admin-nav-item" data-tab="orders">
+          <i class="fa-solid fa-truck"></i> Orders
+        </button>
+      </nav>
+    </aside>
+
+    <div class="admin-main">
+      <div class="tab-panel active" id="panel-products">
+        <div class="panel-header">
+          <h2><i class="fa-solid fa-box"></i> Products</h2>
+          <button class="admin-btn-primary" id="btn-add-product"><i class="fa-solid fa-plus"></i> Add Product</button>
+        </div>
+        <div class="admin-table-container" id="products-container">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> <p>Loading products...</p></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-posts">
+        <div class="panel-header">
+          <h2><i class="fa-solid fa-newspaper"></i> Blog Posts</h2>
+          <button class="admin-btn-primary" id="btn-add-post"><i class="fa-solid fa-plus"></i> Add Post</button>
+        </div>
+        <div class="admin-table-container" id="posts-container">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> <p>Loading posts...</p></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-orders">
+        <div class="panel-header">
+          <h2><i class="fa-solid fa-truck"></i> Orders</h2>
+        </div>
+        <div class="admin-table-container" id="orders-container">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> <p>Loading orders...</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Toast -->
+<div id="toast-container"></div>
+
+<!-- Modal Overlay -->
+<div class="admin-modal-overlay visually-hidden" id="admin-modal">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <h3 id="modal-title"></h3>
+      <button class="admin-modal-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="admin-modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script type="module" src="../script/script.js"></script>
+<script type="module" src="../script/admin.js"></script>
+</body>
+</html>

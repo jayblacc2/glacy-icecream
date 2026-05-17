@@ -4,18 +4,16 @@ const postSchema = new Schema(
   {
     title: {
       type: String,
-      set: (v) => v.toLowerCase(),
       required: [true, "Title is required"],
       trim: true,
       maxlength: [100, "Title cannot exceed 100 characters"],
-      index: true, // For fast searches/filters
+      index: true,
     },
 
     // Excerpt / Summary (shown under title in card)
     excerpt: {
       type: String,
       required: [true, "Excerpt is required"],
-      set: (v) => v.toLowerCase(),
       trim: true,
       maxlength: [200, "Excerpt cannot exceed 200 characters"],
     },

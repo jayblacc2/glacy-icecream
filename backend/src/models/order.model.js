@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import crypto from 'crypto';
 
 const OrderSchema = new mongoose.Schema(
   {
@@ -30,9 +31,8 @@ const OrderSchema = new mongoose.Schema(
       default: 'pending',
     },
     shippingAddress: {
-      street: { type: String },
-      city: { type: String },
-      zipCode: { type: String },
+      address: { type: String },
+      phone: { type: String },
     },
     paymentMethod: {
       type: String,
@@ -52,12 +52,16 @@ const OrderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexes for frequent queries
+OrderSchema.index({ user: 1, createdAt: -1 });
+OrderSchema.index({ status: 1 });
+OrderSchema.index({ createdAt: -1 });
+
 // Generate order number before saving
 OrderSchema.pre('save', function (next) {
   if (!this.orderNumber) {
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    this.orderNumber = `GLC-${timestamp}-${random}`;
+    const uniqueId = crypto.randomUUID().replace(/-/g, '').substring(0, 12).toUpperCase();
+    this.orderNumber = `GLC-${uniqueId}`;
   }
   next();
 });

@@ -1,5 +1,7 @@
-import { loading } from "../utils/loading.js";
-import { errorMessage, emptyMessage } from "../utils/error-message.js";
+﻿import { loading } from "../utils/loading.js";
+import { errorMessage } from "../utils/error-message.js";
+import { escapeHtml, escapeAttr } from "../utils/security.js";
+import { debugLog, debugError } from "../utils/debug.js";
 
 const API_URL = "/api/v1/posts";
 const LIMIT = 20;
@@ -16,27 +18,32 @@ async function init() {
 async function loadBlogs() {
   const blogGrid = document.getElementById("blog-grid");
   if (!blogGrid) {
-    console.error("blog-grid element not found!");
+    debugError("blog-grid not found");
     return;
   }
   blogGrid.innerHTML = loading("Loading delicious blog posts");
 
   try {
     const url = `${API_URL}?limit=${LIMIT}`;
-    console.log("Fetching from:", url);
+    debugLog("Fetching:", url);
 
     const response = await fetch(url);
-    console.log("Response status:", response.status);
+    debugLog("Response:", response.status);
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("API response:", data);
+    debugLog("API data:", data);
 
-    if (!data.success || !data.data || data.data.length === 0) {
-      console.log("No blogs or API returned error:", data);
+    if (!data.success) {
+      showError("API Error", data.error || "Failed to load blog posts");
+      return;
+    }
+
+    if (!data.data || data.data.length === 0) {
+      debugLog("No blogs");
       showNoBlogs();
       return;
     }
@@ -56,10 +63,10 @@ async function loadBlogs() {
       },
     }));
 
-    console.log("Loaded blogs:", blogs.length);
+    debugLog("Loaded blogs:", blogs.length);
     renderBlogs();
   } catch (error) {
-    console.error("Error loading blogs:", error);
+    debugError("Error loading blogs:", error);
     showError(error);
   }
 }
@@ -87,24 +94,21 @@ function createBlogCard(blog) {
   const date = formatDate(blog.published);
 
   // Show truncated content in card (full content in modal)
-  const description = stripHTML(blog.content).substring(0, 150) + "...";
+  const rawText = stripHTML(blog.content);
+  const description = rawText.length > 150 ? rawText.substring(0, 150) + "..." : rawText;
 
   card.innerHTML = `
                 <div class="blog-card-image">
-                    <img src="${imageUrl}" alt="${
-                      blog.title
-                    }" loading="lazy" onerror="this.src='../images/img1.png'">
-                    <span class="blog-date">${date}</span>
+                    <img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(blog.title)}" loading="lazy" onerror="this.src='../images/img1.png'">
+                    <span class="blog-date">${escapeHtml(date)}</span>
                 </div>
                 <div class="blog-card-content">
-                    <h3 class="blog-card-title">${blog.title}</h3>
-                    <p class="blog-card-description">${description}</p>
+                    <h3 class="blog-card-title">${escapeHtml(blog.title)}</h3>
+                    <p class="blog-card-description">${escapeHtml(description)}</p>
                     <div class="blog-card-footer">
                         <div class="blog-author">
                             <i class="fa-solid fa-user"></i>
-                            <span>${
-                              blog.author?.displayName || "Anonymous"
-                            }</span>
+                            <span>${escapeHtml(blog.author?.displayName || "Anonymous")}</span>
                         </div>
                         <div class="read-more">
                             Read More
@@ -172,16 +176,16 @@ function openModal(blog) {
   const modalInnerContent = document.getElementById("modal-inner-content");
   modalInnerContent.innerHTML = `
     <div class="modal-header-image">
-      <img src="${imageUrl}" alt="${blog.title}" onerror="this.src='../images/img1.png'">
+      <img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(blog.title)}" onerror="this.src='../images/img1.png'">
     </div>
     <div class="modal-body">
       <div class="modal-header-content">
-        <span class="modal-date">${date}</span>
-        <h2 class="modal-title">${blog.title}</h2>
+        <span class="modal-date">${escapeHtml(date)}</span>
+        <h2 class="modal-title">${escapeHtml(blog.title)}</h2>
         <div class="modal-meta">
           <div class="modal-meta-item">
             <i class="fa-solid fa-user"></i>
-            <span>${blog.author?.displayName || "Anonymous"}</span>
+            <span>${escapeHtml(blog.author?.displayName || "Anonymous")}</span>
           </div>
           <div class="modal-meta-item">
             <i class="fa-solid fa-clock"></i>
@@ -191,7 +195,7 @@ function openModal(blog) {
       </div>
 
       <div class="modal-content-area">
-        <p class="modal-excerpt">${blog.description}</p>
+        <p class="modal-excerpt">${escapeHtml(blog.description)}</p>
         <div class="modal-content-full">${formattedContent}</div>
       </div>
 
@@ -281,3 +285,7 @@ document.addEventListener("keydown", (e) => {
 
 // Initialize on page load
 init();
+
+// Expose for onclick handlers in error/empty state buttons
+window.loadBlogs = loadBlogs;
+

@@ -5,7 +5,6 @@ const UserSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       minlength: 3,
       maxlength: 50,
@@ -31,10 +30,6 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-    isLoggedIn: {
-      type: Boolean,
-      default: false,
-    },
     avatar: {
       url: { type: String, default: '' },
       public_id: { type: String, default: '' },
@@ -58,6 +53,8 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+UserSchema.index({ role: 1 });
 
 const User = mongoose.model("User", UserSchema);
 

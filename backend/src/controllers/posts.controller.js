@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+﻿import mongoose from "mongoose";
 import Post from "../models/post.model.js";
 
 const getPosts = async (req, res) => {
@@ -42,8 +42,8 @@ const getPosts = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Error:", error);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    console.error("Posts error:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -65,6 +65,10 @@ const getPost = async (req, res) => {
       });
     }
 
+    // Increment view count
+    post.views = (post.views || 0) + 1;
+    await post.save();
+
     res.status(200).json({
       success: true,
       message: "Post retrieved successfully",
@@ -81,8 +85,8 @@ const getPost = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Error:", error);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    console.error("Posts error:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -117,8 +121,8 @@ const createPost = async (req, res) => {
       data: newPost,
     });
   } catch (error) {
-    console.log("Error:", error);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    console.error("Posts error:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -131,20 +135,20 @@ const deletePost = async (req, res) => {
         .json({ success: false, message: "Invalid post Id" });
     }
     const deletedPost = await Post.findByIdAndDelete(id);
-    if (deletedPost) {
+    if (!deletedPost) {
       return res
-        .status(400)
-        .json({ success: false, message: "Post not available" });
+        .status(404)
+        .json({ success: false, message: "Post not found" });
     }
 
     return res
       .status(200)
       .json({ success: true, message: "Post deleted successfully" });
   } catch (error) {
-    console.log("Internal server error: ", error);
+    console.error("Delete post error:", error.message);
     res
       .status(500)
-      .json({ success: false, message: "Internal server error", error });
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -161,9 +165,11 @@ const updatePost = async (req, res) => {
         message: "All fields are required",
       });
     }
-    const updatedPost = await Post.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
+      { title, excerpt, content, author, featuredImage },
+      { new: true, runValidators: true }
+    );
     if (!updatedPost)
       return res
         .status(400)
@@ -177,9 +183,10 @@ const updatePost = async (req, res) => {
         data: updatedPost,
       });
   } catch (error) {
-    console.log("Error:", error);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    console.error("Posts error:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
-export { createPost, deletePost, getPost, getPosts };
+export { createPost, deletePost, getPost, getPosts, updatePost };
+

@@ -1,12 +1,14 @@
+﻿import { fetchWithCsrf } from '../utils/csrf.js';
+import { debugError } from '../utils/debug.js';
+
 const ORDER_API = '/api/v1/orders';
 
 // Create order (checkout)
 async function createOrder(orderData) {
   try {
-    const response = await fetch(ORDER_API, {
+    const response = await fetchWithCsrf(ORDER_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify(orderData),
     });
 
@@ -18,7 +20,7 @@ async function createOrder(orderData) {
 
     return data;
   } catch (error) {
-    console.error('Create order error:', error);
+    debugError("Create order error:", error);
     throw error;
   }
 }
@@ -39,7 +41,7 @@ async function getUserOrders(page = 1, limit = 10) {
 
     return data;
   } catch (error) {
-    console.error('Get orders error:', error);
+    debugError("Get orders error:", error);
     throw error;
   }
 }
@@ -60,7 +62,7 @@ async function getOrderById(orderId) {
 
     return data;
   } catch (error) {
-    console.error('Get order error:', error);
+    debugError("Get order error:", error);
     throw error;
   }
 }
@@ -68,9 +70,8 @@ async function getOrderById(orderId) {
 // Cancel order
 async function cancelOrder(orderId) {
   try {
-    const response = await fetch(`${ORDER_API}/${orderId}/cancel`, {
+    const response = await fetchWithCsrf(`${ORDER_API}/${orderId}/cancel`, {
       method: 'PUT',
-      credentials: 'include',
     });
 
     const data = await response.json();
@@ -81,9 +82,10 @@ async function cancelOrder(orderId) {
 
     return data;
   } catch (error) {
-    console.error('Cancel order error:', error);
+    debugError("Cancel order error:", error);
     throw error;
   }
 }
 
 export { createOrder, getUserOrders, getOrderById, cancelOrder };
+
