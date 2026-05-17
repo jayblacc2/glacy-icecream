@@ -1,8 +1,10 @@
-import User from "../models/user.model.js";
+﻿import User from "../models/user.model.js";
 import Order from "../models/order.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { uploadImage, deleteImage } from "../utils/cloudinary.util.js";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const registerUser = async (req, res) => {
   try {
@@ -15,7 +17,36 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (name.trim().length < 3 || name.trim().length > 50) {
+      return res.status(400).json({
+        success: false,
+        message: "Name must be between 3 and 50 characters",
+      });
+    }
+
+    const trimmedEmail = email.toLowerCase().trim();
+    if (!EMAIL_REGEX.test(trimmedEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters",
+      });
+    }
+
+    if (password.length > 128) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be less than 128 characters",
+      });
+    }
+
+    const existingUser = await User.findOne({ email: trimmedEmail });
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -27,10 +58,9 @@ const registerUser = async (req, res) => {
     const hashedPassword = bcrypt.hashSync(password, saltRound);
 
     const user = await User.create({
-      name,
-      email: email.toLowerCase(),
+      name: name.trim(),
+      email: trimmedEmail,
       password: hashedPassword,
-      isLoggedIn: true,
     });
 
     const token = jwt.sign(
@@ -42,16 +72,20 @@ const registerUser = async (req, res) => {
     const refreshToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "7d" }
     );
 
     res.cookie("token", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       maxAge: 1000 * 60 * 60,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
     res.status(201).json({
@@ -61,8 +95,7 @@ const registerUser = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        isLoggedIn: user.isLoggedIn,
-      },
+        },
     });
   } catch (error) {
     console.error("Error creating user:", error);
@@ -83,7 +116,15 @@ const userLogin = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() }).select(
+    const trimmedEmail = email.toLowerCase().trim();
+    if (!EMAIL_REGEX.test(trimmedEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format",
+      });
+    }
+
+    const user = await User.findOne({ email: trimmedEmail }).select(
       "+password"
     );
     if (!user) {
@@ -100,9 +141,7 @@ const userLogin = async (req, res) => {
       });
     }
 
-    // Set user as logged in
-    user.isLoggedIn = true;
-    await user.save();
+    // Session tracked via JWT token
 
     // Generate tokens
     const token = jwt.sign(
@@ -120,11 +159,15 @@ const userLogin = async (req, res) => {
     // Set cookies
     res.cookie("token", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       maxAge: 1000 * 60 * 60,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
@@ -135,7 +178,6 @@ const userLogin = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        isLoggedIn: user.isLoggedIn,
         role: user.role,
         cart: user.cart,
       },
@@ -176,6 +218,20 @@ const deleteUser = async (req, res) => {
       });
     }
 
+    // Prevent last admin from deleting themselves
+    if (user.role === "admin") {
+      const adminCount = await User.countDocuments({ role: "admin" });
+      if (adminCount <= 1) {
+        return res.status(400).json({
+          success: false,
+          message: "Cannot delete the last admin account",
+        });
+      }
+    }
+
+    // Delete user's orders first
+    await Order.deleteMany({ user: id });
+
     // Delete the user
     await User.deleteOne({ _id: id });
 
@@ -205,9 +261,7 @@ const userLogout = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findById(decoded.id);
         if (user) {
-          // Set user as logged out
-          user.isLoggedIn = false;
-          await user.save();
+          // Session invalidated via cookie clear
         }
       } catch (error) {
         console.error("Error verifying token during logout:", error);
@@ -231,8 +285,7 @@ const userLogout = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Logout successful",
-      isLoggedIn: false,
-    });
+      });
   } catch (error) {
     console.error("Error logging out:", error);
     return res.status(500).json({
@@ -248,7 +301,6 @@ const checkAuthStatus = async (req, res) => {
     if (!token) {
       return res.status(200).json({
         success: true,
-        isLoggedIn: false,
         user: null,
       });
     }
@@ -259,14 +311,12 @@ const checkAuthStatus = async (req, res) => {
       if (!user) {
         return res.status(200).json({
           success: true,
-          isLoggedIn: false,
           user: null,
         });
       }
 
       res.status(200).json({
         success: true,
-        isLoggedIn: user.isLoggedIn,
         user: {
           id: user.id,
           name: user.name,
@@ -279,7 +329,6 @@ const checkAuthStatus = async (req, res) => {
       // Token is invalid or expired
       return res.status(200).json({
         success: true,
-        isLoggedIn: false,
         user: null,
       });
     }
@@ -291,8 +340,6 @@ const checkAuthStatus = async (req, res) => {
     });
   }
 };
-
-export { registerUser, userLogin, deleteUser, userLogout, checkAuthStatus, getUserProfile, updateUserProfile, changePassword, uploadAvatar };
 
 // Upload avatar image
 const uploadAvatar = async (req, res) => {
@@ -513,3 +560,6 @@ const changePassword = async (req, res) => {
     });
   }
 };
+
+export { registerUser, userLogin, deleteUser, userLogout, checkAuthStatus, getUserProfile, updateUserProfile, changePassword, uploadAvatar };
+

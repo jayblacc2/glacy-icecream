@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
       integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
@@ -76,7 +76,7 @@
             </div>
             <div class="form-group form-login">
               <i class="fa-solid fa-user login-icon"></i>
-              <span for="login" class="login-label">User</span>
+              <span class="login-label">User</span>
               <div
                 class="login-container visually-hidden"
                 id="login-container"
@@ -85,7 +85,7 @@
 
             <div class="form-group form-cart">
               <i class="fa-solid fa-cart-shopping cart-icon"></i>
-              <label for="cart" class="cart-label">Empty</label>
+              <span class="cart-label">Empty</span>
               <div class="cart-container visually-hidden" id="cart-container">
                 <h3>Your Cart</h3>
                 <div class="cart-items">
@@ -221,7 +221,7 @@
                   Free delicate strawberry will be added to your package, when
                   you buy 2kg of ice cream.
                 </p>
-                <a href="" class="btn btn-light">Get gift</a>
+                <a href="pages/catalogs.html" class="btn btn-light">Get gift</a>
               </div>
               <div class="content-img">
                 <img
@@ -238,7 +238,7 @@
                   Free delicate marshmallows will be added to your package, when
                   you buy 2kg of ice cream.
                 </p>
-                <a href="" class="btn btn-light">Get gift</a>
+                <a href="pages/catalogs.html" class="btn btn-light">Get gift</a>
               </div>
               <div class="content-img">
                 <img
@@ -336,14 +336,14 @@
             tastiest things that happen with us. We promise not to spam or send
             any nonsense.
           </p>
-          <form class="subscribe-form">
+          <form class="subscribe-form" id="newsletter-form">
             <input
-              type="text"
+              type="email"
               name="email"
-              id="email"
+              id="subscribe-email"
               placeholder="email@example.com"
             />
-            <button class="btn btn-primary">Send</button>
+            <button type="submit" class="btn btn-primary">Send</button>
           </form>
         </article>
       </section>
@@ -373,7 +373,7 @@
                     <input type="date" id="date" />
                   </div>
                   <div class="input-group">
-                    <label for="Telephone">Telephone</label>
+                    <label for="telephone">Telephone</label>
                     <input
                       type="tel"
                       id="telephone"
@@ -413,13 +413,13 @@
       <div class="center footer-contents">
         <div class="social">
           <a href="" class="social-link">
-            <img src="./images/icons/vk.png" alt="" />
+            <img src="./images/icons/vk.png" alt="VK" />
           </a>
           <a href="" class="social-link">
-            <img src="./images/icons/Facebook.png" alt="" />
+            <img src="./images/icons/Facebook.png" alt="Facebook" />
           </a>
           <a href="" class="social-link">
-            <img src="./images/icons/Instagram.png" alt="" />
+            <img src="./images/icons/Instagram.png" alt="Instagram" />
           </a>
         </div>
         <ul class="footer-menu">
@@ -435,18 +435,16 @@
       </div>
     </footer>
 
-    <!-- Catalog overlay for info on selected icecream  -->
-    <div class="overlay">
-      <div class="modal">
-        <div class="modal-content">
-          <h2 class="modal-title">Thank you for your order!</h2>
-          <p class="modal-text">
-            We will contact you soon to confirm your order.
-          </p>
-          <button class="btn btn-primary" id="modal-close">Close</button>
-        </div>
+    <!-- Thank you overlay -->
+    <div class="overlay" id="thankyou-overlay">
+      <div class="overlay-content">
+        <h2>Thank you for your order!</h2>
+        <p>
+          We will contact you soon to confirm your order.
+        </p>
+        <button class="btn btn-primary" id="thankyou-close">Close</button>
       </div>
     </div>
-    <script type="module" src="script/script.js"></script>
   </body>
 </html>
+

@@ -24,13 +24,11 @@ const ProductSchema = new Schema(
         type: String,
         required: false,
         trim: true,
-        lowercase: true,
       },
       publicId: {
         type: String,
         required: false,
         trim: true,
-        lowercase: true,
       },
     },
     category: {
@@ -48,6 +46,12 @@ const ProductSchema = new Schema(
         "nut",
         "mint",
       ],
+    },
+    stock: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0,
     },
   },
   {

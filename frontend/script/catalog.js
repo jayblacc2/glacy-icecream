@@ -1,8 +1,9 @@
-import { loading } from "../utils/loading.js";
+﻿import { loading } from "../utils/loading.js";
 import { errorMessage, emptyMessage } from "../utils/error-message.js";
 import { showToast } from "../utils/toast-notification.js";
-import { isLoggedIn } from "./auth.js";
 import { addItemToCart } from "./cart.service.js";
+import { escapeHtml, escapeAttr } from "../utils/security.js";
+import { debugLog, debugError } from "../utils/debug.js";
 
 let icecreams = [];
 let currentFilter = "all";
@@ -18,30 +19,35 @@ async function loadIcecreams() {
   );
   try {
     const response = await fetch(`${API_BASE_URL}/products`);
-    console.log("Catalog API response status:", response.status);
+    debugLog("Catalog API status:", response.status);
 
     if (!response.ok) throw new Error(`API Error: ${response.status}`);
     const data = await response.json();
-    console.log("Catalog API data:", data);
+    debugLog("Catalog data:", data);
 
     if (data.success) {
       icecreams = data.products;
       renderCatalog();
+    } else {
+      document.getElementById("catalog-grid").innerHTML = errorMessage(
+        "Oops! Something went wrong",
+        data.message || "Failed to load products. Please try again later.",
+      );
     }
   } catch (error) {
-    console.error("Error loading ice creams:", error);
+    debugError("Error loading catalog:", error);
     document.getElementById("catalog-grid").innerHTML = errorMessage(
       "Oops! Something went wrong",
       `Error loading ice creams: ${error.message}. Please try again later.`,
     );
   } finally {
-    console.log("Some went wrong");
+    debugLog("Catalog loaded");
   }
 }
 
 function filterProducts(category) {
   currentFilter = category;
-  console.log("Filtering by category:", category);
+  debugLog("Filtering:", category);
   renderCatalog();
 }
 
@@ -71,15 +77,15 @@ function renderCatalog() {
     card.dataset.id = icecream.id;
 
     card.innerHTML = `
-            <span class="category-badge">${icecream.category}</span>
+            <span class="category-badge">${escapeHtml(icecream.category)}</span>
             <div class="card-img">
-              <img src="${icecream.image.url}" alt="${icecream.name} ice cream" loading="lazy">
+              <img src="${escapeAttr(icecream.image?.url || '')}" alt="${escapeAttr(icecream.name)} ice cream" loading="lazy">
             </div>
             <div class="card-contents">
-              <h3>${icecream.name}</h3>
-              <p>${icecream.description}</p>
+              <h3>${escapeHtml(icecream.name)}</h3>
+              <p>${escapeHtml(icecream.description)}</p>
               <div class="content-item">
-                <span class="card-price">$${icecream.price}/кг</span>
+                <span class="card-price">$${(icecream.price || 0).toFixed(2)}/kg</span>
               </div>
             </div>
           `;
@@ -97,15 +103,15 @@ function openModal(icecream) {
   const modalBody = document.getElementById("modal-body");
   modalBody.innerHTML = `
           <div class="modal-image">
-            <img src="${icecream.image.url}" alt="${icecream.name} ice cream" loading="lazy">
+            <img src="${escapeAttr(icecream.image?.url || '')}" alt="${escapeAttr(icecream.name)} ice cream" loading="lazy" onerror="this.src='../images/img1.png'">
           </div>
           <div class="modal-details">
-            <span class="category-badge">${icecream.category}</span>
-            <h2>${icecream.name}</h2>
-            <p class="description">${icecream.description}</p>
+            <span class="category-badge">${escapeHtml(icecream.category)}</span>
+            <h2>${escapeHtml(icecream.name)}</h2>
+            <p class="description">${escapeHtml(icecream.description)}</p>
 
             <div class="price-section">
-              <span class="price">$${icecream.price}</span>
+              <span class="price">$${(icecream.price || 0).toFixed(2)}</span>
               <span class="price-label">per kg</span>
             </div>
 
@@ -120,22 +126,22 @@ function openModal(icecream) {
 
             <button class="add-to-cart-btn" id="add-to-cart">
               <i class="fa-solid fa-cart-shopping"></i>
-              Add to Cart - $${icecream.price * quantity}
+              Add to Cart - $${((icecream.price || 0) * quantity).toFixed(2)}
             </button>
 
             <div class="product-info">
               <h3>Product Information</h3>
               <div class="info-item">
                 <span class="info-label">Product ID:</span>
-                <span class="info-value">#${icecream.id}</span>
+                <span class="info-value">#${escapeHtml(icecream.id)}</span>
               </div>
               <div class="info-item">
                 <span class="info-label">Category:</span>
-                <span class="info-value">${icecream.category}</span>
+                <span class="info-value">${escapeHtml(icecream.category)}</span>
               </div>
               <div class="info-item">
                 <span class="info-label">Price per kg:</span>
-                <span class="info-value">₽${icecream.price}</span>
+                <span class="info-value">$${(icecream.price || 0).toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -178,10 +184,10 @@ function increaseQuantity() {
 
 function updateQuantityDisplay() {
   document.getElementById("quantity-value").textContent = quantity;
-  const totalPrice = selectedIceCream.price * quantity;
+  const totalPrice = (selectedIceCream.price || 0) * quantity;
   document.querySelector(".add-to-cart-btn").innerHTML = `
           <i class="fa-solid fa-cart-shopping"></i>
-          Add to Cart - ₽${totalPrice}
+          Add to Cart - $${totalPrice.toFixed(2)}
         `;
 }
 
@@ -245,3 +251,4 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadIcecreams();
   setupFilter();
 });
+

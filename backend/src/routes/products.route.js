@@ -6,14 +6,15 @@ import {
   getProducts,
   updateProduct,
 } from "../controllers/products.controller.js";
-import upload from "../middleware/upload.middleware.js";
+import { protect, adminOnly } from "../middleware/auth.middleware.js";
+import { optionalUpload } from "../middleware/upload.middleware.js";
 
 const Route = express.Router();
 
-Route.route("/create").post(upload.single("image"), createProduct);
+Route.route("/create").post(protect, adminOnly, optionalUpload("image"), createProduct);
 Route.route("/").get(getProducts);
 Route.route("/:id").get(getProduct);
-Route.route("/update/:id").put(updateProduct);
-Route.route("/delete/:id").delete(upload.single("image"), deleteProduct);
+Route.route("/update/:id").put(protect, adminOnly, optionalUpload("image"), updateProduct);
+Route.route("/delete/:id").delete(protect, adminOnly, deleteProduct);
 
 export default Route;

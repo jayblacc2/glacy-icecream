@@ -204,9 +204,28 @@
     }
   }
 
+  // Initialize FAQ accordion
+  function initFaq() {
+    var questions = document.querySelectorAll('.faq-question');
+    questions.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var item = this.closest('.faq-item');
+        if (!item) return;
+        var isActive = item.classList.contains('active');
+        // Close all
+        document.querySelectorAll('.faq-item.active').forEach(function(el) {
+          el.classList.remove('active');
+        });
+        // Open clicked if it wasn't open
+        if (!isActive) item.classList.add('active');
+      });
+    });
+  }
+
   // Initialize on page load
   document.addEventListener('DOMContentLoaded', function() {
     initMap();
+    initFaq();
 
     // Add "Get My Location" button functionality
     var getLocationBtn = document.getElementById('get-location-btn');

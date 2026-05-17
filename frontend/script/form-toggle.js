@@ -1,4 +1,6 @@
-// Form and Cart Toggle Functionality with Authentication Support
+﻿// Form and Cart Toggle Functionality with Authentication Support
+import { escapeHtml } from "../utils/security.js";
+import { debugError } from "../utils/debug.js";
 import {
   getAuthInitPromise,
   getCurrentUser,
@@ -147,7 +149,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       loginContainer.innerHTML = `
         <div class="user-profile">
-          <h3>Welcome, ${displayName}!</h3>
+          <h3>Welcome, ${escapeHtml(displayName)}!</h3>
           <p style="">You are logged in</p>
           <button class="logout-btn">Logout</button>
         </div>
@@ -185,7 +187,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         window.showToast("Logged out successfully");
       }
     } catch (error) {
-      console.error("Logout error:", error);
+      debugError("Logout error:", error);
     }
   }
 
@@ -217,6 +219,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     await getAuthInitPromise();
     await updateAuthUI();
   } catch (error) {
-    console.error("Error initializing auth UI:", error);
+    debugError("Auth UI init error:", error);
   }
 });
+

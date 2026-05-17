@@ -4,14 +4,14 @@ import path from "path";
 //storage
 const storage = multer.memoryStorage();
 
-//file filter function: check the file mime
+//file filter function: whitelist safe image types only (no SVG - XSS risk)
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/gif", "image/webp"]);
+
 const checkFileType = (req, file, cb) => {
-  const mimeType = file.mimetype.startsWith("image");
-  if (mimeType) {
+  if (ALLOWED_TYPES.has(file.mimetype)) {
     return cb(null, true);
-  } else {
-    cb(new Error("file type not supported"));
   }
+  cb(new Error("File type not supported. Allowed: JPEG, PNG, GIF, WebP"));
 };
 
 export const upload = multer({
@@ -19,5 +19,14 @@ export const upload = multer({
   fileFilter: checkFileType,
   limits: { fileSize: 5 * 1024 * 1024 },
 });
+
+export const optionalUpload = (fieldName) => (req, res, next) => {
+  const contentType = req.headers['content-type'] || '';
+  if (contentType.includes('multipart/form-data')) {
+    upload.single(fieldName)(req, res, next);
+  } else {
+    next();
+  }
+};
 
 export default upload;

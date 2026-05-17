@@ -1,4 +1,7 @@
-import { showToast } from '../utils/toast-notification.js';
+﻿import { showToast } from '../utils/toast-notification.js';
+import { escapeHtml, escapeAttr } from '../utils/security.js';
+import { fetchWithCsrf } from '../utils/csrf.js';
+import { debugError } from '../utils/debug.js';
 import { fetchCart } from './cart.service.js';
 import { createOrder, getUserOrders } from './order.service.js';
 
@@ -9,7 +12,7 @@ const $ = (id) => document.getElementById(id);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 // State
-let currentUser = null;
+let profileData = null;
 let originalData = {};
 
 // Initialize on page load
@@ -45,7 +48,7 @@ async function checkAuthAndLoadProfile() {
 
     await loadProfile();
   } catch (err) {
-    console.error('Auth check error:', err);
+    debugError("Auth check error:", err);
     showToast('Authentication error', 'error');
   }
 }
@@ -58,12 +61,12 @@ async function loadProfile() {
 
     if (!res.ok || !data.success) throw new Error(data.message || 'Failed to load profile');
 
-    currentUser = data.user;
+    profileData = data.user;
     originalData = { name: data.user.name, email: data.user.email };
 
     updateUI(data.user);
   } catch (err) {
-    console.error('Load profile error:', err);
+    debugError("Profile load error:", err);
     showToast(err.message, 'error');
   }
 }
@@ -147,7 +150,7 @@ function updateProfileCompletion(user) {
 
   if (progressText) {
     if (percentage === 100) {
-      progressText.textContent = 'Your profile is complete! 🎉';
+      progressText.textContent = 'Your profile is complete! ðŸŽ‰';
     } else {
       progressText.textContent = `Complete your profile for better experience`;
     }
@@ -181,8 +184,8 @@ function loadActivity(user) {
         a.icon === 'profile' ? 'user-pen' : 'key'
       }"></i></div>
       <div class="activity-content">
-        <p>${a.text}</p>
-        <span class="activity-time">${a.time}</span>
+        <p>${escapeHtml(a.text)}</p>
+        <span class="activity-time">${escapeHtml(a.time)}</span>
       </div>
     </div>
   `).join('');
@@ -294,9 +297,8 @@ function setupAvatarUpload() {
     editBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
     try {
-      const res = await fetch(`${API_BASE_URL}/avatar`, {
+      const res = await fetchWithCsrf(`${API_BASE_URL}/avatar`, {
         method: 'POST',
-        credentials: 'include',
         body: formData,
       });
 
@@ -310,7 +312,7 @@ function setupAvatarUpload() {
       }
 
       // Update currentUser
-      if (currentUser) currentUser.avatar = data.avatar;
+      if (profileData) profileData.avatar = data.avatar;
 
       showToast('Avatar updated!', 'success');
     } catch (err) {
@@ -381,7 +383,7 @@ function setupFormSubmissions() {
   const resetBtn = $('btn-reset');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      if (currentUser) {
+      if (profileData) {
         $('profile-name').value = originalData.name || '';
         $('profile-email').value = originalData.email || '';
         clearErrors();
@@ -420,17 +422,16 @@ async function handleProfileUpdate(e) {
   setLoading(btn, true);
 
   try {
-    const res = await fetch(`${API_BASE_URL}/profile`, {
+    const res = await fetchWithCsrf(`${API_BASE_URL}/profile`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify({ name, email })
     });
 
     const data = await res.json();
     if (!res.ok || !data.success) throw new Error(data.message);
 
-    currentUser = data.user;
+    profileData = data.user;
     originalData = { name, email };
     updateUI(data.user);
     showToast('Profile updated successfully!', 'success');
@@ -457,10 +458,9 @@ async function handlePasswordChange(e) {
   setLoading(btn, true);
 
   try {
-    const res = await fetch(`${API_BASE_URL}/change-password`, {
+    const res = await fetchWithCsrf(`${API_BASE_URL}/change-password`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify({ currentPassword: current, newPassword: newPass })
     });
 
@@ -479,7 +479,7 @@ async function handlePasswordChange(e) {
 
 // ===== DELETE ACCOUNT =====
 async function handleDeleteAccount() {
-  if (!currentUser) return;
+  if (!profileData) return;
 
   const confirmed = confirm(
     'Are you sure you want to delete your account?\n\n' +
@@ -492,9 +492,8 @@ async function handleDeleteAccount() {
   btn.textContent = 'Deleting...';
 
   try {
-    const res = await fetch(`${API_BASE_URL}/delete/${currentUser.id}`, {
+    const res = await fetchWithCsrf(`${API_BASE_URL}/delete/${profileData.id}`, {
       method: 'DELETE',
-      credentials: 'include',
     });
 
     const data = await res.json();
@@ -562,7 +561,7 @@ async function loadOrders(page = 1) {
 
     renderOrders(data.orders, data.pagination);
   } catch (error) {
-    console.error('Load orders error:', error);
+    debugError("Orders load error:", error);
     ordersContainer.innerHTML = `
       <div class="error-state">
         <i class="fa-solid fa-triangle-exclamation"></i>
@@ -593,13 +592,13 @@ function renderOrders(orders, pagination) {
           <div class="order-card">
             <div class="order-header">
               <div>
-                <span class="order-number">#${order.orderNumber}</span>
-                <span class="order-date">${new Date(order.createdAt).toLocaleDateString('en-US', {
+                <span class="order-number">#${escapeHtml(order.orderNumber)}</span>
+                <span class="order-date">${escapeHtml(new Date(order.createdAt).toLocaleDateString('en-US', {
                   year: 'numeric', month: 'short', day: 'numeric'
-                })}</span>
+                }))}</span>
               </div>
               <span class="order-status" style="background: ${status.bg}; color: ${status.color}">
-                ${status.text}
+                ${escapeHtml(status.text)}
               </span>
             </div>
             <div class="order-details">
@@ -607,7 +606,7 @@ function renderOrders(orders, pagination) {
                 <span class="order-items-count">${order.itemCount} item${order.itemCount !== 1 ? 's' : ''}</span>
                 <span class="order-total">$${order.totalAmount.toFixed(2)}</span>
               </div>
-              <button class="btn-outline btn-small" onclick="viewOrder('${order.id}')">
+              <button class="btn-outline btn-small" onclick="viewOrder('${escapeAttr(order.id)}')">
                 View Details
               </button>
             </div>
@@ -626,11 +625,105 @@ function renderOrders(orders, pagination) {
   `;
 }
 
-// Placeholder for order details view
-window.viewOrder = function(orderId) {
-  showToast('Order details view coming soon!', 'success');
-  // TODO: Navigate to order detail page or show modal
+window.viewOrder = async function(orderId) {
+  try {
+    const { getOrderById } = await import('./order.service.js');
+    const data = await getOrderById(orderId);
+    if (!data.success || !data.order) throw new Error('Order not found');
+
+    showOrderModal(data.order);
+  } catch (error) {
+    showToast(error.message || 'Failed to load order details', 'error');
+  }
 };
+
+function showOrderModal(order) {
+  const existing = document.getElementById('order-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'order-modal';
+  modal.className = 'order-modal-overlay';
+  modal.innerHTML = `
+    <div class="order-modal-content">
+      <button class="order-modal-close"><i class="fa-solid fa-xmark"></i></button>
+      <h3>Order #${escapeHtml(order.orderNumber)}</h3>
+      <div class="order-modal-status" style="margin: 1rem 0; padding: 0.5rem 1rem; border-radius: 8px; display: inline-block; background: ${getStatusBg(order.status)}; color: ${getStatusColor(order.status)}">
+        ${escapeHtml(getStatusText(order.status))}
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Placed on ${escapeHtml(new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))}
+      </p>
+      <div class="order-modal-items" style="margin: 1.5rem 0;">
+        ${order.items.map(item => {
+          const imgUrl = item.image?.url || item.image || '';
+          return `
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+              <img src="${escapeAttr(imgUrl)}" alt="${escapeAttr(item.name)}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" onerror="this.src='../images/img1.png'">
+              <div style="flex: 1;">
+                <strong>${escapeHtml(item.name)}</strong>
+                <p style="margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.9rem;">$${item.price.toFixed(2)} x ${item.quantity}</p>
+              </div>
+              <span style="font-weight: 600;">$${(item.price * item.quantity).toFixed(2)}</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 2px solid var(--border-color);">
+        <div>
+          <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Payment: ${escapeHtml(order.paymentMethod)}</p>
+          ${order.shippingAddress?.address ? `<p style="margin: 0.25rem 0 0; font-size: 0.9rem; color: var(--text-muted);">Deliver to: ${escapeHtml(order.shippingAddress.address)}</p>` : ''}
+        </div>
+        <span style="font-size: 1.25rem; font-weight: 700;">$${order.totalAmount.toFixed(2)}</span>
+      </div>
+      ${['pending', 'processing'].includes(order.status) ? `
+        <button class="btn-danger" id="cancel-order-btn" style="margin-top: 1.5rem; width: 100%;">
+          <i class="fa-solid fa-ban"></i> Cancel Order
+        </button>
+      ` : ''}
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelector('.order-modal-close').addEventListener('click', () => modal.remove());
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+
+  const cancelBtn = modal.querySelector('#cancel-order-btn');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', async () => {
+      if (!confirm('Are you sure you want to cancel this order?')) return;
+      cancelBtn.disabled = true;
+      cancelBtn.textContent = 'Cancelling...';
+      try {
+        const { cancelOrder } = await import('./order.service.js');
+        const result = await cancelOrder(order.id);
+        if (result.success) {
+          showToast('Order cancelled', 'success');
+          modal.remove();
+          loadOrders();
+        }
+      } catch (error) {
+        showToast(error.message || 'Failed to cancel order', 'error');
+        cancelBtn.disabled = false;
+        cancelBtn.textContent = 'Cancel Order';
+      }
+    });
+  }
+}
+
+function getStatusBg(status) {
+  const map = { pending: '#fef3c7', processing: '#dbeafe', shipped: '#d1fae5', delivered: '#d1fae5', cancelled: '#fee2e2' };
+  return map[status] || '#fef3c7';
+}
+function getStatusColor(status) {
+  const map = { pending: '#92400e', processing: '#1e40af', shipped: '#065f46', delivered: '#065f46', cancelled: '#991b1b' };
+  return map[status] || '#92400e';
+}
+function getStatusText(status) {
+  const map = { pending: 'Pending', processing: 'Processing', shipped: 'Shipped', delivered: 'Delivered', cancelled: 'Cancelled' };
+  return map[status] || status;
+}
 
 // Make loadOrders available globally for onclick handlers
 window.loadOrders = loadOrders;
@@ -663,7 +756,7 @@ async function loadCartCheckout() {
     renderCartCheckout(cart, checkoutSection);
     ordersContainer.parentNode.insertBefore(checkoutSection, ordersContainer);
   } catch (error) {
-    console.error('Load cart checkout error:', error);
+    debugError("Cart checkout error:", error);
   }
 }
 
@@ -683,7 +776,7 @@ function renderCartCheckout(cart, container) {
         const imageUrl = item.image?.url || item.image || '';
         return `
           <div class="checkout-item">
-            <img src="${imageUrl}" alt="${item.name}" class="checkout-item-img">
+            <img src="${imageUrl}" alt="${item.name}" class="checkout-item-img" onerror="this.src='../images/img1.png'">
             <div class="checkout-item-info">
               <h4>${item.name}</h4>
               <p>$${price.toFixed(2)} x ${item.quantity}</p>
@@ -692,6 +785,21 @@ function renderCartCheckout(cart, container) {
           </div>
         `;
       }).join('')}
+    </div>
+    <div class="checkout-address">
+      <h4><i class="fa-solid fa-location-dot"></i> Shipping Address</h4>
+      <div class="input-wrapper">
+        <div class="input-field">
+          <i class="fa-solid fa-map-pin input-icon"></i>
+          <input type="text" id="checkout-address" placeholder="Street, city, zip code" required/>
+        </div>
+      </div>
+      <div class="input-wrapper">
+        <div class="input-field">
+          <i class="fa-solid fa-phone input-icon"></i>
+          <input type="text" id="checkout-phone" placeholder="Phone number"/>
+        </div>
+      </div>
     </div>
     <div class="checkout-footer">
       <div class="checkout-total">
@@ -713,18 +821,30 @@ function renderCartCheckout(cart, container) {
 async function handlePlaceOrder() {
   const btn = $('place-order-btn');
   if (!btn) return;
+
+  const address = $('checkout-address')?.value.trim();
+  if (!address) {
+    showToast('Please enter a shipping address', 'error');
+    $('checkout-address')?.focus();
+    return;
+  }
+
   btn.classList.add('loading');
   btn.disabled = true;
 
   try {
-    const data = await createOrder({ paymentMethod: 'cash' });
+    const data = await createOrder({
+      paymentMethod: 'cash',
+      shippingAddress: {
+        address,
+        phone: $('checkout-phone')?.value.trim() || '',
+      },
+    });
     showToast(`Order placed! #${data.order.orderNumber}`, 'success');
 
-    // Remove checkout section
     const section = $('cart-checkout-section');
     if (section) section.remove();
 
-    // Reload orders and refresh profile stats
     await Promise.all([loadOrders(), loadProfile()]);
   } catch (error) {
     showToast(error.message || 'Failed to place order', 'error');
@@ -735,3 +855,5 @@ async function handlePlaceOrder() {
 }
 
 export { loadProfile, loadOrders };
+
+

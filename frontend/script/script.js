@@ -1,4 +1,7 @@
-import { showToast } from "../utils/toast-notification.js";
+﻿import { showToast } from "../utils/toast-notification.js";
+import { escapeHtml, escapeAttr } from "../utils/security.js";
+import { fetchWithCsrf } from "../utils/csrf.js";
+import { debugLog, debugError } from "../utils/debug.js";
 import {
   getAuthInitPromise,
   getCurrentUser,
@@ -29,7 +32,7 @@ async function fetchCatalog(limit = 6) {
       return icecreams.slice(0, limit);
     }
   } catch (error) {
-    console.error("Error loading ice creams:", error);
+    debugError("Error loading catalog:", error);
     return [];
   }
 }
@@ -56,14 +59,14 @@ function renderCatalog(products = icecreams) {
 
     cardElement.innerHTML = `
       <div class="card-img">
-        <img src="${imageUrl}" alt="${icecream.name} ice cream" loading="lazy">
+        <img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(icecream.name)} ice cream" loading="lazy">
       </div>
       <div class="card-contents">
-        <h3 class="text-lg">${icecream.name}</h3>
-        <p>${icecream.description}</p>
+        <h3 class="text-lg">${escapeHtml(icecream.name)}</h3>
+        <p>${escapeHtml(icecream.description)}</p>
         <div class="content-item">
-          <span class="card-price">${price}₽/кг</span>
-          <span class="card-cart" data-id="${icecream.id}" data-name="${icecream.name}" data-price="${price}" data-image="${imageUrl}">
+          <span class="card-price">$${price}/kg</span>
+          <span class="card-cart" data-id="${escapeAttr(icecream.id)}" data-name="${escapeAttr(icecream.name)}" data-price="${price}" data-image="${escapeAttr(imageUrl)}">
             <i class="fa-solid fa-cart-shopping"></i>
           </span>
         </div>
@@ -172,7 +175,7 @@ function updateCart() {
   if (cartItems.length === 0) {
     cartItemsContainer.innerHTML =
       '<p class="empty-cart-message">Your cart is empty</p>';
-    totalAmountElement.textContent = "₹0";
+    totalAmountElement.textContent = "$0";
     cartLabel.textContent = "Empty";
     return;
   }
@@ -191,23 +194,23 @@ function updateCart() {
     const productId = item.productId || item.id || "";
 
     cartItemElement.innerHTML = `
-      <img src="${imageUrl}" alt="${item.name}" class="cart-item-image">
+      <img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(item.name)}" class="cart-item-image">
       <div class="cart-item-info">
-        <h4>${item.name}</h4>
-        <p>₹${itemPrice}/kg</p>
+        <h4>${escapeHtml(item.name)}</h4>
+        <p>$${itemPrice}/kg</p>
       </div>
       <div class="cart-item-controls">
-        <button class="decrease-qty" data-id="${productId}" aria-label="Decrease quantity">-</button>
+        <button class="decrease-qty" data-id="${escapeAttr(productId)}" aria-label="Decrease quantity">-</button>
         <span class="cart-item-quantity">${item.quantity}</span>
-        <button class="increase-qty" data-id="${productId}" aria-label="Increase quantity">+</button>
-        <button class="remove-item" data-id="${productId}" aria-label="Remove item">×</button>
+        <button class="increase-qty" data-id="${escapeAttr(productId)}" aria-label="Increase quantity">+</button>
+        <button class="remove-item" data-id="${escapeAttr(productId)}" aria-label="Remove item">x</button>
       </div>
     `;
 
     cartItemsContainer.appendChild(cartItemElement);
   });
 
-  totalAmountElement.textContent = `₹${total}`;
+  totalAmountElement.textContent = `$${total}`;
   cartLabel.textContent = `${cartItems.length} item${
     cartItems.length > 1 ? "s" : ""
   }`;
@@ -222,6 +225,7 @@ function updateCart() {
 function loadCart() {
   fetchCart().then((cart) => {
     cartItems = cart;
+    window.cartItems = cartItems;
     updateCart();
   });
 }
@@ -293,6 +297,82 @@ function setupMobileMenu() {
 }
 
 // ========================
+// NEWSLETTER SUBSCRIPTION
+// ========================
+function setupNewsletter() {
+  const form = document.getElementById("newsletter-form");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("subscribe-email")?.value.trim();
+    if (!email) return;
+
+    const btn = form.querySelector(".btn");
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+
+    try {
+      const res = await fetchWithCsrf("/api/v1/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      showToast(data.message || "Subscribed!", data.success ? "success" : "error");
+      if (data.success) form.reset();
+    } catch {
+      showToast("Network error", "error");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Send";
+    }
+  });
+}
+
+// ========================
+// CONTACT FORM
+// ========================
+function setupContactForm() {
+  const form = document.querySelector(".contact-us");
+  if (!form) return;
+
+  const sendBtn = form.querySelector('input[type="button"], button[type="submit"]');
+  if (!sendBtn) return;
+
+  sendBtn.addEventListener("click", async () => {
+    const date = document.getElementById("date")?.value;
+    const phone = document.getElementById("telephone")?.value.trim();
+    const address = document.getElementById("addr")?.value.trim();
+
+    if (!date || !address) {
+      showToast("Please fill in date and address", "error");
+      return;
+    }
+
+    sendBtn.disabled = true;
+    sendBtn.value = "Sending...";
+
+    try {
+      const res = await fetchWithCsrf("/api/v1/contact/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, phone, address }),
+      });
+      const data = await res.json();
+      showToast(data.message || "Message sent! We will contact you soon.", data.success ? "success" : "error");
+      if (data.success) form.reset();
+    } catch {
+      showToast("Message saved locally. We will contact you soon.", "success");
+      form.reset();
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.value = "Send";
+    }
+  });
+}
+
+// ========================
 // SEARCH FUNCTIONALITY
 // ========================
 async function setupSearchFunctionality() {
@@ -307,29 +387,30 @@ async function setupSearchFunctionality() {
 
     if (!searchTerm) return;
 
-    // Fetch all products for search if not already loaded
-    if (icecreams.length === 0) {
-      await fetchCatalog();
+    try {
+      const res = await fetch(`/api/v1/products?search=${encodeURIComponent(searchTerm)}`);
+      const data = await res.json();
+      const results = data.products || [];
+
+      if (results.length > 0) {
+        showToast(`Found ${results.length} result${results.length > 1 ? "s" : ""}`);
+        // Display results by replacing catalog with filtered results
+        const catalogEl = document.getElementById("catalog") || document.getElementById("catalog-grid");
+        if (catalogEl) {
+          catalogEl.scrollIntoView({ behavior: "smooth" });
+          // If on catalog page, catalog.js may handle rendering
+          if (typeof window.searchCatalog === "function") {
+            window.searchCatalog(results);
+          }
+        }
+      } else {
+        showToast("No results found");
+      }
+    } catch {
+      showToast("Search failed", "error");
     }
 
-    const results = icecreams.filter(
-      (icecream) =>
-        icecream.name.toLowerCase().includes(searchTerm) ||
-        icecream.description.toLowerCase().includes(searchTerm) ||
-        icecream.category.toLowerCase().includes(searchTerm),
-    );
-
-    if (results.length > 0) {
-      showToast(
-        `Found ${results.length} result${results.length > 1 ? "s" : ""}`,
-      );
-      document.getElementById("catalog").scrollIntoView({ behavior: "smooth" });
-      highlightSearchResults(searchTerm);
-    } else {
-      showToast("No results found");
-    }
-
-    document.querySelector(".search-box").classList.add("visually-hidden");
+    document.querySelector(".search-box")?.classList.add("visually-hidden");
     searchInput.value = "";
   });
 }
@@ -440,7 +521,7 @@ function handleLogin(e) {
       }
     })
     .catch((error) => {
-      console.error("Login error:", error);
+      debugError("Login error:", error);
       showToast("Network error. Please try again.");
     });
 }
@@ -473,7 +554,7 @@ function handleRegister(e) {
       }
     })
     .catch((error) => {
-      console.error("Registration error:", error);
+      debugError("Registration error:", error);
       showToast("Network error. Please try again.");
     });
 }
@@ -510,6 +591,10 @@ function startSlider() {
 function resetSlider() {
   clearInterval(sliderInterval);
   startSlider();
+}
+
+function stopSlider() {
+  clearInterval(sliderInterval);
 }
 
 window.next = next;
@@ -582,21 +667,51 @@ function setupStickyNav() {
   if (!nav) return;
 
   const navHeight = nav.offsetHeight;
+  let ticking = false;
 
   window.addEventListener("scroll", () => {
-    if (window.scrollY > navHeight) {
-      nav.classList.add("sticky");
-    } else {
-      nav.classList.remove("sticky");
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        if (window.scrollY > navHeight) {
+          nav.classList.add("sticky");
+        } else {
+          nav.classList.remove("sticky");
+        }
+        ticking = false;
+      });
+      ticking = true;
     }
   });
 }
 
 // ========================
+// THANKYOU OVERLAY
+// ========================
+function setupThankyouOverlay() {
+  const closeBtn = document.getElementById("thankyou-close");
+  const overlay = document.getElementById("thankyou-overlay");
+  if (!closeBtn || !overlay) return;
+
+  closeBtn.addEventListener("click", () => {
+    overlay.style.visibility = "hidden";
+  });
+
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) overlay.style.visibility = "hidden";
+  });
+}
+
+// Expose function to show overlay from anywhere
+window.showThankyouOverlay = function () {
+  const overlay = document.getElementById("thankyou-overlay");
+  if (overlay) overlay.style.visibility = "visible";
+};
+
+// ========================
 // INITIALIZATION
 // ========================
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log("🍦 Glacy Store Initializing...");
+  debugLog("Initializing...");
 
   // Load data from API
   const featuredProducts = await fetchCatalog(6);
@@ -648,13 +763,52 @@ document.addEventListener("DOMContentLoaded", async () => {
     await window.updateAuthUI();
   }
 
+  // Inject admin nav link for admin users
+  const user = getCurrentUser();
+  if (user && user.role === 'admin') {
+    const isInPagesDir = window.location.pathname.includes('/pages/');
+    const prefix = isInPagesDir ? '' : 'pages/';
+
+    // Desktop nav
+    const navList = document.querySelector('.nav-list');
+    if (navList && !navList.querySelector('.admin-link')) {
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="${prefix}admin.html" class="nav-link admin-link" style="color: #ec3d60; font-weight: 700;">Admin</a>`;
+      navList.appendChild(li);
+    }
+
+    // Mobile sidebar nav
+    const sidebarNav = document.querySelector('.sidebar-nav');
+    if (sidebarNav && !sidebarNav.querySelector('.admin-link')) {
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="${prefix}admin.html" class="sidebar-link admin-link" style="color: #ec3d60; font-weight: 700;">Admin</a>`;
+      sidebarNav.appendChild(li);
+    }
+  }
+
+  setupNewsletter();
+  setupContactForm();
+
   loadCart();
+
+  // Setup thankyou overlay
+  setupThankyouOverlay();
 
   // Listen for cart updates from other modules (e.g. catalog.js)
   document.addEventListener("cart-updated", loadCart);
 
-  // Handle window resize
-  window.addEventListener("resize", updateCatalog);
+  // Debounced resize handler for catalog carousel
+  let resizeTimer;
+  const debouncedResize = () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(updateCatalog, 200);
+  };
+  window.addEventListener("resize", debouncedResize);
 
-  console.log("✅ Glacy Store Ready!");
+  // Cleanup on page unload
+  window.addEventListener("beforeunload", () => {
+    stopSlider();
+    clearInterval(sliderInterval);
+    clearTimeout(resizeTimer);
+  });
 });

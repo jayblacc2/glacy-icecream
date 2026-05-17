@@ -170,7 +170,7 @@ const syncCart = async (req, res) => {
     user.cart = items.map((item) => ({
       productId: item.productId || item.id || item._id,
       name: item.name,
-      price: typeof item.price === 'number' ? item.price.toString() : (item.price || '0'),
+      price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0,
       quantity: parseInt(item.quantity) || 1,
       image: item.image?.url || item.image || '',
     }));

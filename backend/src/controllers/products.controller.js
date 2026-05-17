@@ -23,9 +23,10 @@ const createProduct = async (req, res) => {
       });
     }
 
-    // Check for existing product (case-insensitive)
+    // Check for existing product (case-insensitive) with escaped name
+    const escapedName = trimmedName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const existingProduct = await Product.findOne({
-      name: { $regex: `^${trimmedName}$`, $options: "i" },
+      name: { $regex: `^${escapedName}$`, $options: "i" },
     });
     if (existingProduct) {
       return res.status(409).json({
@@ -62,6 +63,8 @@ const createProduct = async (req, res) => {
           message: "Error uploading image",
         });
       }
+    } else if (req.body.image?.url) {
+      imageData = { url: req.body.image.url, publicId: '' };
     }
 
     // Create product
@@ -115,6 +118,11 @@ const getProducts = async (req, res) => {
     const category = req.query.category?.trim().toLowerCase();
 
     const filter = {};
+    const search = req.query.search?.trim();
+
+    if (search) {
+      filter.name = { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' };
+    }
 
     if (category) {
       const validCategories = Product.schema.path("category").enumValues;
@@ -216,8 +224,14 @@ const updateProduct = async (req, res) => {
   }
 
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(id, req.body, {
+    const allowedFields = ['name', 'description', 'price', 'category', 'image'];
+    const updateData = {};
+    for (const key of allowedFields) {
+      if (req.body[key] !== undefined) updateData[key] = req.body[key];
+    }
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
       new: true,
+      runValidators: true,
     });
 
     if (!updatedProduct) {
@@ -241,6 +255,9 @@ const updateProduct = async (req, res) => {
           message: "Error uploading image",
         });
       }
+    } else if (req.body.image?.url) {
+      updatedProduct.image = { url: req.body.image.url, publicId: updatedProduct.image?.publicId || '' };
+      await updatedProduct.save();
     }
 
     res.status(200).json({

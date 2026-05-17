@@ -1,3 +1,7 @@
+﻿import { syncCart, fetchCart } from './cart.service.js';
+import { fetchWithCsrf } from '../utils/csrf.js';
+import { debugLog, debugWarn, debugError } from '../utils/debug.js';
+
 let currentUser = null;
 let authChecked = false;
 
@@ -5,8 +9,10 @@ let authChecked = false;
   const API_BASE_URL = "/api/v1/users";
 
 // Initialization promise - allows other modules to wait for auth to be ready
-let authInitPromise = null;
-let authInitResolve = null;
+let authInitResolve;
+const authInitPromise = new Promise((resolve) => {
+  authInitResolve = resolve;
+});
 
 // Initialize auth state by checking authentication status
 async function initializeAuth() {
@@ -27,28 +33,19 @@ async function initializeAuth() {
     }
 
     authChecked = true;
-    if (authInitResolve) {
-      authInitResolve(data);
-    }
+    authInitResolve(data);
     return data;
   } catch (error) {
-    console.error("Error initializing auth:", error);
+    debugError("Auth init error:", error);
     currentUser = null;
     authChecked = true;
-    if (authInitResolve) {
-      authInitResolve({ success: false, isLoggedIn: false, user: null });
-    }
+    authInitResolve({ success: false, isLoggedIn: false, user: null });
     return { success: false, isLoggedIn: false, user: null };
   }
 }
 
 // Get or create the initialization promise
 function getAuthInitPromise() {
-  if (!authInitPromise) {
-    authInitPromise = new Promise((resolve) => {
-      authInitResolve = resolve;
-    });
-  }
   return authInitPromise;
 }
 
@@ -84,12 +81,11 @@ async function registerUser(name, email, password, confirmPassword) {
     }
 
     // Make API call to register user
-    const response = await fetch(`${API_BASE_URL}/register`, {
+    const response = await fetchWithCsrf(`${API_BASE_URL}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // Include cookies in response
       body: JSON.stringify({
         name: name.trim(),
         email: email.toLowerCase().trim(),
@@ -115,7 +111,7 @@ async function registerUser(name, email, password, confirmPassword) {
       };
     }
   } catch (error) {
-    console.error("Error registering user:", error);
+    debugError("Register error:", error);
     return {
       success: false,
       message: "Network error. Please try again.",
@@ -131,12 +127,11 @@ async function login(email, password) {
     }
 
     // Make API call to login user
-    const response = await fetch(`${API_BASE_URL}/login`, {
+    const response = await fetchWithCsrf(`${API_BASE_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // Include cookies in response
       body: JSON.stringify({
         email: email.toLowerCase().trim(),
         password: password,
@@ -161,7 +156,7 @@ async function login(email, password) {
       };
     }
   } catch (error) {
-    console.error("Error logging in:", error);
+    debugError("Login error:", error);
     return {
       success: false,
       message: "Network error. Please try again.",
@@ -173,9 +168,8 @@ async function login(email, password) {
 async function logout() {
   try {
     // Make API call to logout user
-    const response = await fetch(`${API_BASE_URL}/logout`, {
+    const response = await fetchWithCsrf(`${API_BASE_URL}/logout`, {
       method: "POST",
-      credentials: "include", // Include cookies in request
     });
 
     const data = await response.json();
@@ -197,7 +191,7 @@ async function logout() {
       };
     }
   } catch (error) {
-    console.error("Error logging out:", error);
+    debugError("Logout error:", error);
     // Still clear local state on error
     currentUser = null;
     localStorage.removeItem("glacy-current-user");
@@ -212,7 +206,7 @@ async function logout() {
 function isLoggedIn() {
   // First check if we've initialized auth
   if (!authChecked) {
-    console.warn("Auth not initialized. Call initializeAuth() first.");
+    debugWarn("Auth not initialized");
     return false;
   }
 
@@ -237,7 +231,7 @@ async function updateUserCart(cartItems) {
     }
     return { success: false, message: result.message || "Failed to update cart" };
   } catch (error) {
-    console.error("Error updating cart:", error);
+    debugError("Cart update error:", error);
     return { success: false, message: "Network error" };
   }
 }
@@ -249,7 +243,7 @@ async function syncCartToBackend(cartItems) {
     const result = await syncCart(cartItems);
     return result;
   } catch (error) {
-    console.error("Error syncing cart:", error);
+    debugError("Cart sync error:", error);
     return { success: false };
   }
 }
@@ -266,7 +260,7 @@ async function fetchUserCart() {
     localStorage.setItem("glacy-current-user", JSON.stringify(userData));
     return cart;
   } catch (error) {
-    console.error("Error fetching cart:", error);
+    debugError("Cart fetch error:", error);
     return [];
   }
 }
@@ -302,3 +296,4 @@ export {
   currentUser,
   authChecked,
 };
+
