@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupPasswordStrength();
   setupPasswordFormToggle();
   setupAvatarUpload();
-  updateFooterYear();
   await loadOrders();
 
   // Auto-switch to orders tab if ?tab=orders is in URL
@@ -727,11 +726,6 @@ function getStatusText(status) {
 
 // Make loadOrders available globally for onclick handlers
 window.loadOrders = loadOrders;
-
-function updateFooterYear() {
-  const el = $('current-year');
-  if (el) el.textContent = new Date().getFullYear();
-}
 
 // ===== CART CHECKOUT ON PROFILE PAGE =====
 
