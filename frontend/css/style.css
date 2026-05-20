@@ -767,6 +767,7 @@ h1 {
   cursor: pointer;
   flex: 0 0 calc(25% - 2rem);
   margin-top: 0;
+  overflow: hidden;
 }
 
 .card:hover .fa-cart-shopping {
@@ -964,11 +965,17 @@ h1 {
   box-shadow: 0 0 0 3px rgba(236, 61, 96, 0.15);
 }
 
-.subscribe-form button {
-  cursor: pointer;
-  display: inline-block;
-  margin-right: 3.5rem;
-}
+  .subscribe-form button {
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 3.5rem;
+  }
+
+  @media (max-width: 480px) {
+    .subscribe-form button {
+      margin-right: 0;
+    }
+  }
 
 input::placeholder {
   color: var(--primary-text-color);
@@ -1195,7 +1202,7 @@ input::placeholder {
   color: #fff;
 }
 
-/* Back to Home Button */
+  /* Back to Home Button */
 .back-home {
   position: fixed;
   top: 2rem;
@@ -1213,6 +1220,12 @@ input::placeholder {
   gap: 0.5rem;
   z-index: 100;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .back-home {
+    top: 5rem;
+  }
 }
 
 .back-home:hover {
@@ -1919,6 +1932,15 @@ input::placeholder {
   /* Extra small screens */
   html {
     font-size: 58%;
+  }
+
+  .btn {
+    border-width: 2px;
+  }
+
+  .btn-light:hover,
+  .btn-primary:hover {
+    border-width: 2px;
   }
 
   .container-center {

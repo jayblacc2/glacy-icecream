@@ -275,24 +275,46 @@ function setupMobileMenu() {
   sidebarOverlay?.addEventListener("click", closeSidebar);
   sidebarLinks.forEach((link) => link.addEventListener("click", closeSidebar));
 
-  sidebarSearch?.addEventListener("click", () => {
+  sidebarSearch?.addEventListener("click", (e) => {
+    e.stopPropagation();
     closeSidebar();
-    document.querySelector(".search-box")?.classList.remove("visually-hidden");
-    document.getElementById("search")?.focus();
+    // Hide login and cart
+    document.getElementById("login-container")?.classList.add("visually-hidden");
+    document.getElementById("cart-container")?.classList.add("visually-hidden");
+    // Toggle search
+    const searchBox = document.querySelector(".search-box");
+    searchBox?.classList.toggle("visually-hidden");
+    if (!searchBox?.classList.contains("visually-hidden")) {
+      document.getElementById("search")?.focus();
+    }
   });
 
-  sidebarLogin?.addEventListener("click", () => {
+  sidebarLogin?.addEventListener("click", (e) => {
+    e.stopPropagation();
     closeSidebar();
-    document
-      .getElementById("login-container")
-      ?.classList.remove("visually-hidden");
+    // Hide search and cart
+    document.querySelector(".search-box")?.classList.add("visually-hidden");
+    document.getElementById("cart-container")?.classList.add("visually-hidden");
+    // Reset forms
+    const loginContainer = document.getElementById("login-container");
+    const loginForm = loginContainer?.querySelector(".login-form");
+    const signupForm = loginContainer?.querySelector(".signup-form");
+    if (loginForm && signupForm) {
+      loginForm.classList.remove("visually-hidden");
+      signupForm.classList.add("visually-hidden");
+    }
+    // Toggle login
+    loginContainer?.classList.toggle("visually-hidden");
   });
 
-  sidebarCart?.addEventListener("click", () => {
+  sidebarCart?.addEventListener("click", (e) => {
+    e.stopPropagation();
     closeSidebar();
-    document
-      .getElementById("cart-container")
-      ?.classList.remove("visually-hidden");
+    // Hide search and login
+    document.querySelector(".search-box")?.classList.add("visually-hidden");
+    document.getElementById("login-container")?.classList.add("visually-hidden");
+    // Toggle cart
+    document.getElementById("cart-container")?.classList.toggle("visually-hidden");
   });
 
   // Escape key closes sidebar

@@ -468,10 +468,33 @@
   .admin-nav {
     flex-direction: row;
     overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .admin-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .admin-nav-item {
     white-space: nowrap;
+    scroll-snap-align: start;
+  }
+
+  .admin-sidebar {
+    position: relative;
+  }
+
+  .admin-sidebar::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to right, transparent, var(--admin-card-bg));
+    pointer-events: none;
   }
 
   .panel-header {
