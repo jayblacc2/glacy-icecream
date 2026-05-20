@@ -301,6 +301,7 @@ const checkAuthStatus = async (req, res) => {
     if (!token) {
       return res.status(200).json({
         success: true,
+        isLoggedIn: false,
         user: null,
       });
     }
@@ -311,12 +312,14 @@ const checkAuthStatus = async (req, res) => {
       if (!user) {
         return res.status(200).json({
           success: true,
+          isLoggedIn: false,
           user: null,
         });
       }
 
       res.status(200).json({
         success: true,
+        isLoggedIn: true,
         user: {
           id: user.id,
           name: user.name,
@@ -329,6 +332,7 @@ const checkAuthStatus = async (req, res) => {
       // Token is invalid or expired
       return res.status(200).json({
         success: true,
+        isLoggedIn: false,
         user: null,
       });
     }
