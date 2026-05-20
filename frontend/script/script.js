@@ -215,6 +215,16 @@ function updateCart() {
     cartItems.length > 1 ? "s" : ""
   }`;
 
+  // Update sidebar cart badge
+  const sidebarCartBadge = document.getElementById("sidebar-cart-badge");
+  if (sidebarCartBadge) {
+    if (cartItems.length === 0) {
+      sidebarCartBadge.textContent = "Empty";
+    } else {
+      sidebarCartBadge.textContent = `${cartItems.length}`;
+    }
+  }
+
   const checkoutBtn = document.querySelector(".checkout-btn");
   if (checkoutBtn) {
     checkoutBtn.disabled = false;
@@ -314,6 +324,46 @@ function setupMobileMenu() {
     document.querySelector(".search-box")?.classList.add("visually-hidden");
     document.getElementById("login-container")?.classList.add("visually-hidden");
     // Toggle cart
+    document.getElementById("cart-container")?.classList.toggle("visually-hidden");
+  });
+
+  // Bottom navigation buttons
+  const bottomSearch = document.getElementById("bottom-search");
+  const bottomLogin = document.getElementById("bottom-login");
+  const bottomCart = document.getElementById("bottom-cart");
+
+  bottomSearch?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeSidebar();
+    document.getElementById("login-container")?.classList.add("visually-hidden");
+    document.getElementById("cart-container")?.classList.add("visually-hidden");
+    const searchBox = document.querySelector(".search-box");
+    searchBox?.classList.toggle("visually-hidden");
+    if (!searchBox?.classList.contains("visually-hidden")) {
+      document.getElementById("search")?.focus();
+    }
+  });
+
+  bottomLogin?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeSidebar();
+    document.querySelector(".search-box")?.classList.add("visually-hidden");
+    document.getElementById("cart-container")?.classList.add("visually-hidden");
+    const loginContainer = document.getElementById("login-container");
+    const loginForm = loginContainer?.querySelector(".login-form");
+    const signupForm = loginContainer?.querySelector(".signup-form");
+    if (loginForm && signupForm) {
+      loginForm.classList.remove("visually-hidden");
+      signupForm.classList.add("visually-hidden");
+    }
+    loginContainer?.classList.toggle("visually-hidden");
+  });
+
+  bottomCart?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeSidebar();
+    document.querySelector(".search-box")?.classList.add("visually-hidden");
+    document.getElementById("login-container")?.classList.add("visually-hidden");
     document.getElementById("cart-container")?.classList.toggle("visually-hidden");
   });
 

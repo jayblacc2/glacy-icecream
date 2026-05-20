@@ -62,22 +62,73 @@
     </button>
   </nav>
   <div class="mobile-sidebar" id="mobile-sidebar">
-    <div class="sidebar-content">
-      <button class="sidebar-close" id="sidebar-close" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
-      <ul class="sidebar-nav">
-        <li><a href="../index.html" class="sidebar-link">Home</a></li>
-        <li><a href="catalogs.html" class="sidebar-link">Catalog</a></li>
-        <li><a href="blog.html" class="sidebar-link">Blog</a></li>
-        <li><a href="about.html" class="sidebar-link">About us</a></li>
-        <li><a href="delivery.html" class="sidebar-link">Delivery & Payment</a></li>
-        <li><a href="profile.html" class="sidebar-link">My Profile</a></li>
-      </ul>
-      <div class="sidebar-actions">
-        <div class="sidebar-phone"><i class="fa-solid fa-phone"></i><p>+1 317 234-67-33</p></div>
-        <button class="sidebar-btn" id="sidebar-search"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
-        <button class="sidebar-btn" id="sidebar-login"><i class="fa-solid fa-user"></i><span>Login</span></button>
-        <button class="sidebar-btn" id="sidebar-cart"><i class="fa-solid fa-cart-shopping"></i><span>Cart</span></button>
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <h2>Glacy Store</h2>
+        <p>Welcome back</p>
       </div>
+      <button class="sidebar-close" id="sidebar-close" aria-label="Close menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-content">
+      <ul class="sidebar-nav">
+        <li><a href="../index.html" class="sidebar-link"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="catalogs.html" class="sidebar-link"><i class="fa-solid fa-grid-2"></i> Catalog</a></li>
+        <li><a href="blog.html" class="sidebar-link"><i class="fa-solid fa-newspaper"></i> Blog</a></li>
+        <li><a href="about.html" class="sidebar-link"><i class="fa-solid fa-circle-info"></i> About us</a></li>
+        <li><a href="delivery.html" class="sidebar-link"><i class="fa-solid fa-truck-fast"></i> Delivery & Payment</a></li>
+        <li><a href="profile.html" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a></li>
+      </ul>
+
+      <div class="sidebar-support">
+        <div class="support-icon">
+          <i class="fa-solid fa-phone"></i>
+        </div>
+        <div class="support-info">
+          <span>Customer Support</span>
+          <p>+1 317 234-67-33</p>
+        </div>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="sidebar-btn" id="sidebar-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Search</span>
+        </button>
+
+        <button class="sidebar-btn" id="sidebar-login">
+          <i class="fa-solid fa-user"></i>
+          <span>Login</span>
+        </button>
+
+        <button class="sidebar-btn" id="sidebar-cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span>Cart</span>
+          <span class="cart-badge" id="sidebar-cart-badge">Empty</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-bottom-nav">
+      <a href="../index.html" class="bottom-nav-item">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </a>
+      <button class="bottom-nav-item" id="bottom-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>Search</span>
+      </button>
+      <button class="bottom-nav-item" id="bottom-login">
+        <i class="fa-solid fa-user"></i>
+        <span>Login</span>
+      </button>
+      <button class="bottom-nav-item" id="bottom-cart">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span>Cart</span>
+      </button>
     </div>
   </div>
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
