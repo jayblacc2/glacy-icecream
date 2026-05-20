@@ -294,6 +294,23 @@ function setupMobileMenu() {
       .getElementById("cart-container")
       ?.classList.remove("visually-hidden");
   });
+
+  // Escape key closes sidebar
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && mobileSidebar.classList.contains("active")) {
+      closeSidebar();
+    }
+  });
+
+  // Focus trap inside sidebar
+  burgerMenu.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      mobileSidebar.classList.add("active");
+      sidebarOverlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => sidebarClose?.focus(), 100);
+    }
+  });
 }
 
 // ========================
@@ -597,6 +614,34 @@ function stopSlider() {
   clearInterval(sliderInterval);
 }
 
+// Touch swipe for hero slider
+let sliderSwipeX = 0;
+
+function setupSliderTouch(container) {
+  if (!container) return;
+
+  let startX = 0;
+
+  container.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+    sliderSwipeX = startX;
+    stopSlider();
+  }, { passive: true });
+
+  container.addEventListener("touchmove", (e) => {
+    sliderSwipeX = e.touches[0].clientX;
+  }, { passive: true });
+
+  container.addEventListener("touchend", () => {
+    const deltaX = sliderSwipeX - startX;
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) prev();
+      else next();
+    }
+    startSlider();
+  }, { passive: true });
+}
+
 window.next = next;
 window.prev = prev;
 
@@ -731,6 +776,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         clearInterval(sliderInterval),
       );
       heroSlide.addEventListener("mouseleave", startSlider);
+      setupSliderTouch(heroSlide);
     }
   }
 
@@ -746,6 +792,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (prevButton) prevButton.addEventListener("click", prevCatalog);
     if (nextButton) nextButton.addEventListener("click", nextCatalog);
+
+    // Catalog carousel swipe
+    const catWrapper = document.querySelector(".card-wrapper");
+    if (catWrapper) {
+      let catStartX = 0;
+      let catSwipeX = 0;
+      catWrapper.addEventListener("touchstart", (e) => {
+        catStartX = e.touches[0].clientX;
+        catSwipeX = catStartX;
+      }, { passive: true });
+      catWrapper.addEventListener("touchmove", (e) => {
+        catSwipeX = e.touches[0].clientX;
+      }, { passive: true });
+      catWrapper.addEventListener("touchend", () => {
+        const deltaX = catSwipeX - catStartX;
+        if (Math.abs(deltaX) > 50) {
+          if (deltaX > 0) prevCatalog();
+          else nextCatalog();
+        }
+      }, { passive: true });
+    }
   }
 
   // Setup all functionality

@@ -466,4 +466,10 @@
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
   }
+
+  .modal-details .quantity-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.5rem;
+  }
 }

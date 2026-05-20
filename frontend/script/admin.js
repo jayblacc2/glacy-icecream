@@ -90,11 +90,11 @@ async function loadProducts() {
         <tbody>
           ${products.map(p => `
             <tr>
-              <td><img src="${escapeAttr(p.image?.url || '../images/img1.png')}" alt="" class="thumb" onerror="this.src='../images/img1.png'"></td>
-              <td><strong>${escapeHtml(p.name)}</strong></td>
-              <td><span class="category-badge">${escapeHtml(p.category)}</span></td>
-              <td class="price-cell">$${p.price.toFixed(2)}</td>
-              <td class="actions">
+              <td data-label="Image"><img src="${escapeAttr(p.image?.url || '../images/img1.png')}" alt="" class="thumb" onerror="this.src='../images/img1.png'"></td>
+              <td data-label="Name"><strong>${escapeHtml(p.name)}</strong></td>
+              <td data-label="Category"><span class="category-badge">${escapeHtml(p.category)}</span></td>
+              <td data-label="Price" class="price-cell">$${p.price.toFixed(2)}</td>
+              <td data-label="" class="actions">
                 <button class="admin-btn-secondary" onclick="editProduct('${escapeAttr(p._id || p.id)}')"><i class="fa-solid fa-pen"></i></button>
                 <button class="admin-btn-danger" onclick="deleteProduct('${escapeAttr(p._id || p.id)}')"><i class="fa-solid fa-trash"></i></button>
               </td>
@@ -162,10 +162,10 @@ async function loadPosts() {
         <tbody>
           ${posts.map(post => `
             <tr>
-              <td><strong>${escapeHtml(post.title)}</strong></td>
-              <td>${escapeHtml(post.author || 'Anonymous')}</td>
-              <td style="color: var(--admin-text-muted); font-size: 0.9rem;">${new Date(post.createdAt).toLocaleDateString()}</td>
-              <td class="actions">
+              <td data-label="Title"><strong>${escapeHtml(post.title)}</strong></td>
+              <td data-label="Author">${escapeHtml(post.author || 'Anonymous')}</td>
+              <td data-label="Date" style="color: var(--admin-text-muted); font-size: 0.9rem;">${new Date(post.createdAt).toLocaleDateString()}</td>
+              <td data-label="" class="actions">
                 <button class="admin-btn-secondary" onclick="editPost('${escapeAttr(post._id || post.id)}')"><i class="fa-solid fa-pen"></i></button>
                 <button class="admin-btn-danger" onclick="deletePost('${escapeAttr(post._id || post.id)}')"><i class="fa-solid fa-trash"></i></button>
               </td>
@@ -239,13 +239,13 @@ async function loadOrders() {
           ${orders.map(o => {
             const sc = statusColors[o.status] || statusColors.pending;
             return `<tr>
-              <td><strong>#${escapeHtml(o.orderNumber)}</strong></td>
-              <td>${escapeHtml(o.user ? o.user.name : '—')}</td>
-              <td>${o.itemCount}</td>
-              <td class="price-cell">$${o.totalAmount.toFixed(2)}</td>
-              <td><span class="status-badge" style="background:${sc.bg};color:${sc.color};padding:0.25rem 0.6rem;border-radius:20px;font-size:0.8rem;font-weight:600;">${escapeHtml(o.status)}</span></td>
-              <td style="color:var(--admin-text-muted);font-size:0.9rem;">${new Date(o.createdAt).toLocaleDateString()}</td>
-              <td class="actions">
+              <td data-label="Order"><strong>#${escapeHtml(o.orderNumber)}</strong></td>
+              <td data-label="Customer">${escapeHtml(o.user ? o.user.name : '—')}</td>
+              <td data-label="Items">${o.itemCount}</td>
+              <td data-label="Total" class="price-cell">$${o.totalAmount.toFixed(2)}</td>
+              <td data-label="Status"><span class="status-badge" style="background:${sc.bg};color:${sc.color};padding:0.25rem 0.6rem;border-radius:20px;font-size:0.8rem;font-weight:600;">${escapeHtml(o.status)}</span></td>
+              <td data-label="Date" style="color:var(--admin-text-muted);font-size:0.9rem;">${new Date(o.createdAt).toLocaleDateString()}</td>
+              <td data-label="" class="actions">
                 <button class="admin-btn-secondary" onclick="editOrderStatus('${escapeAttr(o.id)}')"><i class="fa-solid fa-pen"></i></button>
               </td>
             </tr>`;

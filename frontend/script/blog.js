@@ -283,6 +283,28 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// Swipe down to close modal
+let blogTouchStartY = 0;
+let blogTouchEndY = 0;
+const blogOverlay = document.getElementById("modal-overlay");
+blogOverlay.addEventListener("touchstart", (e) => {
+  if (e.target === blogOverlay) {
+    blogTouchStartY = e.touches[0].clientY;
+    blogTouchEndY = blogTouchStartY;
+  }
+}, { passive: true });
+blogOverlay.addEventListener("touchmove", (e) => {
+  if (e.target === blogOverlay) {
+    blogTouchEndY = e.touches[0].clientY;
+  }
+}, { passive: true });
+blogOverlay.addEventListener("touchend", () => {
+  const deltaY = blogTouchEndY - blogTouchStartY;
+  if (deltaY > 100) {
+    closeModal();
+  }
+}, { passive: true });
+
 // Initialize on page load
 init();
 

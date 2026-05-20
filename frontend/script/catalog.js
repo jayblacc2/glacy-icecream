@@ -246,6 +246,28 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// Swipe down to close modal
+let modalTouchStartY = 0;
+let modalTouchEndY = 0;
+const modalOverlay = document.getElementById("modal-overlay");
+modalOverlay.addEventListener("touchstart", (e) => {
+  if (e.target === modalOverlay) {
+    modalTouchStartY = e.touches[0].clientY;
+    modalTouchEndY = modalTouchStartY;
+  }
+}, { passive: true });
+modalOverlay.addEventListener("touchmove", (e) => {
+  if (e.target === modalOverlay) {
+    modalTouchEndY = e.touches[0].clientY;
+  }
+}, { passive: true });
+modalOverlay.addEventListener("touchend", () => {
+  const deltaY = modalTouchEndY - modalTouchStartY;
+  if (deltaY > 100) {
+    closeModal();
+  }
+}, { passive: true });
+
 // Initialize
 document.addEventListener("DOMContentLoaded", async () => {
   await loadIcecreams();
