@@ -376,6 +376,17 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  cursor: default;
+  text-align: left;
+  opacity: 1;
+  color: inherit;
+  justify-content: flex-start;
+  align-items: stretch;
 }
 
 .admin-form label {
