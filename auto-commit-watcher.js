@@ -1,12 +1,13 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import readline from 'readline';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DEBOUNCE_MS = 10 * 60 * 1000;
+const DEBOUNCE_MS = 60 * 60 * 1000;
 const WATCH_DIRS = [
   path.join(__dirname, 'frontend'),
   path.join(__dirname, 'backend'),
@@ -15,9 +16,9 @@ const WATCH_DIRS = [
 const WATCHED_EXTENSIONS = new Set([
   '.js', '.mjs', '.json', '.html', '.css',
 ]);
+const AUTO_PUSH_ENABLED = true;
 
 let timer = null;
-let pendingChanges = new Map();
 let isRunning = false;
 
 function shouldWatchFile(filePath) {
@@ -33,9 +34,9 @@ function collectChanges() {
     });
     const lines = status.trim().split('\n').filter(Boolean);
     return lines.map(line => {
-      const status = line.substring(0, 2).trim();
+      const s = line.substring(0, 2).trim();
       const file = line.substring(3).trim();
-      return { status, file };
+      return { status: s, file };
     });
   } catch {
     return [];
@@ -46,12 +47,10 @@ function getCommitSummary(changes) {
   const added = changes.filter(c => c.status === '??' || c.status.startsWith('A'));
   const modified = changes.filter(c => c.status.startsWith('M') || c.status.startsWith(' '));
   const deleted = changes.filter(c => c.status.startsWith('D'));
-
   const parts = [];
   if (added.length > 0) parts.push(`${added.length} added`);
   if (modified.length > 0) parts.push(`${modified.length} modified`);
   if (deleted.length > 0) parts.push(`${deleted.length} deleted`);
-
   return parts.length > 0 ? parts.join(', ') : 'changes';
 }
 
@@ -61,86 +60,109 @@ function runTests() {
       const output = execSync('npm test 2>&1', {
         cwd: __dirname,
         encoding: 'utf-8',
-        timeout: 120000,
+        timeout: 300000,
       });
-      console.log('[Watcher] Tests passed');
+      console.log('\n[Watcher] All tests passed');
       resolve({ passed: true, output });
     } catch (error) {
-      console.log('[Watcher] Tests failed');
+      console.log('\n[Watcher] Tests failed');
       resolve({ passed: false, output: error.stdout || error.message });
     }
   });
 }
 
-function autoCommit() {
+function askToCommit(changes) {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    console.log(`\n[Watcher] Changes detected: ${getCommitSummary(changes)}`);
+    rl.question('[Watcher] Commit and push? (y/N) ', (answer) => {
+      rl.close();
+      resolve(answer.trim().toLowerCase() === 'y' || answer.trim().toLowerCase() === 'yes');
+    });
+  });
+}
+
+async function run() {
   if (isRunning) return;
   isRunning = true;
 
   const changes = collectChanges();
   if (changes.length === 0) {
-    console.log('[Watcher] No changes to commit');
+    console.log(`[Watcher] ${new Date().toLocaleTimeString()} — No changes to commit`);
     isRunning = false;
     return;
   }
 
-  const summary = getCommitSummary(changes);
-  console.log(`[Watcher] Detected changes: ${summary}`);
-  console.log('[Watcher] Running tests before auto-commit...');
+  const fileList = changes.map(c => `  ${c.status}  ${c.file}`).join('\n');
+  console.log(`\n[Watcher] Pending changes:\n${fileList}`);
 
-  runTests().then((result) => {
-    if (!result.passed) {
-      console.log('[Watcher] Tests failed — commit blocked');
-      console.log(result.output);
-      isRunning = false;
-      return;
-    }
+  const result = await runTests();
 
-    try {
-      execSync('git add -A', { cwd: __dirname, encoding: 'utf-8' });
-      const commitMsg = `auto: tests passed (${summary})`;
-      execSync(`git commit -m "${commitMsg}"`, {
-        cwd: __dirname,
-        encoding: 'utf-8',
-      });
-      console.log(`[Watcher] Auto-committed: ${commitMsg}`);
-    } catch (error) {
-      console.error('[Watcher] Commit failed:', error.message);
-    }
-
+  if (!result.passed) {
+    console.log('[Watcher] Commit blocked — tests must pass first');
+    console.log(result.output);
     isRunning = false;
-  });
+    return;
+  }
+
+  const shouldCommit = await askToCommit(changes);
+
+  if (!shouldCommit) {
+    console.log('[Watcher] Commit skipped by user');
+    isRunning = false;
+    return;
+  }
+
+  try {
+    execSync('git add -A', { cwd: __dirname, encoding: 'utf-8' });
+    const commitMsg = `auto: tests passed (${getCommitSummary(changes)})`;
+    execSync(`git commit -m "${commitMsg}"`, { cwd: __dirname, encoding: 'utf-8' });
+    console.log(`[Watcher] Committed: ${commitMsg}`);
+
+    if (AUTO_PUSH_ENABLED) {
+      const branch = execSync('git rev-parse --abbrev-ref HEAD', {
+        cwd: __dirname, encoding: 'utf-8',
+      }).trim();
+      execSync(`git push origin ${branch}`, { cwd: __dirname, encoding: 'utf-8' });
+      console.log(`[Watcher] Pushed to origin/${branch} — GitHub Actions triggered`);
+    }
+  } catch (error) {
+    console.error('[Watcher] Commit or push failed:', error.message);
+  }
+
+  isRunning = false;
 }
 
-function debounceAutoCommit() {
+function debouncedRun() {
   if (timer) clearTimeout(timer);
-  console.log('[Watcher] Change detected, waiting 10min debounce...');
-  timer = setTimeout(autoCommit, DEBOUNCE_MS);
+  console.log(`\n[Watcher] ${new Date().toLocaleTimeString()} — Change detected, waiting 1h debounce...`);
+  timer = setTimeout(run, DEBOUNCE_MS);
 }
 
 const watchedFiles = new Set();
 
 function watchDirectory(dir) {
   if (!fs.existsSync(dir)) return;
-
   fs.watch(dir, { recursive: true }, (eventType, filename) => {
     if (!filename) return;
     const fullPath = path.join(dir, filename);
-
     if (watchedFiles.has(fullPath)) return;
     watchedFiles.add(fullPath);
     setTimeout(() => watchedFiles.delete(fullPath), 1000);
-
     if (shouldWatchFile(fullPath)) {
-      pendingChanges.set(fullPath, Date.now());
-      debounceAutoCommit();
+      debouncedRun();
     }
   });
 }
 
-console.log('[Watcher] Starting auto-commit watcher...');
-console.log(`[Watcher] Watching directories: ${WATCH_DIRS.join(', ')}`);
-console.log(`[Watcher] Debounce: ${DEBOUNCE_MS / 1000}s`);
-console.log('[Watcher] Press Ctrl+C to stop');
+console.log('[Watcher] Auto-commit watcher started');
+console.log(`[Watcher] Watching: ${WATCH_DIRS.join(', ')}`);
+console.log(`[Watcher] Debounce: ${DEBOUNCE_MS / 1000 / 60} minutes`);
+console.log('[Watcher] Ctrl+C to stop');
 
 WATCH_DIRS.forEach(watchDirectory);
 

@@ -165,25 +165,6 @@
             </button>
           </div>
         </div>
-
-        <div class="sidebar-bottom-nav">
-          <a href="../index.html" class="bottom-nav-item">
-            <i class="fa-solid fa-house"></i>
-            <span>Home</span>
-          </a>
-          <button class="bottom-nav-item" id="bottom-search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <span>Search</span>
-          </button>
-          <button class="bottom-nav-item" id="bottom-login">
-            <i class="fa-solid fa-user"></i>
-            <span>Login</span>
-          </button>
-          <button class="bottom-nav-item" id="bottom-cart">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span>Cart</span>
-          </button>
-        </div>
       </div>
 
       <!-- Sidebar Overlay -->
@@ -589,6 +570,33 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+      <a href="../index.html" class="bottom-nav-item">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </a>
+      <a href="catalogs.html" class="bottom-nav-item">
+        <i class="fa-solid fa-border-all"></i>
+        <span>Catalog</span>
+      </a>
+      <a href="blog.html" class="bottom-nav-item">
+        <i class="fa-solid fa-newspaper"></i>
+        <span>Blog</span>
+      </a>
+      <button class="bottom-nav-item" id="mobile-cart-btn">
+        <span class="bottom-nav-icon-wrap">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="mobile-cart-badge" id="mobile-cart-badge">0</span>
+        </span>
+        <span>Cart</span>
+      </button>
+      <button class="bottom-nav-item" id="mobile-user">
+        <i class="fa-solid fa-user"></i>
+        <span>Account</span>
+      </button>
+    </nav>
+
     <script type="module" src="../script/script.js"></script>
     <script type="module" src="../script/delivery.js"></script>
     <script type="module" src="../utils/current-year.js"></script>
