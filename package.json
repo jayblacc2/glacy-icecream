@@ -8,7 +8,10 @@
     "build": "vite build --config frontend/vite.config.js",
     "preview": "vite preview --config frontend/vite.config.js",
     "start": "npm run dev",
-    "test": "echo 'Test process placeholder'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "watch:auto-commit": "node auto-commit-watcher.js",
     "version:major": "npm version major -m \"Bump to version %s\"",
     "version:minor": "npm version minor -m \"Bump to version %s\"",
     "version:patch": "npm version patch -m \"Bump to version %s\""
@@ -22,7 +25,14 @@
   "author": "Your Name",
   "license": "MIT",
   "devDependencies": {
-    "vite": "^6.4.1"
+    "@vitest/coverage-v8": "^4.1.7",
+    "happy-dom": "^20.9.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb-memory-server": "^11.1.0",
+    "mongoose": "^9.6.2",
+    "supertest": "^7.2.2",
+    "vite": "^6.4.1",
+    "vitest": "^4.1.7"
   },
   "repository": {
     "type": "git",
