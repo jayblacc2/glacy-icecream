@@ -225,7 +225,7 @@ function updateCart() {
     }
   }
 
-  // Update desktop nav cart badge
+  // Update desktop nav cart badge with pop animation
   const desktopCartBadge = document.getElementById("desktop-cart-badge");
   if (desktopCartBadge) {
     if (cartItems.length === 0) {
@@ -233,10 +233,13 @@ function updateCart() {
     } else {
       desktopCartBadge.style.display = "flex";
       desktopCartBadge.textContent = `${cartItems.length}`;
+      desktopCartBadge.classList.remove("cart-badge-pop");
+      void desktopCartBadge.offsetWidth;
+      desktopCartBadge.classList.add("cart-badge-pop");
     }
   }
 
-  // Update mobile bottom nav cart badge
+  // Update mobile bottom nav cart badge with pop animation
   const mobileCartBadge = document.getElementById("mobile-cart-badge");
   if (mobileCartBadge) {
     if (cartItems.length === 0) {
@@ -244,6 +247,9 @@ function updateCart() {
     } else {
       mobileCartBadge.style.display = "flex";
       mobileCartBadge.textContent = `${cartItems.length}`;
+      mobileCartBadge.classList.remove("cart-badge-pop");
+      void mobileCartBadge.offsetWidth;
+      mobileCartBadge.classList.add("cart-badge-pop");
     }
   }
 
@@ -817,6 +823,7 @@ function setupStickyNav() {
   if (!nav) return;
 
   const navHeight = nav.offsetHeight;
+  const deepScrollThreshold = navHeight * 3;
   let ticking = false;
 
   window.addEventListener("scroll", () => {
@@ -824,8 +831,10 @@ function setupStickyNav() {
       window.requestAnimationFrame(() => {
         if (window.scrollY > navHeight) {
           nav.classList.add("sticky");
+          nav.classList.toggle("scrolled-deep", window.scrollY > deepScrollThreshold);
         } else {
           nav.classList.remove("sticky");
+          nav.classList.remove("scrolled-deep");
         }
         ticking = false;
       });
@@ -862,6 +871,10 @@ window.showThankyouOverlay = function () {
 // ========================
 document.addEventListener("DOMContentLoaded", async () => {
   debugLog("Initializing...");
+
+  // Page entrance animation
+  const mainEl = document.querySelector("main");
+  if (mainEl) mainEl.classList.add("page-fade-in");
 
   // Load data from API
   const featuredProducts = await fetchCatalog(6);

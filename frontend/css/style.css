@@ -1,4 +1,5 @@
 @import url("tokens.css");
+@import url("animation.css");
 * {
   margin: 0;
   padding: 0;
@@ -281,6 +282,40 @@ li {
   background: var(--btn-light);
 }
 
+/* ===== ANIMATION UTILITIES ===== */
+.hover-lift {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+.hover-lift:active {
+  transform: translateY(-2px);
+}
+
+.page-fade-in {
+  animation: scaleIn 0.4s ease both;
+}
+
+.cart-badge-pop {
+  animation: cartBounce 0.4s ease;
+}
+
+.btn-pulse {
+  animation: buttonPulse 1s ease;
+}
+
+.icon-pop {
+  animation: iconPop 0.35s ease;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease infinite;
+}
+
 .main-title {
   color: var(--primary-color);
   font-size: 3.6rem;
@@ -335,18 +370,13 @@ h1 {
   left: 0;
   right: 0;
   background: var(--bg-color-1);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   animation: slideDown 0.3s ease-in-out;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
   padding: 0 5%;
 }
 
-@keyframes slideDown {
-  from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+.nav.sticky.scrolled-deep {
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.18);
 }
 
 .nav-item {
@@ -2052,15 +2082,6 @@ input::placeholder {
   font-size: 3rem;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .error-message {
