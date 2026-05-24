@@ -31,20 +31,20 @@
 }
 
 .delivery-title {
-  font-family: "Yanone Kaffeesatz", sans-serif;
-  font-size: 5rem;
-  font-weight: 900;
+  font-family: var(--font-heading);
+  font-size: var(--text-6xl);
+  font-weight: var(--weight-black);
   color: #fff;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-6);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  letter-spacing: 3px;
+  letter-spacing: var(--tracking-widest);
 }
 
 .delivery-lead {
-  font-size: 2rem;
+  font-size: var(--text-xl);
   color: rgba(255, 255, 255, 0.95);
-  font-weight: 300;
-  line-height: 1.6;
+  font-weight: var(--weight-light);
+  line-height: var(--leading-normal);
   max-width: 600px;
   margin: 0 auto;
 }
@@ -96,30 +96,30 @@
   display: inline-block;
   background: linear-gradient(
     135deg,
-    var(--bg-color-1),
-    var(--dark-primary-color)
+    var(--color-primary),
+    var(--color-primary-dark-08)
   );
   color: white;
-  padding: 0.5rem 1.5rem;
+  padding: var(--space-2) var(--space-6);
   border-radius: 25px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-4);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-wide);
 }
 
 .section-title {
-  font-size: 3rem;
-  color: var(--primary-color);
-  font-family: "Yanone Kaffeesatz", sans-serif;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  font-size: var(--h2-size);
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-2);
 }
 
 .section-subtitle {
-  font-size: 1.3rem;
-  color: var(--primary-color);
+  font-size: var(--text-md);
+  color: var(--color-text);
   max-width: 600px;
   margin: 0 auto;
 }
@@ -140,11 +140,11 @@
 }
 
 .method-card {
-  background: white;
-  border-radius: 20px;
-  padding: 2.5rem;
-  box-shadow: var(--box-shadow);
-  transition: all 0.4s ease;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-10);
+  box-shadow: var(--shadow-card);
+  transition: var(--transition-slow);
   display: flex;
   flex-direction: column;
   align-items: center;

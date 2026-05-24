@@ -1,20 +1,4 @@
-:root {
-  --admin-primary: #ec3d60;
-  --admin-primary-light: #feafbf;
-  --admin-gradient: linear-gradient(135deg, #feafbf 0%, #ec3d60 100%);
-  --admin-bg: #f8f9fc;
-  --admin-card-bg: #ffffff;
-  --admin-text: #1f2937;
-  --admin-text-muted: #6b7280;
-  --admin-border: #e5e7eb;
-  --admin-danger: #ef4444;
-  --admin-success: #10b981;
-  --admin-warning: #f59e0b;
-  --admin-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-  --admin-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-  --admin-radius: 12px;
-  --admin-radius-sm: 8px;
-}
+@import url("tokens.css");
 
 .admin-page {
   min-height: 100vh;
