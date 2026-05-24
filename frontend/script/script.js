@@ -225,6 +225,17 @@ function updateCart() {
     }
   }
 
+  // Update desktop nav cart badge
+  const desktopCartBadge = document.getElementById("desktop-cart-badge");
+  if (desktopCartBadge) {
+    if (cartItems.length === 0) {
+      desktopCartBadge.style.display = "none";
+    } else {
+      desktopCartBadge.style.display = "flex";
+      desktopCartBadge.textContent = `${cartItems.length}`;
+    }
+  }
+
   // Update mobile bottom nav cart badge
   const mobileCartBadge = document.getElementById("mobile-cart-badge");
   if (mobileCartBadge) {

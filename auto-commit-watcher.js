@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DEBOUNCE_MS = 60 * 60 * 1000;
+const DEBOUNCE_MS = 10 * 60 * 1000;
 const WATCH_DIRS = [
   path.join(__dirname, 'frontend'),
   path.join(__dirname, 'backend'),
