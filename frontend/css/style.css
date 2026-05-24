@@ -1498,17 +1498,18 @@ input::placeholder {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 6px 8px;
+  padding: 4px 6px;
   background: transparent;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--primary-text-color);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
-  min-width: 50px;
+  min-width: 44px;
+  flex: 0 0 auto;
 }
 
 .bottom-nav-item i {
@@ -1595,7 +1596,7 @@ input::placeholder {
 
   /* Add bottom padding to account for fixed bottom nav */
   body {
-    padding-bottom: 64px;
+    padding-bottom: 72px;
   }
 
   /* Navigation adjustments for mobile */
@@ -2426,18 +2427,19 @@ input::placeholder {
 
   /* Bottom nav adjustments for small mobile */
   .mobile-bottom-nav {
-    padding: 6px 4px;
-    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+    padding: 4px 2px;
+    padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px));
   }
 
   .bottom-nav-item {
-    padding: 4px 6px;
-    min-width: 44px;
-    font-size: 0.65rem;
+    padding: 3px 4px;
+    min-width: 38px;
+    font-size: 0.6rem;
+    border-radius: 8px;
   }
 
   .bottom-nav-item i {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 
   /* Fix order-contents width overflow */
