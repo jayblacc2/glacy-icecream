@@ -5,8 +5,8 @@
   display: flex;
   align-items: center;
   padding: 1rem 2rem;
-  background: #fff;
-  border-bottom: 1px solid #eee;
+  background: var(--color-bg-card);
+  border-bottom: 1px solid var(--color-border-light);
 }
 .login-nav-brand {
   display: flex;
@@ -29,15 +29,15 @@
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background: linear-gradient(135deg, #fef7f8 0%, #f0f4ff 100%);
+  background: linear-gradient(135deg, var(--color-bg-light) 0%, #f0f4ff 100%);
 }
 
 .login-card {
   width: 100%;
   max-width: 440px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
   padding: 2rem;
   animation: slideUp 0.4s ease;
 }
@@ -52,7 +52,7 @@
   display: flex;
   gap: 0;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid var(--color-border-light);
 }
 .login-tab {
   flex: 1;
@@ -61,18 +61,18 @@
   border: none;
   font-size: 1rem;
   font-weight: 600;
-  color: #999;
+  color: var(--color-text-lighter);
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
 }
 .login-tab.active {
-  color: var(--primary-color);
-  border-bottom-color: var(--primary-color);
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
 }
 .login-tab:hover:not(.active) {
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 /* Form Groups */
@@ -102,19 +102,19 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: 1.5px solid #ddd;
-  border-radius: 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 0.65rem 0.85rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  background: #fafafa;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  background: var(--color-bg-input);
 }
 .input-wrapper-login:focus-within {
-  border-color: var(--primary-color);
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(254, 175, 195, 0.2);
-  background: #fff;
+  background: var(--color-bg-card);
 }
 .input-wrapper-login i {
-  color: #aaa;
+  color: var(--color-text-lighter);
   font-size: 0.9rem;
   min-width: 18px;
 }
@@ -128,7 +128,7 @@
   font-family: inherit;
 }
 .input-wrapper-login input::placeholder {
-  color: #bbb;
+  color: var(--color-text-lighter);
 }
 
 /* Password Toggle */
@@ -136,12 +136,12 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #aaa;
+  color: var(--color-text-lighter);
   padding: 0;
   font-size: 0.9rem;
 }
 .toggle-password:hover {
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 /* Login Options */
@@ -156,13 +156,13 @@
   align-items: center;
   gap: 0.4rem;
   cursor: pointer;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 .remember-me input {
-  accent-color: var(--primary-color);
+  accent-color: var(--color-primary);
 }
 .forgot-link {
-  color: var(--primary-color);
+  color: var(--color-primary);
   text-decoration: none;
   font-weight: 500;
 }
@@ -187,16 +187,16 @@
   gap: 0.5rem;
 }
 .login-btn-page {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: var(--color-bg-card);
 }
 .login-btn-page:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(254, 175, 195, 0.4);
+  box-shadow: var(--shadow-pink);
 }
 .signup-btn-page {
   background: linear-gradient(135deg, var(--color-primary-dark), #4a6cf7);
-  color: #fff;
+  color: var(--color-bg-card);
 }
 .signup-btn-page:hover {
   transform: translateY(-1px);
@@ -221,7 +221,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: #ccc;
+  color: var(--color-text-lighter);
   font-size: 0.85rem;
 }
 .login-divider::before,
@@ -229,19 +229,19 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: #eee;
+  background: var(--color-border-light);
 }
 
 /* Switch Text */
 .login-switch-text {
   text-align: center;
   font-size: 0.9rem;
-  color: #888;
+  color: var(--color-text-light);
 }
 .switch-tab {
   background: none;
   border: none;
-  color: var(--primary-color);
+  color: var(--color-primary);
   font-weight: 600;
   cursor: pointer;
   font-size: 0.9rem;
@@ -257,7 +257,7 @@
   padding: 0.65rem 1rem;
   background: #fee2e2;
   color: #991b1b;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 0.85rem;
   text-align: center;
 }
