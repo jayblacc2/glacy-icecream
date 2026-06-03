@@ -13,7 +13,7 @@
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
   font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 700;
@@ -29,7 +29,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background: linear-gradient(135deg, var(--color-bg-light) 0%, #f0f4ff 100%);
+  background: linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-bg-tint-blue) 100%);
 }
 
 .login-card {
@@ -95,7 +95,7 @@
 .form-group-login label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
 }
 
 .input-wrapper-login {
@@ -110,7 +110,7 @@
 }
 .input-wrapper-login:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(254, 175, 195, 0.2);
+  box-shadow: 0 0 0 3px var(--color-primary-20);
   background: var(--color-bg-card);
 }
 .input-wrapper-login i {
@@ -124,7 +124,7 @@
   outline: none;
   background: transparent;
   font-size: 0.95rem;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
   font-family: inherit;
 }
 .input-wrapper-login input::placeholder {
@@ -195,12 +195,12 @@
   box-shadow: var(--shadow-pink);
 }
 .signup-btn-page {
-  background: linear-gradient(135deg, var(--color-primary-dark), #4a6cf7);
+  background: linear-gradient(135deg, var(--color-primary-dark), var(--color-accent-blue));
   color: var(--color-bg-card);
 }
 .signup-btn-page:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(74, 108, 247, 0.4);
+  box-shadow: 0 4px 12px var(--color-accent-blue-40);
 }
 
 .login-btn-page .btn-loader,
@@ -255,8 +255,8 @@
 .login-error {
   margin-top: 0.75rem;
   padding: 0.65rem 1rem;
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
   border-radius: var(--radius-md);
   font-size: 0.85rem;
   text-align: center;

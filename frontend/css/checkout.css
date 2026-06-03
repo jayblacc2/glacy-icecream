@@ -14,7 +14,7 @@
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
   font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 700;
@@ -110,7 +110,7 @@
   font-family: var(--font-heading);
   font-size: 1.35rem;
   margin-bottom: 1.5rem;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -149,7 +149,7 @@
 .cart-item-info h4 {
   font-size: 0.95rem;
   margin-bottom: 0.15rem;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -187,7 +187,7 @@
 .cart-item-price {
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
   min-width: 70px;
   text-align: right;
 }
@@ -222,7 +222,7 @@
 .form-group-checkout label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
 }
 .input-wrap-checkout {
   display: flex;
@@ -236,7 +236,7 @@
 }
 .input-wrap-checkout:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(254, 175, 195, 0.2);
+  box-shadow: 0 0 0 3px var(--color-primary-20);
   background: var(--color-bg-card);
 }
 .input-wrap-checkout i {
@@ -250,7 +250,7 @@
   outline: none;
   background: transparent;
   font-size: 0.95rem;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
   font-family: inherit;
 }
 .input-wrap-checkout input::placeholder { color: var(--color-text-lighter); }
@@ -283,7 +283,7 @@
 .payment-card strong {
   display: block;
   font-size: 0.95rem;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
 }
 .payment-card p {
   font-size: 0.8rem;
@@ -310,7 +310,7 @@
 .order-summary h3 {
   font-size: 1rem;
   margin-bottom: 0.75rem;
-  color: var(--text-dark);
+  color: var(--color-text-dark);
 }
 .summary-item {
   display: flex;
@@ -443,7 +443,7 @@
   margin-bottom: 1rem;
 }
 .empty-cart-state h2 {
-  color: var(--text-dark);
+  color: var(--color-text-dark);
   margin-bottom: 0.5rem;
 }
 .empty-cart-state p {
