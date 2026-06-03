@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirm Subscription — Glacy Store</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { display:flex; align-items:center; justify-content:center; min-height:100vh; flex-direction:column; gap:1rem; text-align:center; padding:2rem; }
+    h1 { color:var(--color-primary); }
+    #confirm-message { font-size:1.2rem; }
+    .success { color:#2ecc71; }
+    .error { color:#e74c3c; }
+  </style>
+</head>
+<body>
+  <h1>Glacy Store</h1>
+  <p id="confirm-message">Processing...</p>
+  <a href="index.html" class="btn btn-primary" style="margin-top:1rem;">Back to Home</a>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const msg = params.get("message") || "Subscription confirmed!";
+    const success = params.get("success") !== "false";
+    const msgEl = document.getElementById("confirm-message");
+    msgEl.textContent = decodeURIComponent(msg);
+    msgEl.className = success ? "success" : "error";
+  </script>
+</body>
+</html>

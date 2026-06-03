@@ -237,6 +237,7 @@
                 <h3>Personal Info</h3>
                 <p id="overview-name">--</p>
                 <p id="overview-email" class="text-muted">--</p>
+                <p id="overview-phone" class="text-muted" style="margin-top:4px;"></p>
               </div>
             </div>
             <div class="info-card">
@@ -245,7 +246,7 @@
               </div>
               <div class="info-card-content">
                 <h3>Contact</h3>
-                <p id="overview-contact">--</p>
+                <p id="overview-address">--</p>
                 <span class="badge verified"><i class="fa-solid fa-check"></i> Verified</span>
               </div>
             </div>
@@ -307,6 +308,22 @@
                   <input type="email" id="profile-email" name="email" placeholder="your@email.com" required/>
                 </div>
                 <span class="error-message" id="email-error"></span>
+              </div>
+
+              <div class="input-wrapper full-width">
+                <label for="profile-phone" class="input-label"><i class="fa-solid fa-phone"></i> Phone</label>
+                <div class="input-field">
+                  <i class="fa-solid fa-phone input-icon"></i>
+                  <input type="tel" id="profile-phone" name="phone" placeholder="+1 (555) 123-4567"/>
+                </div>
+              </div>
+
+              <div class="input-wrapper full-width">
+                <label for="profile-address" class="input-label"><i class="fa-solid fa-location-dot"></i> Address</label>
+                <div class="input-field">
+                  <i class="fa-solid fa-location-dot input-icon"></i>
+                  <input type="text" id="profile-address" name="address" placeholder="123 Main St, City"/>
+                </div>
               </div>
 
               <div class="input-wrapper full-width">

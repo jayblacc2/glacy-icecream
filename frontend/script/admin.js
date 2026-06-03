@@ -1,15 +1,20 @@
 import { showToast } from '../utils/toast-notification.js';
 import { getCurrentUser, getAuthInitPromise } from './auth.js';
 import { fetchWithCsrf } from '../utils/csrf.js';
+import { renderPagination } from '../utils/pagination.js';
 
 const API_PRODUCTS = '/api/v1/products';
 const API_POSTS = '/api/v1/posts';
+const ADMIN_PAGE_LIMIT = 20;
 
 const $ = (id) => document.getElementById(id);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 let editingId = null;
 let editingType = null;
+let adminProductPage = 1;
+let adminOrderPage = 1;
+let adminPostPage = 1;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await getAuthInitPromise();
@@ -61,12 +66,14 @@ function closeModal() {
 }
 
 // ===== PRODUCTS =====
-async function loadProducts() {
+async function loadProducts(page = 1) {
+  adminProductPage = page;
   const container = $('products-container');
   container.innerHTML = `<div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> <p>Loading products...</p></div>`;
 
   try {
-    const res = await fetch(API_PRODUCTS);
+    const url = `${API_PRODUCTS}?page=${page}&limit=${ADMIN_PAGE_LIMIT}`;
+    const res = await fetch(url);
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
 
@@ -102,8 +109,9 @@ async function loadProducts() {
           `).join('')}
         </tbody>
       </table>`;
+    renderPagination(data.pagination, 'admin-products-pagination', (p) => loadProducts(p));
   } catch (err) {
-    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadProducts()">Retry</button></div>`;
+    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadProducts(adminProductPage)">Retry</button></div>`;
   }
 }
 
@@ -134,16 +142,18 @@ window.deleteProduct = async function(id) {
 };
 
 // ===== POSTS =====
-async function loadPosts() {
+async function loadPosts(page = 1) {
+  adminPostPage = page;
   const container = $('posts-container');
   container.innerHTML = `<div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> <p>Loading posts...</p></div>`;
 
   try {
-    const res = await fetch(API_POSTS);
+    const url = `${API_POSTS}?page=${page}&limit=${ADMIN_PAGE_LIMIT}`;
+    const res = await fetch(url);
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
 
-    const posts = data.posts || [];
+    const posts = data.data || [];
     if (posts.length === 0) {
       container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-newspaper"></i><h3>No posts yet</h3><p>Write your first blog post.</p></div>`;
       return;
@@ -173,8 +183,9 @@ async function loadPosts() {
           `).join('')}
         </tbody>
       </table>`;
+    renderPagination(data.pagination, 'admin-posts-pagination', (p) => loadPosts(p));
   } catch (err) {
-    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadPosts()">Retry</button></div>`;
+    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadPosts(adminPostPage)">Retry</button></div>`;
   }
 }
 
@@ -205,12 +216,13 @@ window.deletePost = async function(id) {
 };
 
 // ===== ORDERS =====
-async function loadOrders() {
+async function loadOrders(page = 1) {
+  adminOrderPage = page;
   const container = $('orders-container');
   container.innerHTML = `<div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> <p>Loading orders...</p></div>`;
 
   try {
-    const res = await fetch('/api/v1/orders/admin', { credentials: 'include' });
+    const res = await fetch(`/api/v1/orders/admin?page=${page}&limit=${ADMIN_PAGE_LIMIT}`, { credentials: 'include' });
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
 
@@ -252,8 +264,9 @@ async function loadOrders() {
           }).join('')}
         </tbody>
       </table>`;
+    renderPagination(data.pagination, 'admin-orders-pagination', (p) => loadOrders(p));
   } catch (err) {
-    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadOrders()">Retry</button></div>`;
+    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadOrders(adminOrderPage)">Retry</button></div>`;
   }
 }
 

@@ -49,21 +49,32 @@ const createOrder = async (req, res) => {
       }
     }
 
-    // Build order items with verified prices
+    // Reject if any product is no longer in the DB
+    for (const cartItem of user.cart) {
+      const productId = cartItem.productId.toString();
+      if (!priceMap.has(productId)) {
+        return res.status(400).json({
+          success: false,
+          message: `Product "${cartItem.name}" is no longer available`,
+        });
+      }
+    }
+
+    // Build order items with verified prices (all guaranteed to exist)
     let totalAmount = 0;
     const orderItems = user.cart.map((cartItem) => {
       const productId = cartItem.productId.toString();
       const verifiedProduct = priceMap.get(productId);
-      const price = verifiedProduct ? verifiedProduct.price : cartItem.price;
+      const price = verifiedProduct.price;
       const itemTotal = price * cartItem.quantity;
       totalAmount += itemTotal;
 
       return {
         productId: cartItem.productId,
-        name: verifiedProduct ? verifiedProduct.name : cartItem.name,
+        name: verifiedProduct.name,
         price,
         quantity: cartItem.quantity,
-        image: verifiedProduct ? verifiedProduct.image : cartItem.image,
+        image: verifiedProduct.image?.url || "",
       };
     });
 
@@ -188,6 +199,16 @@ const getOrderById = async (req, res) => {
   }
 };
 
+/**
+ * Restore product stock for a list of order items.
+ * Called when an order is cancelled.
+ */
+async function restoreStock(orderItems) {
+  for (const item of orderItems) {
+    await Product.findByIdAndUpdate(item.productId, { $inc: { stock: item.quantity } });
+  }
+}
+
 // Cancel order
 const cancelOrder = async (req, res) => {
   try {
@@ -213,6 +234,9 @@ const cancelOrder = async (req, res) => {
 
     order.status = 'cancelled';
     await order.save();
+
+    // Restore stock that was decremented on order placement
+    await restoreStock(order.items);
 
     res.status(200).json({
       success: true,
@@ -274,10 +298,18 @@ const updateOrderStatus = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid status' });
     }
 
-    const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
+    const order = await Order.findById(id);
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
+
+    // Restore stock when cancelling an order that wasn't already cancelled
+    if (status === 'cancelled' && order.status !== 'cancelled') {
+      await restoreStock(order.items);
+    }
+
+    order.status = status;
+    await order.save();
 
     res.status(200).json({ success: true, message: 'Order status updated', order });
   } catch (error) {

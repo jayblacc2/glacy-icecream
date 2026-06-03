@@ -91,21 +91,27 @@ function updateUI(user) {
   // Overview cards
   const overviewName = $('overview-name');
   const overviewEmail = $('overview-email');
-  const overviewContact = $('overview-contact');
+  const overviewPhone = $('overview-phone');
+  const overviewAddress = $('overview-address');
   const overviewRole = $('overview-role');
 
   if (overviewName) overviewName.textContent = user.name || '--';
   if (overviewEmail) overviewEmail.textContent = user.email || '--';
-  if (overviewContact) overviewContact.textContent = user.email || '--';
+  if (overviewPhone) overviewPhone.textContent = user.phone ? `📞 ${user.phone}` : '';
+  if (overviewAddress) overviewAddress.textContent = user.address || '--';
   if (overviewRole) overviewRole.textContent = user.role === 'admin' ? 'Administrator' : 'Standard';
 
   // Profile form
   const profileName = $('profile-name');
   const profileEmail = $('profile-email');
+  const profilePhone = $('profile-phone');
+  const profileAddress = $('profile-address');
   const profileCreated = $('profile-created');
 
   if (profileName) profileName.value = user.name || '';
   if (profileEmail) profileEmail.value = user.email || '';
+  if (profilePhone) profilePhone.value = user.phone || '';
+  if (profileAddress) profileAddress.value = user.address || '';
   if (profileCreated && user.createdAt) {
     profileCreated.value = new Date(user.createdAt).toLocaleDateString('en-US', {
       year: 'numeric', month: 'long', day: 'numeric'
@@ -136,10 +142,18 @@ function updateUI(user) {
 
 function updateProfileCompletion(user) {
   let completed = 0;
-  const fields = ['name', 'email'];
-  fields.forEach(f => { if (user[f]) completed++; });
+  const fields = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'phone', label: 'Phone' },
+    { key: 'address', label: 'Address' },
+  ];
+  fields.forEach(f => { if (user[f.key]) completed++; });
+  // Avatar counts if a URL is set
+  if (user.avatar?.url) completed++;
 
-  const percentage = Math.round((completed / fields.length) * 100);
+  const totalFields = fields.length + 1;
+  const percentage = Math.round((completed / totalFields) * 100);
   const progressBar = $('completion-progress');
   const progressText = $('completion-text');
   const statCompletion = $('stat-completion');
@@ -283,6 +297,12 @@ function setupAvatarUpload() {
     const file = fileInput.files[0];
     if (!file) return;
 
+    if (!file.type || !file.type.startsWith('image/')) {
+      showToast('Only image files are allowed (JPEG, PNG, GIF, WebP)', 'error');
+      fileInput.value = '';
+      return;
+    }
+
     if (file.size > 5 * 1024 * 1024) {
       showToast('Image must be less than 5MB', 'error');
       fileInput.value = '';
@@ -385,6 +405,8 @@ function setupFormSubmissions() {
       if (profileData) {
         $('profile-name').value = originalData.name || '';
         $('profile-email').value = originalData.email || '';
+        $('profile-phone').value = originalData.phone || '';
+        $('profile-address').value = originalData.address || '';
         clearErrors();
       }
     });
@@ -403,6 +425,8 @@ async function handleProfileUpdate(e) {
 
   const name = $('profile-name').value.trim();
   const email = $('profile-email').value.trim();
+  const phone = $('profile-phone').value.trim();
+  const address = $('profile-address').value.trim();
 
   if (!name || name.length < 3) {
     showFieldError('name-error', 'Name must be at least 3 characters');
@@ -412,7 +436,7 @@ async function handleProfileUpdate(e) {
     showFieldError('email-error', 'Please enter a valid email');
     return;
   }
-  if (name === originalData.name && email === originalData.email) {
+  if (name === originalData.name && email === originalData.email && phone === (originalData.phone || '') && address === (originalData.address || '')) {
     showToast('No changes to save', 'error');
     return;
   }
@@ -424,14 +448,14 @@ async function handleProfileUpdate(e) {
     const res = await fetchWithCsrf(`${API_BASE_URL}/profile`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email })
+      body: JSON.stringify({ name, email, phone, address })
     });
 
     const data = await res.json();
     if (!res.ok || !data.success) throw new Error(data.message);
 
     profileData = data.user;
-    originalData = { name, email };
+    originalData = { name, email, phone, address };
     updateUI(data.user);
     showToast('Profile updated successfully!', 'success');
   } catch (err) {

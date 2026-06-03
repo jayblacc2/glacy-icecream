@@ -618,18 +618,18 @@ function handleLogin(e) {
   login(email, password)
     .then(async (result) => {
       if (result.success) {
-        // Get guest cart and sync with user cart
+        // Get guest cart and merge with user cart
         const guestCart = JSON.parse(localStorage.getItem("glacy-guest-cart") || "[]");
         if (guestCart.length > 0) {
-          // Sync guest cart with backend
           const syncResult = await syncCart(guestCart);
           if (syncResult.success) {
-            cartItems = syncResult.cart || [];
             localStorage.removeItem("glacy-guest-cart");
             showToast("Cart synced with your account!");
+          } else {
+            showToast("Could not sync guest cart — items saved locally. Please try again.", "error");
           }
+          cartItems = await fetchCart();
         } else {
-          // Load user cart from backend
           cartItems = await fetchCart();
         }
 

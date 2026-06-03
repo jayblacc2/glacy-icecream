@@ -419,6 +419,8 @@ const getUserProfile = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
+        address: user.address,
         role: user.role,
         avatar: user.avatar,
         createdAt: user.createdAt,
@@ -439,7 +441,7 @@ const getUserProfile = async (req, res) => {
 // Update user profile
 const updateUserProfile = async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, email, phone, address } = req.body;
     const updateData = {};
 
     if (name) {
@@ -466,6 +468,9 @@ const updateUserProfile = async (req, res) => {
       }
       updateData.email = email.toLowerCase();
     }
+
+    if (phone !== undefined) updateData.phone = phone.trim();
+    if (address !== undefined) updateData.address = address.trim();
 
     const user = await User.findByIdAndUpdate(
       req.user.id,

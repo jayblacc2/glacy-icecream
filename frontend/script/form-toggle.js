@@ -168,7 +168,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     try {
       await logout();
 
-      // Clear cart if updateCart function exists (from script.js)
+      // Persist MongoDB cart to localStorage before clearing,
+      // so items aren't lost on logout.
+      if (typeof window.cartItems !== "undefined" && window.cartItems.length > 0) {
+        try {
+          localStorage.setItem("glacy-guest-cart", JSON.stringify(window.cartItems));
+        } catch (_) { /* storage full — silently skip */ }
+      }
+
+      // Clear cart UI
       if (typeof window.updateCart === "function") {
         if (typeof window.cartItems !== "undefined") {
           window.cartItems = [];

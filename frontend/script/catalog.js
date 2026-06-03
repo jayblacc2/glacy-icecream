@@ -4,21 +4,27 @@ import { showToast } from "../utils/toast-notification.js";
 import { addItemToCart } from "./cart.service.js";
 import { escapeHtml, escapeAttr } from "../utils/security.js";
 import { debugLog, debugError } from "../utils/debug.js";
+import { renderPagination } from "../utils/pagination.js";
 
 let icecreams = [];
 let currentFilter = "all";
 let selectedIceCream = null;
 let quantity = 1;
+let currentPage = 1;
+const PER_PAGE = 12;
 
 const API_BASE_URL = "/api/v1";
 
 // Load product data
-async function loadIcecreams() {
+async function loadIcecreams(page = 1) {
+  currentPage = page;
   document.getElementById("catalog-grid").innerHTML = loading(
     "Loading ice cream treats",
   );
   try {
-    const response = await fetch(`${API_BASE_URL}/products`);
+    const params = new URLSearchParams({ page, limit: PER_PAGE });
+    if (currentFilter !== "all") params.set("category", currentFilter);
+    const response = await fetch(`${API_BASE_URL}/products?${params}`);
     debugLog("Catalog API status:", response.status);
 
     if (!response.ok) throw new Error(`API Error: ${response.status}`);
@@ -27,7 +33,7 @@ async function loadIcecreams() {
 
     if (data.success) {
       icecreams = data.products;
-      renderCatalog();
+      renderCatalog(data.pagination);
     } else {
       document.getElementById("catalog-grid").innerHTML = errorMessage(
         "Oops! Something went wrong",
@@ -47,31 +53,22 @@ async function loadIcecreams() {
 
 function filterProducts(category) {
   currentFilter = category;
-  debugLog("Filtering:", category);
-  renderCatalog();
+  loadIcecreams(1);
 }
 
 // Render catalog
-function renderCatalog() {
+function renderCatalog(pagination) {
   const catalogGrid = document.getElementById("catalog-grid");
   if (!catalogGrid) return;
 
-  let filteredIcecreams = icecreams;
-
-  if (currentFilter !== "all") {
-    filteredIcecreams = icecreams.filter(
-      (icecream) => icecream.category.toLowerCase() === currentFilter.toLowerCase(),
-    );
-  }
-
-  if (!filteredIcecreams || filteredIcecreams.length === 0) {
+  if (!icecreams || icecreams.length === 0) {
     catalogGrid.innerHTML = emptyMessage("No ice creams available in this category.");
     return;
   }
 
   catalogGrid.innerHTML = "";
 
-  filteredIcecreams.forEach((icecream) => {
+  icecreams.forEach((icecream) => {
     const card = document.createElement("div");
     card.className = "ice-cream-card";
     card.dataset.id = icecream.id;
@@ -93,6 +90,8 @@ function renderCatalog() {
     card.addEventListener("click", () => openModal(icecream));
     catalogGrid.appendChild(card);
   });
+
+  renderPagination(pagination, "catalog-pagination", (page) => loadIcecreams(page));
 }
 
 // Open modal with ice cream details

@@ -1,7 +1,6 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import readline from 'readline';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -62,31 +61,16 @@ function runTests() {
         encoding: 'utf-8',
         timeout: 300000,
       });
-      console.log('\n[Watcher] All tests passed');
+      console.log('[Watcher] All tests passed');
       resolve({ passed: true, output });
     } catch (error) {
-      console.log('\n[Watcher] Tests failed');
+      console.log('[Watcher] Tests failed — commit blocked');
       resolve({ passed: false, output: error.stdout || error.message });
     }
   });
 }
 
-function askToCommit(changes) {
-  return new Promise((resolve) => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    console.log(`\n[Watcher] Changes detected: ${getCommitSummary(changes)}`);
-    rl.question('[Watcher] Commit and push? (y/N) ', (answer) => {
-      rl.close();
-      resolve(answer.trim().toLowerCase() === 'y' || answer.trim().toLowerCase() === 'yes');
-    });
-  });
-}
-
-async function run() {
+async function autoCommit() {
   if (isRunning) return;
   isRunning = true;
 
@@ -97,29 +81,20 @@ async function run() {
     return;
   }
 
-  const fileList = changes.map(c => `  ${c.status}  ${c.file}`).join('\n');
-  console.log(`\n[Watcher] Pending changes:\n${fileList}`);
+  const summary = getCommitSummary(changes);
+  console.log(`[Watcher] Changes: ${summary}`);
 
   const result = await runTests();
 
   if (!result.passed) {
-    console.log('[Watcher] Commit blocked — tests must pass first');
     console.log(result.output);
-    isRunning = false;
-    return;
-  }
-
-  const shouldCommit = await askToCommit(changes);
-
-  if (!shouldCommit) {
-    console.log('[Watcher] Commit skipped by user');
     isRunning = false;
     return;
   }
 
   try {
     execSync('git add -A', { cwd: __dirname, encoding: 'utf-8' });
-    const commitMsg = `auto: tests passed (${getCommitSummary(changes)})`;
+    const commitMsg = `auto: tests passed (${summary})`;
     execSync(`git commit -m "${commitMsg}"`, { cwd: __dirname, encoding: 'utf-8' });
     console.log(`[Watcher] Committed: ${commitMsg}`);
 
@@ -139,8 +114,8 @@ async function run() {
 
 function debouncedRun() {
   if (timer) clearTimeout(timer);
-  console.log(`\n[Watcher] ${new Date().toLocaleTimeString()} — Change detected, waiting 1h debounce...`);
-  timer = setTimeout(run, DEBOUNCE_MS);
+  console.log(`\n[Watcher] ${new Date().toLocaleTimeString()} — Change detected, waiting ${DEBOUNCE_MS / 1000 / 60}min debounce...`);
+  timer = setTimeout(autoCommit, DEBOUNCE_MS);
 }
 
 const watchedFiles = new Set();
