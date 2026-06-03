@@ -1,5 +1,6 @@
-﻿// Cart Toggle Functionality with Authentication Support
+﻿// Cart + User Dropdown Toggle Functionality with Authentication Support
 import { debugError } from "../utils/debug.js";
+import { escapeHtml } from "../utils/security.js";
 import {
   getAuthInitPromise,
   getCurrentUser,
@@ -17,22 +18,90 @@ document.addEventListener("DOMContentLoaded", async function () {
   const searchBox = document.querySelector(".search-box");
   const sidebarLogin = document.getElementById("sidebar-login");
   const mobileUser = document.getElementById("mobile-user");
-  const navUserLink = document.querySelector(".nav-user-link");
+  const navUserLink = document.getElementById("nav-user-link");
+  const userDropdown = document.getElementById("user-dropdown");
 
-  // Determine login page path based on current page
+  // Determine page paths based on current location
   function getLoginPath() {
     const path = window.location.pathname;
     if (path.includes("/pages/")) return "login.html";
     return "pages/login.html";
   }
 
-  function getProfilePath() {
+  function getProfilePath(tab) {
     const path = window.location.pathname;
-    if (path.includes("/pages/")) return "profile.html";
-    return "pages/profile.html";
+    const base = path.includes("/pages/") ? "profile.html" : "pages/profile.html";
+    return tab ? `${base}?tab=${tab}` : base;
   }
 
-  // Update nav user link based on auth state
+  function getAdminPath() {
+    return window.location.pathname.includes("/pages/") ? "admin.html" : "pages/admin.html";
+  }
+
+  // ========================
+  // USER DROPDOWN (logged in)
+  // ========================
+
+  function buildUserDropdown(user) {
+    const displayName = (
+      user.name?.split(" ")[0] || user.email.split("@")[0]
+    ).toUpperCase();
+    const fullName = user.name || user.email.split("@")[0];
+    const initials = (user.name || user.email)
+      .split(/\s+|@/)
+      .slice(0, 2)
+      .map((s) => s[0]?.toUpperCase() || "")
+      .join("");
+    const isAdmin = user.role === "admin";
+
+    const avatarHTML = user.avatar?.url
+      ? `<img src="${escapeHtml(user.avatar.url)}" alt="${escapeHtml(fullName)}" />`
+      : initials || `<i class="fa-solid fa-user"></i>`;
+
+    const roleClass = isAdmin ? "is-admin" : "";
+    const roleLabel = isAdmin ? "Admin" : "Member";
+
+    const adminItem = isAdmin
+      ? `<li class="user-dropdown-item"><a href="${getAdminPath()}"><i class="fa-solid fa-gauge-high"></i> Admin Panel</a></li>`
+      : "";
+
+    return `
+      <div class="user-dropdown-header">
+        <div class="user-dropdown-avatar">${avatarHTML}</div>
+        <div class="user-dropdown-info">
+          <div class="user-dropdown-name">${escapeHtml(fullName)}</div>
+          <div class="user-dropdown-email">${escapeHtml(user.email)}</div>
+          <span class="user-dropdown-role ${roleClass}">${roleLabel}</span>
+        </div>
+      </div>
+      <ul class="user-dropdown-menu">
+        <li class="user-dropdown-item"><a href="${getProfilePath("overview")}"><i class="fa-solid fa-chart-pie"></i> Overview</a></li>
+        <li class="user-dropdown-item"><a href="${getProfilePath("profile")}"><i class="fa-solid fa-user-pen"></i> Edit Profile</a></li>
+        <li class="user-dropdown-item"><a href="${getProfilePath("orders")}"><i class="fa-solid fa-bag-shopping"></i> My Orders</a></li>
+        ${adminItem}
+        <li class="user-dropdown-divider"></li>
+        <li class="user-dropdown-item is-logout"><button type="button" id="nav-logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></li>
+      </ul>
+    `;
+  }
+
+  function toggleUserDropdown(event) {
+    if (event) event.preventDefault();
+    if (event) event.stopPropagation();
+    // Hide other dropdowns
+    if (cartContainer) cartContainer.classList.add("visually-hidden");
+    if (searchBox) searchBox.classList.add("visually-hidden");
+    userDropdown.classList.toggle("visually-hidden");
+  }
+
+  function closeUserDropdown() {
+    userDropdown.classList.add("visually-hidden");
+  }
+
+  // ========================
+  // NAV AUTH STATE
+  // ========================
+
   async function updateNavAuth() {
     try {
       await getAuthInitPromise();
@@ -44,13 +113,28 @@ document.addEventListener("DOMContentLoaded", async function () {
         user.name?.split(" ")[0] || user.email.split("@")[0]
       ).toUpperCase();
 
-      // Update desktop nav link
+      // Update desktop nav link (logged-in mode: shows first name + opens dropdown)
       if (navUserLink) {
-        navUserLink.href = getProfilePath();
+        navUserLink.classList.add("is-logged-in");
         navUserLink.querySelector("span").textContent = displayName;
+        // Replace the href-only link with a click handler that toggles dropdown
+        navUserLink.removeAttribute("href");
       }
 
-      // Update sidebar login button
+      // Build and inject dropdown content
+      if (userDropdown) {
+        userDropdown.innerHTML = buildUserDropdown(user);
+        const logoutBtn = userDropdown.querySelector("#nav-logout-btn");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            await handleLogout();
+          });
+        }
+      }
+
+      // Update sidebar
       if (sidebarLogin) {
         sidebarLogin.href = getProfilePath();
         sidebarLogin.querySelector("span").textContent = "Profile";
@@ -61,30 +145,43 @@ document.addEventListener("DOMContentLoaded", async function () {
         mobileUser.onclick = () => { window.location.href = getProfilePath(); };
       }
     } else {
-      // Update sidebar login button
+      // Logged-out mode: link navigates to login page
+      if (navUserLink) {
+        navUserLink.classList.remove("is-logged-in");
+        navUserLink.href = getLoginPath();
+        navUserLink.querySelector("span").textContent = "Account";
+      }
+      if (userDropdown) {
+        userDropdown.innerHTML = "";
+        userDropdown.classList.add("visually-hidden");
+      }
+
       if (sidebarLogin) {
         sidebarLogin.href = getLoginPath();
         sidebarLogin.querySelector("span").textContent = "Login";
       }
 
-      // Update mobile user button
       if (mobileUser) {
         mobileUser.onclick = () => { window.location.href = getLoginPath(); };
       }
     }
   }
 
-  // Toggle cart
+  // ========================
+  // CART + SEARCH TOGGLES
+  // ========================
+
   function toggleCart(event) {
     event.stopPropagation();
     if (searchBox) searchBox.classList.add("visually-hidden");
+    if (userDropdown) userDropdown.classList.add("visually-hidden");
     cartContainer.classList.toggle("visually-hidden");
   }
 
-  // Toggle search
   function toggleSearch(event) {
     event.stopPropagation();
     if (cartContainer) cartContainer.classList.add("visually-hidden");
+    if (userDropdown) userDropdown.classList.add("visually-hidden");
     searchBox.classList.toggle("visually-hidden");
   }
 
@@ -93,6 +190,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (
       !event.target.closest(".form-cart") &&
       !event.target.closest("#cart-container") &&
+      !event.target.closest(".form-user") &&
+      !event.target.closest("#user-dropdown") &&
       !event.target.classList.contains("increase-qty") &&
       !event.target.classList.contains("decrease-qty") &&
       !event.target.classList.contains("remove-item") &&
@@ -103,22 +202,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     ) {
       if (cartContainer) cartContainer.classList.add("visually-hidden");
       if (searchBox) searchBox.classList.add("visually-hidden");
+      if (userDropdown) userDropdown.classList.add("visually-hidden");
     }
   }
 
-  // Event listeners
-  if (cartIcon) cartIcon.addEventListener("click", toggleCart);
-  if (cartLabel) cartLabel.addEventListener("click", toggleCart);
-  if (searchIcon) searchIcon.addEventListener("click", toggleSearch);
-  if (searchToggle) searchToggle.addEventListener("click", toggleSearch);
-  if (searchBox) {
-    searchBox.addEventListener("click", function (event) {
-      event.stopPropagation();
-    });
-  }
-  document.addEventListener("click", closeAllDropdowns);
+  // ========================
+  // LOGOUT
+  // ========================
 
-  // Handle logout from nav (when logged in, clicking nav link shows logout option)
   async function handleLogout() {
     try {
       await logout();
@@ -140,10 +231,48 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
-  // Export for use by other modules
+  // ========================
+  // EVENT WIRING
+  // ========================
+
+  if (cartIcon) cartIcon.addEventListener("click", toggleCart);
+  if (cartLabel) cartLabel.addEventListener("click", toggleCart);
+  if (searchIcon) searchIcon.addEventListener("click", toggleSearch);
+  if (searchToggle) searchToggle.addEventListener("click", toggleSearch);
+
+  // User link: when logged in it opens the dropdown; when logged out, the href navigates
+  if (navUserLink) {
+    navUserLink.addEventListener("click", (e) => {
+      if (navUserLink.classList.contains("is-logged-in")) {
+        toggleUserDropdown(e);
+      }
+      // else: let the <a href="login.html"> navigate normally
+    });
+  }
+  if (userDropdown) {
+    userDropdown.addEventListener("click", (e) => e.stopPropagation());
+  }
+
+  if (searchBox) {
+    searchBox.addEventListener("click", function (event) {
+      event.stopPropagation();
+    });
+  }
+  document.addEventListener("click", closeAllDropdowns);
+
+  // Escape closes user dropdown
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && userDropdown && !userDropdown.classList.contains("visually-hidden")) {
+      userDropdown.classList.add("visually-hidden");
+    }
+  });
+
+  // ========================
+  // EXPORTS + INIT
+  // ========================
+
   window.handleNavLogout = handleLogout;
   window.updateNavAuth = updateNavAuth;
 
-  // Initialize
   await updateNavAuth();
 });
