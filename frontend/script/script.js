@@ -6,11 +6,8 @@ import {
   getAuthInitPromise,
   getCurrentUser,
   isLoggedIn,
-  login,
-  logout,
-  registerUser,
 } from "./auth.js";
-import { fetchCart, addItemToCart, updateCartItem, removeCartItem, syncCart } from "./cart.service.js";
+import { fetchCart, addItemToCart, updateCartItem, removeCartItem } from "./cart.service.js";
 
 let cartItems = [];
 let icecreams = [];
@@ -271,13 +268,15 @@ function loadCart() {
 function handleCheckout() {
   if (!isLoggedIn()) {
     showToast("Please login to proceed with checkout", "error");
-    const loginContainer = document.getElementById("login-container");
-    if (loginContainer) loginContainer.classList.remove("visually-hidden");
+    const isInPagesDir = window.location.pathname.includes("/pages/");
+    window.location.href = (isInPagesDir ? "" : "pages/") + "login.html?redirect=" + encodeURIComponent(
+      (isInPagesDir ? "" : "pages/") + "checkout.html"
+    );
     return;
   }
 
   const isInPagesDir = window.location.pathname.includes("/pages/");
-  window.location.href = (isInPagesDir ? "" : "pages/") + "profile.html?tab=orders";
+  window.location.href = (isInPagesDir ? "" : "pages/") + "checkout.html";
 }
 
 // ========================
@@ -316,10 +315,7 @@ function setupMobileMenu() {
   sidebarSearch?.addEventListener("click", (e) => {
     e.stopPropagation();
     closeSidebar();
-    // Hide login and cart
-    document.getElementById("login-container")?.classList.add("visually-hidden");
     document.getElementById("cart-container")?.classList.add("visually-hidden");
-    // Toggle search
     const searchBox = document.querySelector(".search-box");
     searchBox?.classList.toggle("visually-hidden");
     if (!searchBox?.classList.contains("visually-hidden")) {
@@ -327,31 +323,12 @@ function setupMobileMenu() {
     }
   });
 
-  sidebarLogin?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    closeSidebar();
-    // Hide search and cart
-    document.querySelector(".search-box")?.classList.add("visually-hidden");
-    document.getElementById("cart-container")?.classList.add("visually-hidden");
-    // Reset forms
-    const loginContainer = document.getElementById("login-container");
-    const loginForm = loginContainer?.querySelector(".login-form");
-    const signupForm = loginContainer?.querySelector(".signup-form");
-    if (loginForm && signupForm) {
-      loginForm.classList.remove("visually-hidden");
-      signupForm.classList.add("visually-hidden");
-    }
-    // Toggle login
-    loginContainer?.classList.toggle("visually-hidden");
-  });
+  // sidebar-login is now an <a> tag, no JS needed
 
   sidebarCart?.addEventListener("click", (e) => {
     e.stopPropagation();
     closeSidebar();
-    // Hide search and login
     document.querySelector(".search-box")?.classList.add("visually-hidden");
-    document.getElementById("login-container")?.classList.add("visually-hidden");
-    // Toggle cart
     document.getElementById("cart-container")?.classList.toggle("visually-hidden");
   });
 
@@ -360,8 +337,12 @@ function setupMobileMenu() {
   const mobileUser = document.getElementById("mobile-user");
   const mobileCartBtn = document.getElementById("mobile-cart-btn");
 
+  function getLoginPath() {
+    const path = window.location.pathname;
+    return path.includes("/pages/") ? "login.html" : "pages/login.html";
+  }
+
   function toggleSearchPanel() {
-    document.getElementById("login-container")?.classList.add("visually-hidden");
     document.getElementById("cart-container")?.classList.add("visually-hidden");
     const searchBox = document.querySelector(".search-box");
     searchBox?.classList.toggle("visually-hidden");
@@ -370,24 +351,8 @@ function setupMobileMenu() {
     }
   }
 
-  function toggleUserPanel() {
-    document.querySelector(".search-box")?.classList.add("visually-hidden");
-    document.getElementById("cart-container")?.classList.add("visually-hidden");
-    const loginContainer = document.getElementById("login-container");
-    if (loginContainer) {
-      const loginForm = loginContainer.querySelector(".login-form");
-      const signupForm = loginContainer.querySelector(".signup-form");
-      if (loginForm && signupForm) {
-        loginForm.classList.remove("visually-hidden");
-        signupForm.classList.add("visually-hidden");
-      }
-      loginContainer.classList.toggle("visually-hidden");
-    }
-  }
-
   function toggleCartPanel() {
     document.querySelector(".search-box")?.classList.add("visually-hidden");
-    document.getElementById("login-container")?.classList.add("visually-hidden");
     document.getElementById("cart-container")?.classList.toggle("visually-hidden");
   }
 
@@ -398,7 +363,7 @@ function setupMobileMenu() {
 
   mobileUser?.addEventListener("click", (e) => {
     e.stopPropagation();
-    toggleUserPanel();
+    window.location.href = getLoginPath();
   });
 
   mobileCartBtn?.addEventListener("click", (e) => {
@@ -574,119 +539,6 @@ window.updateCart = updateCart;
 window.showToast = showToast;
 
 // Export attachFormListeners for form-toggle.js to use
-window.attachFormListeners = attachFormListeners;
-
-function attachFormListeners() {
-  const loginForm = document.querySelector(".login-form");
-  const signupForm = document.querySelector(".signup-form");
-
-  if (loginForm) {
-    loginForm.addEventListener("submit", handleLogin);
-  }
-
-  if (signupForm) {
-    signupForm.addEventListener("submit", handleRegister);
-  }
-
-  // Form switching buttons
-  const showSignupBtn = document.getElementById("show-signup");
-  const showLoginBtn = document.getElementById("show-login");
-
-  if (showSignupBtn && loginForm && signupForm) {
-    showSignupBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      loginForm.classList.add("visually-hidden");
-      signupForm.classList.remove("visually-hidden");
-    });
-  }
-
-  if (showLoginBtn && loginForm && signupForm) {
-    showLoginBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      signupForm.classList.add("visually-hidden");
-      loginForm.classList.remove("visually-hidden");
-    });
-  }
-}
-
-function handleLogin(e) {
-  e.preventDefault();
-
-  const email = document.getElementById("email")?.value;
-  const password = document.getElementById("password")?.value;
-
-  login(email, password)
-    .then(async (result) => {
-      if (result.success) {
-        // Get guest cart and merge with user cart
-        const guestCart = JSON.parse(localStorage.getItem("glacy-guest-cart") || "[]");
-        if (guestCart.length > 0) {
-          const syncResult = await syncCart(guestCart);
-          if (syncResult.success) {
-            localStorage.removeItem("glacy-guest-cart");
-            showToast("Cart synced with your account!");
-          } else {
-            showToast("Could not sync guest cart — items saved locally. Please try again.", "error");
-          }
-          cartItems = await fetchCart();
-        } else {
-          cartItems = await fetchCart();
-        }
-
-        await loadCart();
-
-        // Use the updateAuthUI from form-toggle.js
-        if (typeof window.updateAuthUI === "function") {
-          window.updateAuthUI();
-        }
-
-        const loginContainer = document.getElementById("login-container");
-        loginContainer?.classList.add("visually-hidden");
-
-        showToast(result.message);
-      } else {
-        showToast(result.message);
-      }
-    })
-    .catch((error) => {
-      debugError("Login error:", error);
-      showToast("Network error. Please try again.");
-    });
-}
-
-function handleRegister(e) {
-  e.preventDefault();
-
-  const name = document.getElementById("signup-name").value;
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
-  const confirmPassword = document.getElementById("confirm-password").value;
-
-  registerUser(name, email, password, confirmPassword)
-    .then((result) => {
-      if (result.success) {
-        showToast(result.message + " Please login now.");
-        setTimeout(() => window.location.reload(), 1000);
-
-        const loginForm = document.querySelector(".login-form");
-        const signupForm = document.querySelector(".signup-form");
-        signupForm.classList.add("visually-hidden");
-        loginForm.classList.remove("visually-hidden");
-
-        document.getElementById("signup-name").value = "";
-        document.getElementById("signup-email").value = "";
-        document.getElementById("signup-password").value = "";
-        document.getElementById("confirm-password").value = "";
-      } else {
-        showToast(result.message);
-      }
-    })
-    .catch((error) => {
-      debugError("Registration error:", error);
-      showToast("Network error. Please try again.");
-    });
-}
-
 // ========================
 // HERO SLIDER
 // ========================

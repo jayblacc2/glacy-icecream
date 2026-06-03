@@ -488,6 +488,36 @@ h1 {
   cursor: pointer;
 }
 
+/* Nav user link (replaces login dropdown) */
+.nav-user-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+}
+.nav-user-link i {
+  font-size: 1.3rem;
+  transition: color 0.3s ease;
+}
+.nav-user-link span {
+  font-size: 0.7rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+.nav-user-link:hover {
+  background: var(--bg-color-1);
+  color: #fff;
+}
+.nav-user-link:hover i,
+.nav-user-link:hover span {
+  color: #fff;
+}
+
 /* Cart badge wrapper on desktop */
 .desktop-cart-icon-wrap {
   position: relative;
