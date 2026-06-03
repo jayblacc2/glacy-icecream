@@ -2,6 +2,7 @@ import { showToast } from '../utils/toast-notification.js';
 import { fetchCart, removeCartItem, updateCartItem } from './cart.service.js';
 import { createOrder } from './order.service.js';
 import { debugError } from '../utils/debug.js';
+import { loading } from '../utils/loading.js';
 
 let cartItems = [];
 let currentStep = 1;
@@ -17,9 +18,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ===================== CART LOADING =====================
 
 async function loadCart() {
+  $('cart-items-list').innerHTML = loading("Loading your cart...");
+
   cartItems = await fetchCart();
 
   if (!cartItems || cartItems.length === 0) {
+    $('cart-items-list').innerHTML = '';
     $('empty-cart-state').classList.remove('visually-hidden');
     document.querySelector('.checkout-progress').style.display = 'none';
     document.querySelector('.checkout-content').style.display = 'none';

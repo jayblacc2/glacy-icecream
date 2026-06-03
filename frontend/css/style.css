@@ -449,7 +449,7 @@ h1 {
   position: relative;
 }
 
-/* Desktop nav icons styled like mobile bottom nav */
+/* Desktop nav icons – clean minimal style */
 .form-login,
 .form-cart {
   display: flex;
@@ -457,66 +457,62 @@ h1 {
   align-items: center;
   gap: 2px;
   padding: 6px 10px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .form-login:hover,
 .form-cart:hover {
-  background: var(--bg-color-1);
-  color: #fff;
-}
-
-.form-login:hover .login-icon,
-.form-login:hover .login-label,
-.form-cart:hover .cart-icon,
-.form-cart:hover .cart-label {
-  color: #fff;
+  opacity: 0.7;
 }
 
 .form-login .login-icon,
 .form-cart .cart-icon {
   font-size: 1.3rem;
-  transition: color 0.3s ease;
+  color: inherit;
+  transition: color var(--transition-fast);
 }
 
 .form-login .login-label,
 .form-cart .cart-label {
   font-size: 0.7rem;
   font-weight: 500;
-  transition: color 0.3s ease;
+  color: inherit;
   cursor: pointer;
 }
 
-/* Nav user link (replaces login dropdown) */
+/* Nav user link */
 .nav-user-link {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
   padding: 6px 10px;
-  border-radius: 12px;
   text-decoration: none;
   color: inherit;
-  transition: all 0.3s ease;
+  cursor: pointer;
 }
 .nav-user-link i {
   font-size: 1.3rem;
-  transition: color 0.3s ease;
+  color: inherit;
+  transition: color var(--transition-fast);
+}
+.nav-user-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  object-fit: cover;
 }
 .nav-user-link span {
   font-size: 0.7rem;
   font-weight: 500;
-  transition: color 0.3s ease;
+  color: inherit;
 }
 .nav-user-link:hover {
-  background: var(--bg-color-1);
-  color: #fff;
+  opacity: 0.7;
 }
 .nav-user-link:hover i,
 .nav-user-link:hover span {
-  color: #fff;
+  color: inherit;
 }
 .nav-user-link.is-logged-in {
   cursor: pointer;

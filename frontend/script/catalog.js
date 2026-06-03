@@ -1,4 +1,4 @@
-﻿import { loading } from "../utils/loading.js";
+﻿import { loading, setButtonLoading } from "../utils/loading.js";
 import { errorMessage, emptyMessage } from "../utils/error-message.js";
 import { showToast } from "../utils/toast-notification.js";
 import { addItemToCart } from "./cart.service.js";
@@ -200,7 +200,12 @@ async function addToCart() {
     return;
   }
 
+  const btn = document.getElementById("add-to-cart");
+  setButtonLoading(btn, true);
+
   const result = await addItemToCart(productId, quantity);
+
+  setButtonLoading(btn, false);
 
   if (result.success) {
     showToast(`${selectedIceCream.name} added to cart!`, "success");

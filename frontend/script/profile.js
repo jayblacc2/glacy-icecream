@@ -4,6 +4,7 @@ import { fetchWithCsrf } from '../utils/csrf.js';
 import { debugError } from '../utils/debug.js';
 import { fetchCart } from './cart.service.js';
 import { createOrder, getUserOrders } from './order.service.js';
+import { loading } from '../utils/loading.js';
 
 const API_BASE_URL = '/api/v1/users';
 
@@ -649,13 +650,19 @@ function renderOrders(orders, pagination) {
 }
 
 window.viewOrder = async function(orderId) {
+  const tempModal = document.createElement('div');
+  tempModal.className = 'order-modal-overlay';
+  tempModal.innerHTML = `<div class="order-modal-content">${loading("Loading order details...")}</div>`;
+  document.body.appendChild(tempModal);
+
   try {
     const { getOrderById } = await import('./order.service.js');
     const data = await getOrderById(orderId);
     if (!data.success || !data.order) throw new Error('Order not found');
-
+    tempModal.remove();
     showOrderModal(data.order);
   } catch (error) {
+    tempModal.remove();
     showToast(error.message || 'Failed to load order details', 'error');
   }
 };

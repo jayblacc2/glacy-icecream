@@ -8,6 +8,7 @@ import {
   isLoggedIn,
 } from "./auth.js";
 import { fetchCart, addItemToCart, updateCartItem, removeCartItem } from "./cart.service.js";
+import { loading } from "../utils/loading.js";
 
 let cartItems = [];
 let icecreams = [];
@@ -18,6 +19,9 @@ const API_BASE_URL = "/api/v1";
 // CATALOG RENDERING
 // ========================
 async function fetchCatalog(limit = 6) {
+  const container = document.getElementById("catalog-cards");
+  if (container) container.innerHTML = loading("Loading treats...");
+
   try {
     const response = await fetch(`${API_BASE_URL}/products`);
     if (!response.ok) {
@@ -258,6 +262,9 @@ function updateCart() {
 }
 
 function loadCart() {
+  const container = document.querySelector(".cart-items");
+  if (container) container.innerHTML = loading("Loading cart...");
+
   fetchCart().then((cart) => {
     cartItems = cart;
     window.cartItems = cartItems;

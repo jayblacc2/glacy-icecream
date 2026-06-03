@@ -2,6 +2,7 @@ import { showToast } from '../utils/toast-notification.js';
 import { getCurrentUser, getAuthInitPromise } from './auth.js';
 import { fetchWithCsrf } from '../utils/csrf.js';
 import { renderPagination } from '../utils/pagination.js';
+import { loading, setButtonLoading } from '../utils/loading.js';
 
 const API_PRODUCTS = '/api/v1/products';
 const API_POSTS = '/api/v1/posts';
@@ -116,6 +117,8 @@ async function loadProducts(page = 1) {
 }
 
 window.editProduct = async function(id) {
+  openModal('Edit Product');
+  $('modal-body').innerHTML = loading("Loading product...");
   try {
     const res = await fetch(`${API_PRODUCTS}/${id}`);
     const data = await res.json();
@@ -123,6 +126,7 @@ window.editProduct = async function(id) {
     openForm('product', data.product);
   } catch (err) {
     showToast(err.message, 'error');
+    closeModal();
   }
 };
 
@@ -190,6 +194,8 @@ async function loadPosts(page = 1) {
 }
 
 window.editPost = async function(id) {
+  openModal('Edit Post');
+  $('modal-body').innerHTML = loading("Loading post...");
   try {
     const res = await fetch(`${API_POSTS}/${id}`);
     const data = await res.json();
@@ -197,6 +203,7 @@ window.editPost = async function(id) {
     openForm('post', data.post);
   } catch (err) {
     showToast(err.message, 'error');
+    closeModal();
   }
 };
 
@@ -344,6 +351,7 @@ function openProductForm(product) {
 
   $('item-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const submitBtn = e.target.querySelector('.btn-submit');
     const imageUrl = $('pf-image').value.trim();
     const body = {
       name: $('pf-name').value.trim(),
@@ -352,6 +360,8 @@ function openProductForm(product) {
       category: $('pf-category').value,
     };
     if (imageUrl) body.image = { url: imageUrl };
+
+    setButtonLoading(submitBtn, true);
 
     try {
       const url = isEdit ? `${API_PRODUCTS}/update/${editingId}` : `${API_PRODUCTS}/create`;
@@ -369,6 +379,8 @@ function openProductForm(product) {
       loadProducts();
     } catch (err) {
       showToast(err.message, 'error');
+    } finally {
+      setButtonLoading(submitBtn, false);
     }
   });
 }
@@ -409,6 +421,7 @@ function openPostForm(post) {
 
   $('item-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const submitBtn = e.target.querySelector('.btn-submit');
     const body = {
       title: $('pf-title').value.trim(),
       excerpt: $('pf-excerpt').value.trim(),
@@ -416,6 +429,8 @@ function openPostForm(post) {
       author: $('pf-author').value.trim() || undefined,
       featuredImage: $('pf-featured-image').value.trim() || undefined,
     };
+
+    setButtonLoading(submitBtn, true);
 
     try {
       const url = isEdit ? `${API_POSTS}/update/${editingId}` : `${API_POSTS}/create`;
@@ -433,6 +448,8 @@ function openPostForm(post) {
       loadPosts();
     } catch (err) {
       showToast(err.message, 'error');
+    } finally {
+      setButtonLoading(submitBtn, false);
     }
   });
 }

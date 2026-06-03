@@ -113,10 +113,27 @@ document.addEventListener("DOMContentLoaded", async function () {
         user.name?.split(" ")[0] || user.email.split("@")[0]
       ).toUpperCase();
 
-      // Update desktop nav link (logged-in mode: shows first name + opens dropdown)
+      // Update desktop nav link (logged-in mode: shows avatar + first name, opens dropdown)
       if (navUserLink) {
         navUserLink.classList.add("is-logged-in");
         navUserLink.querySelector("span").textContent = displayName;
+        const iconEl = navUserLink.querySelector("i");
+        if (user.avatar?.url) {
+          if (iconEl) {
+            const img = document.createElement("img");
+            img.src = user.avatar.url;
+            img.alt = fullName;
+            img.className = "nav-user-avatar";
+            iconEl.replaceWith(img);
+          }
+        } else {
+          // Ensure icon exists (not replaced by img)
+          if (!navUserLink.querySelector("i")) {
+            const i = document.createElement("i");
+            i.className = "fa-solid fa-user";
+            navUserLink.insertBefore(i, navUserLink.querySelector("span"));
+          }
+        }
         // Replace the href-only link with a click handler that toggles dropdown
         navUserLink.removeAttribute("href");
       }
@@ -150,6 +167,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         navUserLink.classList.remove("is-logged-in");
         navUserLink.href = getLoginPath();
         navUserLink.querySelector("span").textContent = "Account";
+        // Restore default user icon
+        const existingImg = navUserLink.querySelector(".nav-user-avatar");
+        if (existingImg) {
+          const i = document.createElement("i");
+          i.className = "fa-solid fa-user";
+          existingImg.replaceWith(i);
+        }
       }
       if (userDropdown) {
         userDropdown.innerHTML = "";
