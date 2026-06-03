@@ -38,6 +38,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     return window.location.pathname.includes("/pages/") ? "admin.html" : "pages/admin.html";
   }
 
+  function getCheckoutPath() {
+    return window.location.pathname.includes("/pages/") ? "checkout.html" : "pages/checkout.html";
+  }
+
   // ========================
   // USER DROPDOWN (logged in)
   // ========================
@@ -197,6 +201,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   function toggleCart(event) {
     event.stopPropagation();
+    // On tablet (768–1024px), navigate to checkout instead of opening dropdown
+    if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
+      window.location.href = getCheckoutPath();
+      return;
+    }
     if (searchBox) searchBox.classList.add("visually-hidden");
     if (userDropdown) userDropdown.classList.add("visually-hidden");
     cartContainer.classList.toggle("visually-hidden");
