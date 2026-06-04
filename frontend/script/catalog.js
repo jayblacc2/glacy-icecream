@@ -274,7 +274,62 @@ modalOverlay.addEventListener("touchend", () => {
 
 // Initialize
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadIcecreams();
+  const params = new URLSearchParams(window.location.search);
+  const searchTerm = params.get("search");
+
+  if (searchTerm) {
+    activateFilterByTerm(searchTerm);
+    await searchCatalog(searchTerm);
+  } else {
+    await loadIcecreams();
+  }
+
   setupFilter();
 });
+
+// Expose for cross-page search redirect
+function activateFilterByTerm(term) {
+  const lower = term.toLowerCase();
+  const filterBtn = Array.from(document.querySelectorAll(".filter-btn")).find(
+    (btn) => btn.dataset.category.toLowerCase() === lower,
+  );
+  if (filterBtn) {
+    document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+    filterBtn.classList.add("active");
+    currentFilter = filterBtn.dataset.category;
+  } else {
+    currentFilter = "all";
+  }
+}
+
+window.searchCatalog = async function (term) {
+  activateFilterByTerm(term);
+  document.getElementById("catalog-grid").innerHTML = loading(
+    `Searching for "${term}"`,
+  );
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/products?search=${encodeURIComponent(term)}`,
+    );
+    if (!response.ok) throw new Error(`API Error: ${response.status}`);
+    const data = await response.json();
+
+    if (data.success) {
+      icecreams = data.products;
+      renderCatalog(data.pagination);
+      showToast(`Found ${icecreams.length} result${icecreams.length !== 1 ? "s" : ""} for "${term}"`);
+    } else {
+      document.getElementById("catalog-grid").innerHTML = errorMessage(
+        "Search failed",
+        data.message || "Please try again later.",
+      );
+    }
+  } catch (error) {
+    debugError("Search error:", error);
+    document.getElementById("catalog-grid").innerHTML = errorMessage(
+      "Search error",
+      `Something went wrong: ${error.message}`,
+    );
+  }
+};
 

@@ -340,13 +340,19 @@ function setupMobileMenu() {
   });
 
   // Standalone mobile bottom nav buttons
-  const mobileSearch = document.getElementById("mobile-search");
+  const mobileSearch = document.getElementById("mobile-search-btn");
   const mobileUser = document.getElementById("mobile-user");
   const mobileCartBtn = document.getElementById("mobile-cart-btn");
 
   function getLoginPath() {
     const path = window.location.pathname;
     return path.includes("/pages/") ? "login.html" : "pages/login.html";
+  }
+
+  function getCatalogPath() {
+    return window.location.pathname.includes("/pages/")
+      ? "catalogs.html"
+      : "pages/catalogs.html";
   }
 
   function toggleSearchPanel() {
@@ -487,50 +493,13 @@ async function setupSearchFunctionality() {
 
     if (!searchTerm) return;
 
-    try {
-      const res = await fetch(`/api/v1/products?search=${encodeURIComponent(searchTerm)}`);
-      const data = await res.json();
-      const results = data.products || [];
-
-      if (results.length > 0) {
-        showToast(`Found ${results.length} result${results.length > 1 ? "s" : ""}`);
-        // Display results by replacing catalog with filtered results
-        const catalogEl = document.getElementById("catalog") || document.getElementById("catalog-grid");
-        if (catalogEl) {
-          catalogEl.scrollIntoView({ behavior: "smooth" });
-          // If on catalog page, catalog.js may handle rendering
-          if (typeof window.searchCatalog === "function") {
-            window.searchCatalog(results);
-          }
-        }
-      } else {
-        showToast("No results found");
-      }
-    } catch {
-      showToast("Search failed", "error");
+    function getCatalogPath() {
+      return window.location.pathname.includes("/pages/")
+        ? "catalogs.html"
+        : "pages/catalogs.html";
     }
 
-    document.querySelector(".search-box")?.classList.add("visually-hidden");
-    searchInput.value = "";
-  });
-}
-
-function highlightSearchResults(searchTerm) {
-  const cards = document.querySelectorAll(".card");
-  cards.forEach((card) => {
-    const name = card.querySelector("h3").textContent.toLowerCase();
-    const description = card.querySelector("p").textContent.toLowerCase();
-
-    if (name.includes(searchTerm) || description.includes(searchTerm)) {
-      card.style.border = "2px solid var(--bg-color-1)";
-      card.style.transform = "scale(1.02)";
-
-      // Remove highlight after 2 seconds
-      setTimeout(() => {
-        card.style.border = "";
-        card.style.transform = "";
-      }, 2000);
-    }
+    window.location.href = `${getCatalogPath()}?search=${encodeURIComponent(searchTerm)}`;
   });
 }
 
