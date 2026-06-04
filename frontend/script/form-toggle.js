@@ -42,6 +42,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     return window.location.pathname.includes("/pages/") ? "checkout.html" : "pages/checkout.html";
   }
 
+  function getCatalogPath() {
+    return window.location.pathname.includes("/pages/") ? "catalogs.html" : "pages/catalogs.html";
+  }
+
   // ========================
   // USER DROPDOWN (logged in)
   // ========================
@@ -201,8 +205,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   function toggleCart(event) {
     event.stopPropagation();
-    // On tablet (768–1024px), navigate to checkout instead of opening dropdown
-    if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
+    if (window.innerWidth <= 1024) {
       window.location.href = getCheckoutPath();
       return;
     }
@@ -213,13 +216,38 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   function toggleSearch(event) {
     event.stopPropagation();
+    if (window.innerWidth <= 1024) {
+      window.location.href = getCatalogPath();
+      return;
+    }
     if (cartContainer) cartContainer.classList.add("visually-hidden");
     if (userDropdown) userDropdown.classList.add("visually-hidden");
     searchBox.classList.toggle("visually-hidden");
   }
 
-  // Close all dropdowns when clicking outside
+  function toggleUserDropdown(event) {
+    if (window.innerWidth <= 1024) {
+      if (isLoggedIn()) {
+        window.location.href = getProfilePath();
+      } else {
+        window.location.href = getLoginPath();
+      }
+      return;
+    }
+    if (event) event.preventDefault();
+    if (event) event.stopPropagation();
+    if (cartContainer) cartContainer.classList.add("visually-hidden");
+    if (searchBox) searchBox.classList.add("visually-hidden");
+    userDropdown.classList.toggle("visually-hidden");
+  }
+
+  function closeUserDropdown() {
+    userDropdown.classList.add("visually-hidden");
+  }
+
+  // Close all dropdowns when clicking outside (desktop only)
   function closeAllDropdowns(event) {
+    if (window.innerWidth <= 1024) return;
     if (
       !event.target.closest(".form-cart") &&
       !event.target.closest("#cart-container") &&

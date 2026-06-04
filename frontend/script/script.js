@@ -322,12 +322,7 @@ function setupMobileMenu() {
   sidebarSearch?.addEventListener("click", (e) => {
     e.stopPropagation();
     closeSidebar();
-    document.getElementById("cart-container")?.classList.add("visually-hidden");
-    const searchBox = document.querySelector(".search-box");
-    searchBox?.classList.toggle("visually-hidden");
-    if (!searchBox?.classList.contains("visually-hidden")) {
-      document.getElementById("search")?.focus();
-    }
+    window.location.href = getCatalogPath();
   });
 
   // sidebar-login is now an <a> tag, no JS needed
@@ -335,8 +330,7 @@ function setupMobileMenu() {
   sidebarCart?.addEventListener("click", (e) => {
     e.stopPropagation();
     closeSidebar();
-    document.querySelector(".search-box")?.classList.add("visually-hidden");
-    document.getElementById("cart-container")?.classList.toggle("visually-hidden");
+    window.location.href = getCheckoutPath();
   });
 
   // Standalone mobile bottom nav buttons
@@ -355,23 +349,15 @@ function setupMobileMenu() {
       : "pages/catalogs.html";
   }
 
-  function toggleSearchPanel() {
-    document.getElementById("cart-container")?.classList.add("visually-hidden");
-    const searchBox = document.querySelector(".search-box");
-    searchBox?.classList.toggle("visually-hidden");
-    if (!searchBox?.classList.contains("visually-hidden")) {
-      document.getElementById("search")?.focus();
-    }
-  }
-
-  function toggleCartPanel() {
-    document.querySelector(".search-box")?.classList.add("visually-hidden");
-    document.getElementById("cart-container")?.classList.toggle("visually-hidden");
+  function getCheckoutPath() {
+    return window.location.pathname.includes("/pages/")
+      ? "checkout.html"
+      : "pages/checkout.html";
   }
 
   mobileSearch?.addEventListener("click", (e) => {
     e.stopPropagation();
-    toggleSearchPanel();
+    window.location.href = getCatalogPath();
   });
 
   mobileUser?.addEventListener("click", (e) => {
@@ -381,7 +367,7 @@ function setupMobileMenu() {
 
   mobileCartBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
-    toggleCartPanel();
+    window.location.href = getCheckoutPath();
   });
 
   // Escape key closes sidebar
