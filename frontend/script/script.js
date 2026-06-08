@@ -6,11 +6,9 @@ import {
   getAuthInitPromise,
   getCurrentUser,
   isLoggedIn,
-  login,
-  logout,
-  registerUser,
 } from "./auth.js";
-import { fetchCart, addItemToCart, updateCartItem, removeCartItem, syncCart } from "./cart.service.js";
+import { fetchCart, addItemToCart, updateCartItem, removeCartItem } from "./cart.service.js";
+import { loading } from "../utils/loading.js";
 
 let cartItems = [];
 let icecreams = [];
@@ -21,6 +19,9 @@ const API_BASE_URL = "/api/v1";
 // CATALOG RENDERING
 // ========================
 async function fetchCatalog(limit = 6) {
+  const container = document.getElementById("catalog-cards");
+  if (container) container.innerHTML = loading("Loading treats...");
+
   try {
     const response = await fetch(`${API_BASE_URL}/products`);
     if (!response.ok) {
@@ -215,6 +216,44 @@ function updateCart() {
     cartItems.length > 1 ? "s" : ""
   }`;
 
+  // Update sidebar cart badge
+  const sidebarCartBadge = document.getElementById("sidebar-cart-badge");
+  if (sidebarCartBadge) {
+    if (cartItems.length === 0) {
+      sidebarCartBadge.textContent = "Empty";
+    } else {
+      sidebarCartBadge.textContent = `${cartItems.length}`;
+    }
+  }
+
+  // Update desktop nav cart badge with pop animation
+  const desktopCartBadge = document.getElementById("desktop-cart-badge");
+  if (desktopCartBadge) {
+    if (cartItems.length === 0) {
+      desktopCartBadge.style.display = "none";
+    } else {
+      desktopCartBadge.style.display = "flex";
+      desktopCartBadge.textContent = `${cartItems.length}`;
+      desktopCartBadge.classList.remove("cart-badge-pop");
+      void desktopCartBadge.offsetWidth;
+      desktopCartBadge.classList.add("cart-badge-pop");
+    }
+  }
+
+  // Update mobile bottom nav cart badge with pop animation
+  const mobileCartBadge = document.getElementById("mobile-cart-badge");
+  if (mobileCartBadge) {
+    if (cartItems.length === 0) {
+      mobileCartBadge.style.display = "none";
+    } else {
+      mobileCartBadge.style.display = "flex";
+      mobileCartBadge.textContent = `${cartItems.length}`;
+      mobileCartBadge.classList.remove("cart-badge-pop");
+      void mobileCartBadge.offsetWidth;
+      mobileCartBadge.classList.add("cart-badge-pop");
+    }
+  }
+
   const checkoutBtn = document.querySelector(".checkout-btn");
   if (checkoutBtn) {
     checkoutBtn.disabled = false;
@@ -223,6 +262,9 @@ function updateCart() {
 }
 
 function loadCart() {
+  const container = document.querySelector(".cart-items");
+  if (container) container.innerHTML = loading("Loading cart...");
+
   fetchCart().then((cart) => {
     cartItems = cart;
     window.cartItems = cartItems;
@@ -233,13 +275,15 @@ function loadCart() {
 function handleCheckout() {
   if (!isLoggedIn()) {
     showToast("Please login to proceed with checkout", "error");
-    const loginContainer = document.getElementById("login-container");
-    if (loginContainer) loginContainer.classList.remove("visually-hidden");
+    const isInPagesDir = window.location.pathname.includes("/pages/");
+    window.location.href = (isInPagesDir ? "" : "pages/") + "login.html?redirect=" + encodeURIComponent(
+      (isInPagesDir ? "" : "pages/") + "checkout.html"
+    );
     return;
   }
 
   const isInPagesDir = window.location.pathname.includes("/pages/");
-  window.location.href = (isInPagesDir ? "" : "pages/") + "profile.html?tab=orders";
+  window.location.href = (isInPagesDir ? "" : "pages/") + "checkout.html";
 }
 
 // ========================
@@ -275,24 +319,72 @@ function setupMobileMenu() {
   sidebarOverlay?.addEventListener("click", closeSidebar);
   sidebarLinks.forEach((link) => link.addEventListener("click", closeSidebar));
 
-  sidebarSearch?.addEventListener("click", () => {
+  sidebarSearch?.addEventListener("click", (e) => {
+    e.stopPropagation();
     closeSidebar();
-    document.querySelector(".search-box")?.classList.remove("visually-hidden");
-    document.getElementById("search")?.focus();
+    window.location.href = getCatalogPath();
   });
 
-  sidebarLogin?.addEventListener("click", () => {
+  // sidebar-login is now an <a> tag, no JS needed
+
+  sidebarCart?.addEventListener("click", (e) => {
+    e.stopPropagation();
     closeSidebar();
-    document
-      .getElementById("login-container")
-      ?.classList.remove("visually-hidden");
+    window.location.href = getCheckoutPath();
   });
 
-  sidebarCart?.addEventListener("click", () => {
-    closeSidebar();
-    document
-      .getElementById("cart-container")
-      ?.classList.remove("visually-hidden");
+  // Standalone mobile bottom nav buttons
+  const mobileSearch = document.getElementById("mobile-search-btn");
+  const mobileUser = document.getElementById("mobile-user");
+  const mobileCartBtn = document.getElementById("mobile-cart-btn");
+
+  function getLoginPath() {
+    const path = window.location.pathname;
+    return path.includes("/pages/") ? "login.html" : "pages/login.html";
+  }
+
+  function getCatalogPath() {
+    return window.location.pathname.includes("/pages/")
+      ? "catalogs.html"
+      : "pages/catalogs.html";
+  }
+
+  function getCheckoutPath() {
+    return window.location.pathname.includes("/pages/")
+      ? "checkout.html"
+      : "pages/checkout.html";
+  }
+
+  mobileSearch?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    window.location.href = getCatalogPath();
+  });
+
+  mobileUser?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    window.location.href = getLoginPath();
+  });
+
+  mobileCartBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    window.location.href = getCheckoutPath();
+  });
+
+  // Escape key closes sidebar
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && mobileSidebar.classList.contains("active")) {
+      closeSidebar();
+    }
+  });
+
+  // Focus trap inside sidebar
+  burgerMenu.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      mobileSidebar.classList.add("active");
+      sidebarOverlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => sidebarClose?.focus(), 100);
+    }
   });
 }
 
@@ -387,50 +479,13 @@ async function setupSearchFunctionality() {
 
     if (!searchTerm) return;
 
-    try {
-      const res = await fetch(`/api/v1/products?search=${encodeURIComponent(searchTerm)}`);
-      const data = await res.json();
-      const results = data.products || [];
-
-      if (results.length > 0) {
-        showToast(`Found ${results.length} result${results.length > 1 ? "s" : ""}`);
-        // Display results by replacing catalog with filtered results
-        const catalogEl = document.getElementById("catalog") || document.getElementById("catalog-grid");
-        if (catalogEl) {
-          catalogEl.scrollIntoView({ behavior: "smooth" });
-          // If on catalog page, catalog.js may handle rendering
-          if (typeof window.searchCatalog === "function") {
-            window.searchCatalog(results);
-          }
-        }
-      } else {
-        showToast("No results found");
-      }
-    } catch {
-      showToast("Search failed", "error");
+    function getCatalogPath() {
+      return window.location.pathname.includes("/pages/")
+        ? "catalogs.html"
+        : "pages/catalogs.html";
     }
 
-    document.querySelector(".search-box")?.classList.add("visually-hidden");
-    searchInput.value = "";
-  });
-}
-
-function highlightSearchResults(searchTerm) {
-  const cards = document.querySelectorAll(".card");
-  cards.forEach((card) => {
-    const name = card.querySelector("h3").textContent.toLowerCase();
-    const description = card.querySelector("p").textContent.toLowerCase();
-
-    if (name.includes(searchTerm) || description.includes(searchTerm)) {
-      card.style.border = "2px solid var(--bg-color-1)";
-      card.style.transform = "scale(1.02)";
-
-      // Remove highlight after 2 seconds
-      setTimeout(() => {
-        card.style.border = "";
-        card.style.transform = "";
-      }, 2000);
-    }
+    window.location.href = `${getCatalogPath()}?search=${encodeURIComponent(searchTerm)}`;
   });
 }
 
@@ -446,119 +501,6 @@ window.updateCart = updateCart;
 window.showToast = showToast;
 
 // Export attachFormListeners for form-toggle.js to use
-window.attachFormListeners = attachFormListeners;
-
-function attachFormListeners() {
-  const loginForm = document.querySelector(".login-form");
-  const signupForm = document.querySelector(".signup-form");
-
-  if (loginForm) {
-    loginForm.addEventListener("submit", handleLogin);
-  }
-
-  if (signupForm) {
-    signupForm.addEventListener("submit", handleRegister);
-  }
-
-  // Form switching buttons
-  const showSignupBtn = document.getElementById("show-signup");
-  const showLoginBtn = document.getElementById("show-login");
-
-  if (showSignupBtn && loginForm && signupForm) {
-    showSignupBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      loginForm.classList.add("visually-hidden");
-      signupForm.classList.remove("visually-hidden");
-    });
-  }
-
-  if (showLoginBtn && loginForm && signupForm) {
-    showLoginBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      signupForm.classList.add("visually-hidden");
-      loginForm.classList.remove("visually-hidden");
-    });
-  }
-}
-
-function handleLogin(e) {
-  e.preventDefault();
-
-  const email = document.getElementById("email")?.value;
-  const password = document.getElementById("password")?.value;
-
-  login(email, password)
-    .then(async (result) => {
-      if (result.success) {
-        // Get guest cart and sync with user cart
-        const guestCart = JSON.parse(localStorage.getItem("glacy-guest-cart") || "[]");
-        if (guestCart.length > 0) {
-          // Sync guest cart with backend
-          const syncResult = await syncCart(guestCart);
-          if (syncResult.success) {
-            cartItems = syncResult.cart || [];
-            localStorage.removeItem("glacy-guest-cart");
-            showToast("Cart synced with your account!");
-          }
-        } else {
-          // Load user cart from backend
-          cartItems = await fetchCart();
-        }
-
-        await loadCart();
-
-        // Use the updateAuthUI from form-toggle.js
-        if (typeof window.updateAuthUI === "function") {
-          window.updateAuthUI();
-        }
-
-        const loginContainer = document.getElementById("login-container");
-        loginContainer?.classList.add("visually-hidden");
-
-        showToast(result.message);
-      } else {
-        showToast(result.message);
-      }
-    })
-    .catch((error) => {
-      debugError("Login error:", error);
-      showToast("Network error. Please try again.");
-    });
-}
-
-function handleRegister(e) {
-  e.preventDefault();
-
-  const name = document.getElementById("signup-name").value;
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
-  const confirmPassword = document.getElementById("confirm-password").value;
-
-  registerUser(name, email, password, confirmPassword)
-    .then((result) => {
-      if (result.success) {
-        showToast(result.message + " Please login now.");
-        setTimeout(() => window.location.reload(), 1000);
-
-        const loginForm = document.querySelector(".login-form");
-        const signupForm = document.querySelector(".signup-form");
-        signupForm.classList.add("visually-hidden");
-        loginForm.classList.remove("visually-hidden");
-
-        document.getElementById("signup-name").value = "";
-        document.getElementById("signup-email").value = "";
-        document.getElementById("signup-password").value = "";
-        document.getElementById("confirm-password").value = "";
-      } else {
-        showToast(result.message);
-      }
-    })
-    .catch((error) => {
-      debugError("Registration error:", error);
-      showToast("Network error. Please try again.");
-    });
-}
-
 // ========================
 // HERO SLIDER
 // ========================
@@ -595,6 +537,34 @@ function resetSlider() {
 
 function stopSlider() {
   clearInterval(sliderInterval);
+}
+
+// Touch swipe for hero slider
+let sliderSwipeX = 0;
+
+function setupSliderTouch(container) {
+  if (!container) return;
+
+  let startX = 0;
+
+  container.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+    sliderSwipeX = startX;
+    stopSlider();
+  }, { passive: true });
+
+  container.addEventListener("touchmove", (e) => {
+    sliderSwipeX = e.touches[0].clientX;
+  }, { passive: true });
+
+  container.addEventListener("touchend", () => {
+    const deltaX = sliderSwipeX - startX;
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) prev();
+      else next();
+    }
+    startSlider();
+  }, { passive: true });
 }
 
 window.next = next;
@@ -667,6 +637,7 @@ function setupStickyNav() {
   if (!nav) return;
 
   const navHeight = nav.offsetHeight;
+  const deepScrollThreshold = navHeight * 3;
   let ticking = false;
 
   window.addEventListener("scroll", () => {
@@ -674,8 +645,10 @@ function setupStickyNav() {
       window.requestAnimationFrame(() => {
         if (window.scrollY > navHeight) {
           nav.classList.add("sticky");
+          nav.classList.toggle("scrolled-deep", window.scrollY > deepScrollThreshold);
         } else {
           nav.classList.remove("sticky");
+          nav.classList.remove("scrolled-deep");
         }
         ticking = false;
       });
@@ -713,6 +686,10 @@ window.showThankyouOverlay = function () {
 document.addEventListener("DOMContentLoaded", async () => {
   debugLog("Initializing...");
 
+  // Page entrance animation
+  const mainEl = document.querySelector("main");
+  if (mainEl) mainEl.classList.add("page-fade-in");
+
   // Load data from API
   const featuredProducts = await fetchCatalog(6);
   renderCatalog(featuredProducts);
@@ -731,6 +708,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         clearInterval(sliderInterval),
       );
       heroSlide.addEventListener("mouseleave", startSlider);
+      setupSliderTouch(heroSlide);
     }
   }
 
@@ -746,6 +724,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (prevButton) prevButton.addEventListener("click", prevCatalog);
     if (nextButton) nextButton.addEventListener("click", nextCatalog);
+
+    // Catalog carousel swipe
+    const catWrapper = document.querySelector(".card-wrapper");
+    if (catWrapper) {
+      let catStartX = 0;
+      let catSwipeX = 0;
+      catWrapper.addEventListener("touchstart", (e) => {
+        catStartX = e.touches[0].clientX;
+        catSwipeX = catStartX;
+      }, { passive: true });
+      catWrapper.addEventListener("touchmove", (e) => {
+        catSwipeX = e.touches[0].clientX;
+      }, { passive: true });
+      catWrapper.addEventListener("touchend", () => {
+        const deltaX = catSwipeX - catStartX;
+        if (Math.abs(deltaX) > 50) {
+          if (deltaX > 0) prevCatalog();
+          else nextCatalog();
+        }
+      }, { passive: true });
+    }
   }
 
   // Setup all functionality

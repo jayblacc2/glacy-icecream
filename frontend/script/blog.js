@@ -2,12 +2,14 @@
 import { errorMessage } from "../utils/error-message.js";
 import { escapeHtml, escapeAttr } from "../utils/security.js";
 import { debugLog, debugError } from "../utils/debug.js";
+import { renderPagination } from "../utils/pagination.js";
 
 const API_URL = "/api/v1/posts";
-const LIMIT = 20;
+const LIMIT = 12;
 
 let blogs = [];
 let selectedBlog = null;
+let currentPage = 1;
 
 // Initialize the page
 async function init() {
@@ -15,7 +17,8 @@ async function init() {
 }
 
 // Load blogs from backend API
-async function loadBlogs() {
+async function loadBlogs(page = 1) {
+  currentPage = page;
   const blogGrid = document.getElementById("blog-grid");
   if (!blogGrid) {
     debugError("blog-grid not found");
@@ -24,7 +27,7 @@ async function loadBlogs() {
   blogGrid.innerHTML = loading("Loading delicious blog posts");
 
   try {
-    const url = `${API_URL}?limit=${LIMIT}`;
+    const url = `${API_URL}?limit=${LIMIT}&page=${page}`;
     debugLog("Fetching:", url);
 
     const response = await fetch(url);
@@ -44,7 +47,10 @@ async function loadBlogs() {
 
     if (!data.data || data.data.length === 0) {
       debugLog("No blogs");
-      showNoBlogs();
+      if (page > 1) {
+        showNoBlogs();
+      }
+      renderPagination(data.pagination, "blog-pagination", (p) => loadBlogs(p));
       return;
     }
 
@@ -64,7 +70,7 @@ async function loadBlogs() {
     }));
 
     debugLog("Loaded blogs:", blogs.length);
-    renderBlogs();
+    renderBlogs(data.pagination);
   } catch (error) {
     debugError("Error loading blogs:", error);
     showError(error);
@@ -72,7 +78,7 @@ async function loadBlogs() {
 }
 
 // Render blog cards
-function renderBlogs() {
+function renderBlogs(pagination) {
   const blogGrid = document.getElementById("blog-grid");
   blogGrid.innerHTML = "";
 
@@ -80,6 +86,8 @@ function renderBlogs() {
     const card = createBlogCard(blog);
     blogGrid.appendChild(card);
   });
+
+  renderPagination(pagination, "blog-pagination", (page) => loadBlogs(page));
 }
 
 // Create blog card element
@@ -282,6 +290,28 @@ document.addEventListener("keydown", (e) => {
     closeModal();
   }
 });
+
+// Swipe down to close modal
+let blogTouchStartY = 0;
+let blogTouchEndY = 0;
+const blogOverlay = document.getElementById("modal-overlay");
+blogOverlay.addEventListener("touchstart", (e) => {
+  if (e.target === blogOverlay) {
+    blogTouchStartY = e.touches[0].clientY;
+    blogTouchEndY = blogTouchStartY;
+  }
+}, { passive: true });
+blogOverlay.addEventListener("touchmove", (e) => {
+  if (e.target === blogOverlay) {
+    blogTouchEndY = e.touches[0].clientY;
+  }
+}, { passive: true });
+blogOverlay.addEventListener("touchend", () => {
+  const deltaY = blogTouchEndY - blogTouchStartY;
+  if (deltaY > 100) {
+    closeModal();
+  }
+}, { passive: true });
 
 // Initialize on page load
 init();

@@ -68,7 +68,12 @@
       return;
     }
 
-    map = L.map('delivery-map').setView([STORE_LOCATION.lat, STORE_LOCATION.lng], 13);
+    map = L.map('delivery-map', {
+      tap: true,
+      touchZoom: true,
+      dragging: true,
+      zoomControl: true
+    }).setView([STORE_LOCATION.lat, STORE_LOCATION.lng], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',

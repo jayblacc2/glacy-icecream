@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Slab:wght@400;500;700&family=Yanone+Kaffeesatz:wght@400;500;700;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"/>
+<link rel="stylesheet" href="../css/tokens.css"/>
 <link rel="stylesheet" href="../css/style.css"/>
 <link rel="stylesheet" href="../css/profile.css"/>
 <title>Glacy-Store | My Profile</title>
@@ -35,7 +36,7 @@
       <div class="nav-form">
         <p>+1 317 234-67-33</p>
         <div class="form-group search" id="search-toggle">
-          <img src="../images/icons/search.svg" alt="search"/>
+          <i class="fa-solid fa-magnifying-glass"></i>
           <div class="search-box visually-hidden" id="search-box">
             <form class="search-form">
               <input type="search" id="search" name="q" placeholder="Search products" aria-label="Search" required/>
@@ -43,14 +44,20 @@
             </form>
           </div>
         </div>
-        <div class="form-group form-login">
-          <i class="fa-solid fa-user login-icon"></i>
-          <span class="login-label">User</span>
-          <div class="login-container visually-hidden" id="login-container"></div>
-        </div>
-        <div class="form-group form-cart">
-          <i class="fa-solid fa-cart-shopping cart-icon"></i>
-          <span class="cart-label">Empty</span>
+            <div class="form-group form-user">
+              <a href="login.html" class="nav-user-link" id="nav-user-link">
+                <i class="fa-solid fa-user"></i>
+                <span>Account</span>
+              </a>
+              <div class="user-dropdown visually-hidden" id="user-dropdown"></div>
+            </div>
+
+            <div class="form-group form-cart">
+              <span class="desktop-cart-icon-wrap">
+                <i class="fa-solid fa-cart-shopping cart-icon"></i>
+                <span class="desktop-cart-badge" id="desktop-cart-badge">0</span>
+              </span>
+              <span class="cart-label">Cart</span>
           <div class="cart-container visually-hidden" id="cart-container">
             <h3>Your Cart</h3>
             <div class="cart-items"><p class="empty-cart-message">Your cart is empty</p></div>
@@ -65,21 +72,53 @@
   </nav>
 
   <div class="mobile-sidebar" id="mobile-sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <h2>Glacy Store</h2>
+        <p>Welcome back</p>
+      </div>
+      <button class="sidebar-close" id="sidebar-close" aria-label="Close menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
     <div class="sidebar-content">
-      <button class="sidebar-close" id="sidebar-close" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
       <ul class="sidebar-nav">
-        <li><a href="../index.html" class="sidebar-link">Home</a></li>
-        <li><a href="catalogs.html" class="sidebar-link">Catalog</a></li>
-        <li><a href="blog.html" class="sidebar-link">Blog</a></li>
-        <li><a href="about.html" class="sidebar-link">About us</a></li>
-        <li><a href="delivery.html" class="sidebar-link">Delivery & Payment</a></li>
-        <li><a href="profile.html" class="sidebar-link active">My Profile</a></li>
+        <li><a href="../index.html" class="sidebar-link"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="catalogs.html" class="sidebar-link"><i class="fa-solid fa-border-all"></i> Catalog</a></li>
+        <li><a href="blog.html" class="sidebar-link"><i class="fa-solid fa-newspaper"></i> Blog</a></li>
+        <li><a href="about.html" class="sidebar-link"><i class="fa-solid fa-circle-info"></i> About us</a></li>
+        <li><a href="delivery.html" class="sidebar-link"><i class="fa-solid fa-truck-fast"></i> Delivery & Payment</a></li>
+        <li><a href="profile.html" class="sidebar-link active"><i class="fa-solid fa-user"></i> My Profile</a></li>
       </ul>
+
+      <div class="sidebar-support">
+        <div class="support-icon">
+          <i class="fa-solid fa-phone"></i>
+        </div>
+        <div class="support-info">
+          <span>Customer Support</span>
+          <p>+1 317 234-67-33</p>
+        </div>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+
       <div class="sidebar-actions">
-        <div class="sidebar-phone"><i class="fa-solid fa-phone"></i><p>+1 317 234-67-33</p></div>
-        <button class="sidebar-btn" id="sidebar-search"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
-        <button class="sidebar-btn" id="sidebar-login"><i class="fa-solid fa-user"></i><span>Login</span></button>
-        <button class="sidebar-btn" id="sidebar-cart"><i class="fa-solid fa-cart-shopping"></i><span>Cart</span></button>
+        <button class="sidebar-btn" id="sidebar-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Search</span>
+        </button>
+
+        <a href="login.html" class="sidebar-btn" id="sidebar-login">
+          <i class="fa-solid fa-user"></i>
+          <span>Login</span>
+        </a>
+
+        <button class="sidebar-btn" id="sidebar-cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span>Cart</span>
+          <span class="cart-badge" id="sidebar-cart-badge">Empty</span>
+        </button>
       </div>
     </div>
   </div>
@@ -197,6 +236,7 @@
                 <h3>Personal Info</h3>
                 <p id="overview-name">--</p>
                 <p id="overview-email" class="text-muted">--</p>
+                <p id="overview-phone" class="text-muted" style="margin-top:4px;"></p>
               </div>
             </div>
             <div class="info-card">
@@ -205,7 +245,7 @@
               </div>
               <div class="info-card-content">
                 <h3>Contact</h3>
-                <p id="overview-contact">--</p>
+                <p id="overview-address">--</p>
                 <span class="badge verified"><i class="fa-solid fa-check"></i> Verified</span>
               </div>
             </div>
@@ -267,6 +307,22 @@
                   <input type="email" id="profile-email" name="email" placeholder="your@email.com" required/>
                 </div>
                 <span class="error-message" id="email-error"></span>
+              </div>
+
+              <div class="input-wrapper full-width">
+                <label for="profile-phone" class="input-label"><i class="fa-solid fa-phone"></i> Phone</label>
+                <div class="input-field">
+                  <i class="fa-solid fa-phone input-icon"></i>
+                  <input type="tel" id="profile-phone" name="phone" placeholder="+1 (555) 123-4567"/>
+                </div>
+              </div>
+
+              <div class="input-wrapper full-width">
+                <label for="profile-address" class="input-label"><i class="fa-solid fa-location-dot"></i> Address</label>
+                <div class="input-field">
+                  <i class="fa-solid fa-location-dot input-icon"></i>
+                  <input type="text" id="profile-address" name="address" placeholder="123 Main St, City"/>
+                </div>
               </div>
 
               <div class="input-wrapper full-width">
@@ -415,8 +471,48 @@
 
 <div id="toast-container"></div>
 
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+  <a href="../index.html" class="bottom-nav-item">
+    <i class="fa-solid fa-house"></i>
+    <span>Home</span>
+  </a>
+  <a href="catalogs.html" class="bottom-nav-item">
+    <i class="fa-solid fa-border-all"></i>
+    <span>Catalog</span>
+  </a>
+  <a href="blog.html" class="bottom-nav-item">
+    <i class="fa-solid fa-newspaper"></i>
+    <span>Blog</span>
+  </a>
+  <a href="about.html" class="bottom-nav-item">
+    <i class="fa-solid fa-circle-info"></i>
+    <span>About</span>
+  </a>
+  <a href="delivery.html" class="bottom-nav-item">
+    <i class="fa-solid fa-truck-fast"></i>
+    <span>Delivery</span>
+  </a>
+      <button class="bottom-nav-item" id="mobile-search-btn">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>Search</span>
+      </button>
+      <button class="bottom-nav-item" id="mobile-cart-btn">
+        <span class="bottom-nav-icon-wrap">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="mobile-cart-badge" id="mobile-cart-badge">0</span>
+        </span>
+        <span>Cart</span>
+      </button>
+  <button class="bottom-nav-item" id="mobile-user">
+    <i class="fa-solid fa-user"></i>
+    <span>Account</span>
+  </button>
+</nav>
+
 <script type="module" src="../script/script.js"></script>
 <script type="module" src="../script/profile.js"></script>
+<script type="module" src="../utils/current-year.js"></script>
 </body>
 </html>
 

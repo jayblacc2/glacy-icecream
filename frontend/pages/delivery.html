@@ -26,6 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Slab:wght@400;500;700&family=Yanone+Kaffeesatz:wght@400;500;700;900&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="../css/tokens.css" />
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/delivery.css" />
     <title>Glacy-Store | Delivery & Payment</title>
@@ -61,7 +62,7 @@
           <div class="nav-form">
             <p>+1 317 234-67-33</p>
             <div class="form-group search" id="search-toggle">
-              <img src="../images/icons/search.svg" alt="search" />
+              <i class="fa-solid fa-magnifying-glass"></i>
               <div class="search-box visually-hidden" id="search-box">
                 <form class="search-form">
                   <input
@@ -79,18 +80,20 @@
                 </form>
               </div>
             </div>
-            <div class="form-group form-login">
-              <i class="fa-solid fa-user login-icon"></i>
-              <span class="login-label">User</span>
-              <div
-                class="login-container visually-hidden"
-                id="login-container"
-              ></div>
+            <div class="form-group form-user">
+              <a href="login.html" class="nav-user-link" id="nav-user-link">
+                <i class="fa-solid fa-user"></i>
+                <span>Account</span>
+              </a>
+              <div class="user-dropdown visually-hidden" id="user-dropdown"></div>
             </div>
 
             <div class="form-group form-cart">
-              <i class="fa-solid fa-cart-shopping cart-icon"></i>
-              <span class="cart-label">Empty</span>
+              <span class="desktop-cart-icon-wrap">
+                <i class="fa-solid fa-cart-shopping cart-icon"></i>
+                <span class="desktop-cart-badge" id="desktop-cart-badge">0</span>
+              </span>
+              <span class="cart-label">Cart</span>
               <div class="cart-container visually-hidden" id="cart-container">
                 <h3>Your Cart</h3>
                 <div class="cart-items">
@@ -116,51 +119,51 @@
 
       <!-- Mobile Sidebar Menu -->
       <div class="mobile-sidebar" id="mobile-sidebar">
-        <div class="sidebar-content">
-          <button
-            class="sidebar-close"
-            id="sidebar-close"
-            aria-label="Close menu"
-          >
+        <div class="sidebar-header">
+          <div class="sidebar-brand">
+            <h2>Glacy Store</h2>
+            <p>Welcome back</p>
+          </div>
+          <button class="sidebar-close" id="sidebar-close" aria-label="Close menu">
             <i class="fa-solid fa-xmark"></i>
           </button>
+        </div>
 
+        <div class="sidebar-content">
           <ul class="sidebar-nav">
-            <li><a href="../index.html" class="sidebar-link">Home</a></li>
-            <li>
-              <a href="catalogs.html" class="sidebar-link">Catalog</a>
-            </li>
-            <li><a href="blog.html" class="sidebar-link">Blog</a></li>
-
-            <li>
-              <a href="about.html" class="sidebar-link">About us</a>
-            </li>
-            <li>
-              <a href="delivery.html" class="sidebar-link active"
-                >Delivery & Payment</a
-              >
-            </li>
+            <li><a href="../index.html" class="sidebar-link"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a href="catalogs.html" class="sidebar-link"><i class="fa-solid fa-border-all"></i> Catalog</a></li>
+            <li><a href="blog.html" class="sidebar-link"><i class="fa-solid fa-newspaper"></i> Blog</a></li>
+            <li><a href="about.html" class="sidebar-link"><i class="fa-solid fa-circle-info"></i> About us</a></li>
+            <li><a href="delivery.html" class="sidebar-link active"><i class="fa-solid fa-truck-fast"></i> Delivery & Payment</a></li>
           </ul>
 
-          <div class="sidebar-actions">
-            <div class="sidebar-phone">
+          <div class="sidebar-support">
+            <div class="support-icon">
               <i class="fa-solid fa-phone"></i>
+            </div>
+            <div class="support-info">
+              <span>Customer Support</span>
               <p>+1 317 234-67-33</p>
             </div>
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
 
+          <div class="sidebar-actions">
             <button class="sidebar-btn" id="sidebar-search">
               <i class="fa-solid fa-magnifying-glass"></i>
               <span>Search</span>
             </button>
 
-            <button class="sidebar-btn" id="sidebar-login">
+            <a href="login.html" class="sidebar-btn" id="sidebar-login">
               <i class="fa-solid fa-user"></i>
               <span>Login</span>
-            </button>
+            </a>
 
             <button class="sidebar-btn" id="sidebar-cart">
               <i class="fa-solid fa-cart-shopping"></i>
               <span>Cart</span>
+              <span class="cart-badge" id="sidebar-cart-badge">Empty</span>
             </button>
           </div>
         </div>
@@ -558,7 +561,7 @@
         </ul>
 
         <div class="footer-made">
-          <p>Copyright &copy; <span id="current-year">2022</span> made ❤️ by <a href="#"> Jayblacc </a></p>
+          <p>Copyright &copy; <span id="current-year"></span> made ❤️ by <a href="#"> Jayblacc </a></p>
         </div>
       </div>
     </footer>
@@ -569,8 +572,48 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+      <a href="../index.html" class="bottom-nav-item">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </a>
+      <a href="catalogs.html" class="bottom-nav-item">
+        <i class="fa-solid fa-border-all"></i>
+        <span>Catalog</span>
+      </a>
+      <a href="blog.html" class="bottom-nav-item">
+        <i class="fa-solid fa-newspaper"></i>
+        <span>Blog</span>
+      </a>
+      <a href="about.html" class="bottom-nav-item">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>About</span>
+      </a>
+      <a href="delivery.html" class="bottom-nav-item active">
+        <i class="fa-solid fa-truck-fast"></i>
+        <span>Delivery</span>
+      </a>
+      <button class="bottom-nav-item" id="mobile-search-btn">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>Search</span>
+      </button>
+      <button class="bottom-nav-item" id="mobile-cart-btn">
+        <span class="bottom-nav-icon-wrap">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="mobile-cart-badge" id="mobile-cart-badge">0</span>
+        </span>
+        <span>Cart</span>
+      </button>
+      <button class="bottom-nav-item" id="mobile-user">
+        <i class="fa-solid fa-user"></i>
+        <span>Account</span>
+      </button>
+    </nav>
+
     <script type="module" src="../script/script.js"></script>
     <script type="module" src="../script/delivery.js"></script>
+    <script type="module" src="../utils/current-year.js"></script>
   </body>
 </html>
 

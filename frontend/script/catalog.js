@@ -1,24 +1,30 @@
-﻿import { loading } from "../utils/loading.js";
+﻿import { loading, setButtonLoading } from "../utils/loading.js";
 import { errorMessage, emptyMessage } from "../utils/error-message.js";
 import { showToast } from "../utils/toast-notification.js";
 import { addItemToCart } from "./cart.service.js";
 import { escapeHtml, escapeAttr } from "../utils/security.js";
 import { debugLog, debugError } from "../utils/debug.js";
+import { renderPagination } from "../utils/pagination.js";
 
 let icecreams = [];
 let currentFilter = "all";
 let selectedIceCream = null;
 let quantity = 1;
+let currentPage = 1;
+const PER_PAGE = 12;
 
 const API_BASE_URL = "/api/v1";
 
 // Load product data
-async function loadIcecreams() {
+async function loadIcecreams(page = 1) {
+  currentPage = page;
   document.getElementById("catalog-grid").innerHTML = loading(
     "Loading ice cream treats",
   );
   try {
-    const response = await fetch(`${API_BASE_URL}/products`);
+    const params = new URLSearchParams({ page, limit: PER_PAGE });
+    if (currentFilter !== "all") params.set("category", currentFilter);
+    const response = await fetch(`${API_BASE_URL}/products?${params}`);
     debugLog("Catalog API status:", response.status);
 
     if (!response.ok) throw new Error(`API Error: ${response.status}`);
@@ -27,7 +33,7 @@ async function loadIcecreams() {
 
     if (data.success) {
       icecreams = data.products;
-      renderCatalog();
+      renderCatalog(data.pagination);
     } else {
       document.getElementById("catalog-grid").innerHTML = errorMessage(
         "Oops! Something went wrong",
@@ -47,31 +53,22 @@ async function loadIcecreams() {
 
 function filterProducts(category) {
   currentFilter = category;
-  debugLog("Filtering:", category);
-  renderCatalog();
+  loadIcecreams(1);
 }
 
 // Render catalog
-function renderCatalog() {
+function renderCatalog(pagination) {
   const catalogGrid = document.getElementById("catalog-grid");
   if (!catalogGrid) return;
 
-  let filteredIcecreams = icecreams;
-
-  if (currentFilter !== "all") {
-    filteredIcecreams = icecreams.filter(
-      (icecream) => icecream.category.toLowerCase() === currentFilter.toLowerCase(),
-    );
-  }
-
-  if (!filteredIcecreams || filteredIcecreams.length === 0) {
+  if (!icecreams || icecreams.length === 0) {
     catalogGrid.innerHTML = emptyMessage("No ice creams available in this category.");
     return;
   }
 
   catalogGrid.innerHTML = "";
 
-  filteredIcecreams.forEach((icecream) => {
+  icecreams.forEach((icecream) => {
     const card = document.createElement("div");
     card.className = "ice-cream-card";
     card.dataset.id = icecream.id;
@@ -93,6 +90,8 @@ function renderCatalog() {
     card.addEventListener("click", () => openModal(icecream));
     catalogGrid.appendChild(card);
   });
+
+  renderPagination(pagination, "catalog-pagination", (page) => loadIcecreams(page));
 }
 
 // Open modal with ice cream details
@@ -201,7 +200,12 @@ async function addToCart() {
     return;
   }
 
+  const btn = document.getElementById("add-to-cart");
+  setButtonLoading(btn, true);
+
   const result = await addItemToCart(productId, quantity);
+
+  setButtonLoading(btn, false);
 
   if (result.success) {
     showToast(`${selectedIceCream.name} added to cart!`, "success");
@@ -246,9 +250,86 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// Swipe down to close modal
+let modalTouchStartY = 0;
+let modalTouchEndY = 0;
+const modalOverlay = document.getElementById("modal-overlay");
+modalOverlay.addEventListener("touchstart", (e) => {
+  if (e.target === modalOverlay) {
+    modalTouchStartY = e.touches[0].clientY;
+    modalTouchEndY = modalTouchStartY;
+  }
+}, { passive: true });
+modalOverlay.addEventListener("touchmove", (e) => {
+  if (e.target === modalOverlay) {
+    modalTouchEndY = e.touches[0].clientY;
+  }
+}, { passive: true });
+modalOverlay.addEventListener("touchend", () => {
+  const deltaY = modalTouchEndY - modalTouchStartY;
+  if (deltaY > 100) {
+    closeModal();
+  }
+}, { passive: true });
+
 // Initialize
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadIcecreams();
+  const params = new URLSearchParams(window.location.search);
+  const searchTerm = params.get("search");
+
+  if (searchTerm) {
+    activateFilterByTerm(searchTerm);
+    await searchCatalog(searchTerm);
+  } else {
+    await loadIcecreams();
+  }
+
   setupFilter();
 });
+
+// Expose for cross-page search redirect
+function activateFilterByTerm(term) {
+  const lower = term.toLowerCase();
+  const filterBtn = Array.from(document.querySelectorAll(".filter-btn")).find(
+    (btn) => btn.dataset.category.toLowerCase() === lower,
+  );
+  if (filterBtn) {
+    document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+    filterBtn.classList.add("active");
+    currentFilter = filterBtn.dataset.category;
+  } else {
+    currentFilter = "all";
+  }
+}
+
+window.searchCatalog = async function (term) {
+  activateFilterByTerm(term);
+  document.getElementById("catalog-grid").innerHTML = loading(
+    `Searching for "${term}"`,
+  );
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/products?search=${encodeURIComponent(term)}`,
+    );
+    if (!response.ok) throw new Error(`API Error: ${response.status}`);
+    const data = await response.json();
+
+    if (data.success) {
+      icecreams = data.products;
+      renderCatalog(data.pagination);
+      showToast(`Found ${icecreams.length} result${icecreams.length !== 1 ? "s" : ""} for "${term}"`);
+    } else {
+      document.getElementById("catalog-grid").innerHTML = errorMessage(
+        "Search failed",
+        data.message || "Please try again later.",
+      );
+    }
+  } catch (error) {
+    debugError("Search error:", error);
+    document.getElementById("catalog-grid").innerHTML = errorMessage(
+      "Search error",
+      `Something went wrong: ${error.message}`,
+    );
+  }
+};
 

@@ -12,22 +12,22 @@
 
 .section-tag {
   display: inline-block;
-  background: var(--bg-color-1);
-  color: var(--primary-color);
-  padding: 0.5rem 1.5rem;
-  border-radius: 20px;
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  background: var(--color-primary);
+  color: var(--color-text);
+  padding: var(--space-2) var(--space-6);
+  border-radius: var(--radius-2xl);
+  font-size: var(--h4-size);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-4);
 }
 
 .section-title {
-  font-family: "Yanone Kaffeesatz", sans-serif;
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  margin-bottom: 2rem;
-  line-height: 1.2;
+  font-family: var(--font-heading);
+  font-size: var(--h1-size);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  margin-bottom: var(--space-8);
+  line-height: var(--leading-tight);
 }
 
 /* ========================================

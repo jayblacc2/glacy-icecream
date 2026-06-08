@@ -140,18 +140,6 @@ const getProducts = async (req, res) => {
       Product.find(filter).skip(skip).limit(limit),
     ]);
 
-    if (products.length === 0) {
-      const message = category
-        ? `No products found in category: ${category}`
-        : total > 0
-          ? "No products found on this page"
-          : "No products available";
-
-      return res.status(404).json({
-        success: false,
-        message,
-      });
-    }
     const totalPages = Math.ceil(total / limit);
 
     const transformedProducts = products.map((product) => ({
@@ -164,11 +152,17 @@ const getProducts = async (req, res) => {
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
     }));
+    const message = total === 0
+      ? "No products available"
+      : products.length === 0
+        ? "No products found on this page"
+        : category
+          ? `Products in ${category} category retrieved successfully`
+          : "Products retrieved successfully";
+
     return res.status(200).json({
       success: true,
-      message: category
-        ? `Products in ${category} category retrieved successfully`
-        : "Products retrieved successfully",
+      message,
       products: transformedProducts,
       pagination: {
         currentPage: page,

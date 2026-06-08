@@ -1,15 +1,21 @@
 import { showToast } from '../utils/toast-notification.js';
 import { getCurrentUser, getAuthInitPromise } from './auth.js';
 import { fetchWithCsrf } from '../utils/csrf.js';
+import { renderPagination } from '../utils/pagination.js';
+import { loading, setButtonLoading } from '../utils/loading.js';
 
 const API_PRODUCTS = '/api/v1/products';
 const API_POSTS = '/api/v1/posts';
+const ADMIN_PAGE_LIMIT = 20;
 
 const $ = (id) => document.getElementById(id);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 let editingId = null;
 let editingType = null;
+let adminProductPage = 1;
+let adminOrderPage = 1;
+let adminPostPage = 1;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await getAuthInitPromise();
@@ -61,12 +67,14 @@ function closeModal() {
 }
 
 // ===== PRODUCTS =====
-async function loadProducts() {
+async function loadProducts(page = 1) {
+  adminProductPage = page;
   const container = $('products-container');
   container.innerHTML = `<div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> <p>Loading products...</p></div>`;
 
   try {
-    const res = await fetch(API_PRODUCTS);
+    const url = `${API_PRODUCTS}?page=${page}&limit=${ADMIN_PAGE_LIMIT}`;
+    const res = await fetch(url);
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
 
@@ -90,11 +98,11 @@ async function loadProducts() {
         <tbody>
           ${products.map(p => `
             <tr>
-              <td><img src="${escapeAttr(p.image?.url || '../images/img1.png')}" alt="" class="thumb" onerror="this.src='../images/img1.png'"></td>
-              <td><strong>${escapeHtml(p.name)}</strong></td>
-              <td><span class="category-badge">${escapeHtml(p.category)}</span></td>
-              <td class="price-cell">$${p.price.toFixed(2)}</td>
-              <td class="actions">
+              <td data-label="Image"><img src="${escapeAttr(p.image?.url || '../images/img1.png')}" alt="" class="thumb" onerror="this.src='../images/img1.png'"></td>
+              <td data-label="Name"><strong>${escapeHtml(p.name)}</strong></td>
+              <td data-label="Category"><span class="category-badge">${escapeHtml(p.category)}</span></td>
+              <td data-label="Price" class="price-cell">$${p.price.toFixed(2)}</td>
+              <td data-label="" class="actions">
                 <button class="admin-btn-secondary" onclick="editProduct('${escapeAttr(p._id || p.id)}')"><i class="fa-solid fa-pen"></i></button>
                 <button class="admin-btn-danger" onclick="deleteProduct('${escapeAttr(p._id || p.id)}')"><i class="fa-solid fa-trash"></i></button>
               </td>
@@ -102,12 +110,15 @@ async function loadProducts() {
           `).join('')}
         </tbody>
       </table>`;
+    renderPagination(data.pagination, 'admin-products-pagination', (p) => loadProducts(p));
   } catch (err) {
-    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadProducts()">Retry</button></div>`;
+    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadProducts(adminProductPage)">Retry</button></div>`;
   }
 }
 
 window.editProduct = async function(id) {
+  openModal('Edit Product');
+  $('modal-body').innerHTML = loading("Loading product...");
   try {
     const res = await fetch(`${API_PRODUCTS}/${id}`);
     const data = await res.json();
@@ -115,6 +126,7 @@ window.editProduct = async function(id) {
     openForm('product', data.product);
   } catch (err) {
     showToast(err.message, 'error');
+    closeModal();
   }
 };
 
@@ -134,16 +146,18 @@ window.deleteProduct = async function(id) {
 };
 
 // ===== POSTS =====
-async function loadPosts() {
+async function loadPosts(page = 1) {
+  adminPostPage = page;
   const container = $('posts-container');
   container.innerHTML = `<div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> <p>Loading posts...</p></div>`;
 
   try {
-    const res = await fetch(API_POSTS);
+    const url = `${API_POSTS}?page=${page}&limit=${ADMIN_PAGE_LIMIT}`;
+    const res = await fetch(url);
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
 
-    const posts = data.posts || [];
+    const posts = data.data || [];
     if (posts.length === 0) {
       container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-newspaper"></i><h3>No posts yet</h3><p>Write your first blog post.</p></div>`;
       return;
@@ -162,10 +176,10 @@ async function loadPosts() {
         <tbody>
           ${posts.map(post => `
             <tr>
-              <td><strong>${escapeHtml(post.title)}</strong></td>
-              <td>${escapeHtml(post.author || 'Anonymous')}</td>
-              <td style="color: var(--admin-text-muted); font-size: 0.9rem;">${new Date(post.createdAt).toLocaleDateString()}</td>
-              <td class="actions">
+              <td data-label="Title"><strong>${escapeHtml(post.title)}</strong></td>
+              <td data-label="Author">${escapeHtml(post.author || 'Anonymous')}</td>
+              <td data-label="Date" style="color: var(--admin-text-muted); font-size: 0.9rem;">${new Date(post.createdAt).toLocaleDateString()}</td>
+              <td data-label="" class="actions">
                 <button class="admin-btn-secondary" onclick="editPost('${escapeAttr(post._id || post.id)}')"><i class="fa-solid fa-pen"></i></button>
                 <button class="admin-btn-danger" onclick="deletePost('${escapeAttr(post._id || post.id)}')"><i class="fa-solid fa-trash"></i></button>
               </td>
@@ -173,12 +187,15 @@ async function loadPosts() {
           `).join('')}
         </tbody>
       </table>`;
+    renderPagination(data.pagination, 'admin-posts-pagination', (p) => loadPosts(p));
   } catch (err) {
-    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadPosts()">Retry</button></div>`;
+    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadPosts(adminPostPage)">Retry</button></div>`;
   }
 }
 
 window.editPost = async function(id) {
+  openModal('Edit Post');
+  $('modal-body').innerHTML = loading("Loading post...");
   try {
     const res = await fetch(`${API_POSTS}/${id}`);
     const data = await res.json();
@@ -186,6 +203,7 @@ window.editPost = async function(id) {
     openForm('post', data.post);
   } catch (err) {
     showToast(err.message, 'error');
+    closeModal();
   }
 };
 
@@ -205,12 +223,13 @@ window.deletePost = async function(id) {
 };
 
 // ===== ORDERS =====
-async function loadOrders() {
+async function loadOrders(page = 1) {
+  adminOrderPage = page;
   const container = $('orders-container');
   container.innerHTML = `<div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> <p>Loading orders...</p></div>`;
 
   try {
-    const res = await fetch('/api/v1/orders/admin', { credentials: 'include' });
+    const res = await fetch(`/api/v1/orders/admin?page=${page}&limit=${ADMIN_PAGE_LIMIT}`, { credentials: 'include' });
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
 
@@ -239,21 +258,22 @@ async function loadOrders() {
           ${orders.map(o => {
             const sc = statusColors[o.status] || statusColors.pending;
             return `<tr>
-              <td><strong>#${escapeHtml(o.orderNumber)}</strong></td>
-              <td>${escapeHtml(o.user ? o.user.name : '—')}</td>
-              <td>${o.itemCount}</td>
-              <td class="price-cell">$${o.totalAmount.toFixed(2)}</td>
-              <td><span class="status-badge" style="background:${sc.bg};color:${sc.color};padding:0.25rem 0.6rem;border-radius:20px;font-size:0.8rem;font-weight:600;">${escapeHtml(o.status)}</span></td>
-              <td style="color:var(--admin-text-muted);font-size:0.9rem;">${new Date(o.createdAt).toLocaleDateString()}</td>
-              <td class="actions">
+              <td data-label="Order"><strong>#${escapeHtml(o.orderNumber)}</strong></td>
+              <td data-label="Customer">${escapeHtml(o.user ? o.user.name : '—')}</td>
+              <td data-label="Items">${o.itemCount}</td>
+              <td data-label="Total" class="price-cell">$${o.totalAmount.toFixed(2)}</td>
+              <td data-label="Status"><span class="status-badge" style="background:${sc.bg};color:${sc.color};padding:0.25rem 0.6rem;border-radius:20px;font-size:0.8rem;font-weight:600;">${escapeHtml(o.status)}</span></td>
+              <td data-label="Date" style="color:var(--admin-text-muted);font-size:0.9rem;">${new Date(o.createdAt).toLocaleDateString()}</td>
+              <td data-label="" class="actions">
                 <button class="admin-btn-secondary" onclick="editOrderStatus('${escapeAttr(o.id)}')"><i class="fa-solid fa-pen"></i></button>
               </td>
             </tr>`;
           }).join('')}
         </tbody>
       </table>`;
+    renderPagination(data.pagination, 'admin-orders-pagination', (p) => loadOrders(p));
   } catch (err) {
-    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadOrders()">Retry</button></div>`;
+    container.innerHTML = `<div class="error-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p><button class="admin-btn-secondary" onclick="loadOrders(adminOrderPage)">Retry</button></div>`;
   }
 }
 
@@ -331,6 +351,7 @@ function openProductForm(product) {
 
   $('item-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const submitBtn = e.target.querySelector('.btn-submit');
     const imageUrl = $('pf-image').value.trim();
     const body = {
       name: $('pf-name').value.trim(),
@@ -339,6 +360,8 @@ function openProductForm(product) {
       category: $('pf-category').value,
     };
     if (imageUrl) body.image = { url: imageUrl };
+
+    setButtonLoading(submitBtn, true);
 
     try {
       const url = isEdit ? `${API_PRODUCTS}/update/${editingId}` : `${API_PRODUCTS}/create`;
@@ -356,6 +379,8 @@ function openProductForm(product) {
       loadProducts();
     } catch (err) {
       showToast(err.message, 'error');
+    } finally {
+      setButtonLoading(submitBtn, false);
     }
   });
 }
@@ -396,6 +421,7 @@ function openPostForm(post) {
 
   $('item-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const submitBtn = e.target.querySelector('.btn-submit');
     const body = {
       title: $('pf-title').value.trim(),
       excerpt: $('pf-excerpt').value.trim(),
@@ -403,6 +429,8 @@ function openPostForm(post) {
       author: $('pf-author').value.trim() || undefined,
       featuredImage: $('pf-featured-image').value.trim() || undefined,
     };
+
+    setButtonLoading(submitBtn, true);
 
     try {
       const url = isEdit ? `${API_POSTS}/update/${editingId}` : `${API_POSTS}/create`;
@@ -420,6 +448,8 @@ function openPostForm(post) {
       loadPosts();
     } catch (err) {
       showToast(err.message, 'error');
+    } finally {
+      setButtonLoading(submitBtn, false);
     }
   });
 }

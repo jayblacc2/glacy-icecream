@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  root: "frontend",
   server: {
     port: 4000,
     host: true,

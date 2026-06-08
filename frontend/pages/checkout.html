@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout - Glacy Store</title>
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/checkout.css" />
+    <link
+      rel="shortcut icon"
+      href="../images/icons/favicon.png"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;700&family=Yanone+Kaffeesatz:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Minimal Nav -->
+    <nav class="checkout-nav">
+      <a href="../index.html" class="checkout-nav-brand">
+        <img src="../images/icons/logo.svg" alt="Glacy Store" />
+      </a>
+      <a href="catalogs.html" class="checkout-nav-continue">
+        <i class="fa-solid fa-arrow-left"></i> Continue Shopping
+      </a>
+    </nav>
+
+    <main class="checkout-page">
+      <!-- Progress Steps -->
+      <div class="checkout-progress">
+        <div class="progress-step active" data-step="1">
+          <div class="step-circle">1</div>
+          <span class="step-label">Cart</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="2">
+          <div class="step-circle">2</div>
+          <span class="step-label">Shipping</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="3">
+          <div class="step-circle">3</div>
+          <span class="step-label">Payment</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="4">
+          <div class="step-circle">4</div>
+          <span class="step-label">Confirm</span>
+        </div>
+      </div>
+
+      <div class="checkout-content">
+        <!-- Step 1: Cart Review -->
+        <section class="checkout-step active" id="step-1">
+          <h2><i class="fa-solid fa-cart-shopping"></i> Review Your Cart</h2>
+          <div class="cart-items-list" id="cart-items-list">
+            <!-- Dynamically populated -->
+          </div>
+          <div class="checkout-step-actions">
+            <a href="catalogs.html" class="btn-secondary-checkout">
+              <i class="fa-solid fa-arrow-left"></i> Back to Shop
+            </a>
+            <button class="btn-primary-checkout" id="to-step-2" disabled>
+              Continue to Shipping <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- Step 2: Shipping -->
+        <section class="checkout-step" id="step-2">
+          <h2><i class="fa-solid fa-truck"></i> Shipping Information</h2>
+          <form id="shipping-form" class="checkout-form">
+            <div class="form-row">
+              <div class="form-group-checkout">
+                <label for="ship-name">Full Name</label>
+                <div class="input-wrap-checkout">
+                  <i class="fa-solid fa-user"></i>
+                  <input type="text" id="ship-name" placeholder="John Doe" required />
+                </div>
+              </div>
+              <div class="form-group-checkout">
+                <label for="ship-phone">Phone Number</label>
+                <div class="input-wrap-checkout">
+                  <i class="fa-solid fa-phone"></i>
+                  <input type="tel" id="ship-phone" placeholder="+1 (555) 000-0000" />
+                </div>
+              </div>
+            </div>
+            <div class="form-group-checkout">
+              <label for="ship-address">Street Address</label>
+              <div class="input-wrap-checkout">
+                <i class="fa-solid fa-location-dot"></i>
+                <input type="text" id="ship-address" placeholder="123 Main St, Apt 4" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group-checkout">
+                <label for="ship-city">City</label>
+                <div class="input-wrap-checkout">
+                  <i class="fa-solid fa-city"></i>
+                  <input type="text" id="ship-city" placeholder="New York" required />
+                </div>
+              </div>
+              <div class="form-group-checkout">
+                <label for="ship-zip">ZIP / Postal Code</label>
+                <div class="input-wrap-checkout">
+                  <i class="fa-solid fa-mailbox"></i>
+                  <input type="text" id="ship-zip" placeholder="10001" required />
+                </div>
+              </div>
+            </div>
+          </form>
+          <div class="checkout-step-actions">
+            <button class="btn-secondary-checkout" id="back-to-1">
+              <i class="fa-solid fa-arrow-left"></i> Back to Cart
+            </button>
+            <button class="btn-primary-checkout" id="to-step-3">
+              Continue to Payment <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- Step 3: Payment -->
+        <section class="checkout-step" id="step-3">
+          <h2><i class="fa-solid fa-credit-card"></i> Payment Method</h2>
+          <div class="payment-options">
+            <label class="payment-option selected">
+              <input type="radio" name="payment" value="cash" checked />
+              <div class="payment-card">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                <div>
+                  <strong>Cash on Delivery</strong>
+                  <p>Pay when you receive your order</p>
+                </div>
+              </div>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="card" />
+              <div class="payment-card">
+                <i class="fa-solid fa-credit-card"></i>
+                <div>
+                  <strong>Credit / Debit Card</strong>
+                  <p>Secure online payment</p>
+                </div>
+              </div>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="paypal" />
+              <div class="payment-card">
+                <i class="fa-brands fa-paypal"></i>
+                <div>
+                  <strong>PayPal</strong>
+                  <p>Pay with your PayPal account</p>
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="order-summary">
+            <h3>Order Summary</h3>
+            <div id="summary-items"></div>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="summary-subtotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Shipping</span>
+              <span class="free-shipping">Free</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total</span>
+              <span id="summary-total">$0.00</span>
+            </div>
+          </div>
+
+          <div class="checkout-step-actions">
+            <button class="btn-secondary-checkout" id="back-to-2">
+              <i class="fa-solid fa-arrow-left"></i> Back to Shipping
+            </button>
+            <button class="btn-primary-checkout place-order-btn" id="place-order">
+              <span class="btn-text"><i class="fa-solid fa-lock"></i> Place Order</span>
+              <span class="btn-loader"><i class="fa-solid fa-circle-notch fa-spin"></i> Processing...</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Step 4: Confirmation -->
+        <section class="checkout-step" id="step-4">
+          <div class="confirmation-content">
+            <div class="confirmation-icon">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2>Order Placed Successfully!</h2>
+            <p class="order-number" id="order-number"></p>
+            <p class="confirmation-msg">
+              Thank you for your order! We'll send you a confirmation email shortly.
+            </p>
+            <div class="confirmation-actions">
+              <a href="../index.html" class="btn-primary-checkout">
+                <i class="fa-solid fa-house"></i> Back to Home
+              </a>
+              <a href="profile.html?tab=orders" class="btn-secondary-checkout">
+                <i class="fa-solid fa-box"></i> View My Orders
+              </a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Empty Cart State -->
+      <div class="empty-cart-state visually-hidden" id="empty-cart-state">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added any items yet.</p>
+        <a href="catalogs.html" class="btn-primary-checkout">
+          <i class="fa-solid fa-ice-cream"></i> Browse Catalog
+        </a>
+      </div>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast-container"></div>
+
+    <script type="module" src="../script/checkout.js"></script>
+    <script type="module" src="../utils/toast-notification.js"></script>
+  </body>
+</html>
