@@ -128,5 +128,8 @@ dist
 .roo/
 
 
+# Local dev tools
+/auto-commit-watcher.js
+
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node
 
