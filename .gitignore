@@ -4,7 +4,7 @@
 
 #ignore my todo or issues to be fixed
 *.md    
-/package-lock.json
+# /package-lock.json
 
 # Logs
 logs
