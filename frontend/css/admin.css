@@ -68,6 +68,20 @@
   box-shadow: 0 4px 12px rgba(236, 61, 96, 0.3);
 }
 
+.admin-sidebar-footer {
+  border-top: 1px solid var(--admin-border);
+  padding: 0.75rem;
+}
+
+.admin-logout-btn {
+  color: var(--admin-danger);
+}
+
+.admin-logout-btn:hover {
+  background: #fef2f2;
+  color: var(--admin-danger);
+}
+
 .admin-main {
   min-height: 400px;
 }

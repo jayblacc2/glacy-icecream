@@ -1,5 +1,5 @@
 import { showToast } from '../utils/toast-notification.js';
-import { getCurrentUser, getAuthInitPromise } from './auth.js';
+import { getCurrentUser, getAuthInitPromise, logout } from './auth.js';
 import { fetchWithCsrf } from '../utils/csrf.js';
 import { renderPagination } from '../utils/pagination.js';
 import { loading, setButtonLoading } from '../utils/loading.js';
@@ -34,6 +34,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   $('btn-add-product').addEventListener('click', () => openForm('product'));
   $('btn-add-post').addEventListener('click', () => openForm('post'));
+
+  $('admin-logout-btn').addEventListener('click', async () => {
+    await logout();
+    window.location.href = 'login.html';
+  });
 });
 
 function setupTabNav() {
