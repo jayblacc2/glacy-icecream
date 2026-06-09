@@ -2,6 +2,7 @@
   "name": "glacy-store",
   "version": "1.0.0",
   "description": "Ice cream store website with frontend and backend",
+  "type": "module",
   "main": "frontend/index.html",
   "scripts": {
     "dev": "vite frontend",
@@ -11,7 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "watch:auto-commit": "node auto-commit-watcher.js",
+    "watch:tests": "node auto-commit-watcher.js",
     "version:major": "npm version major -m \"Bump to version %s\"",
     "version:minor": "npm version minor -m \"Bump to version %s\"",
     "version:patch": "npm version patch -m \"Bump to version %s\""
