@@ -3,23 +3,31 @@
 .admin-page {
   min-height: 100vh;
   background: var(--admin-bg);
-  padding: 2rem 0 4rem;
+  padding: 0;
 }
 
 .admin-layout {
   display: grid;
   grid-template-columns: 240px 1fr;
-  gap: 2rem;
-  align-items: start;
+  height: calc(100vh - 80px);
+  overflow: hidden;
 }
 
 .admin-sidebar {
   position: sticky;
-  top: 2rem;
+  top: 0;
+  height: 100%;
+  overflow-y: auto;
   background: var(--admin-card-bg);
-  border-radius: var(--admin-radius);
+  border-right: 1px solid var(--admin-border);
   box-shadow: var(--admin-shadow);
-  overflow: hidden;
+  border-radius: 0;
+}
+
+.admin-main {
+  height: 100%;
+  overflow-y: auto;
+  padding: 2rem;
 }
 
 .admin-sidebar-header {
@@ -468,10 +476,16 @@
 @media (max-width: 768px) {
   .admin-layout {
     grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
   }
 
   .admin-sidebar {
-    position: static;
+    position: sticky;
+    top: 0;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--admin-border);
   }
 
   .admin-nav {
@@ -489,10 +503,6 @@
   .admin-nav-item {
     white-space: nowrap;
     scroll-snap-align: start;
-  }
-
-  .admin-sidebar {
-    position: relative;
   }
 
   .admin-sidebar::after {
@@ -533,6 +543,10 @@
     grid-template-columns: 1fr;
   }
 
+  .admin-table-container {
+    overflow-x: auto;
+  }
+
   .admin-modal-close {
     width: 44px;
     height: 44px;
@@ -541,6 +555,12 @@
 
   .admin-nav-item {
     min-height: 44px;
+  }
+
+  .admin-main {
+    height: auto;
+    overflow: visible;
+    padding: 1.5rem 1rem;
   }
 }
 
